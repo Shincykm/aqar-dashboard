@@ -1,3 +1,6 @@
+// ----------------------------------------------------------------------
+
+
 export type IPropertyItem = {
   nameAr?: string | null;
   nameEn: string;
@@ -31,12 +34,6 @@ export type IPropertyItem = {
   createdAt: Date;
   updatedAt: Date;
   deletedAt?: Date | null;
-};
-
-export type IPropertyTableFilterValue = string | string[];
-
-export type IPropertTableFilters = {
-  name: string;
 };
 
 // //////////////////// Original Product code ///////////////////////////

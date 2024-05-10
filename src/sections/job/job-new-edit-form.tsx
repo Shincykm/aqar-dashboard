@@ -113,6 +113,7 @@ export default function JobNewEditForm({ currentJob }: Props) {
 
   useEffect(() => {
     if (currentJob) {
+      console.log(currentJob);
       reset(defaultValues);
     }
   }, [currentJob, defaultValues, reset]);

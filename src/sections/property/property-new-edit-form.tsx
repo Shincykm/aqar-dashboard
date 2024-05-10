@@ -38,6 +38,7 @@ import FormProvider, {
 // types
 import { IPropertyItem } from 'src/types/property';
 import { IPropertyType } from 'src/types/propertyType';
+import { useCreateUpdateProperty } from 'src/api/property';
 
 // ----------------------------------------------------------------------
 
@@ -210,7 +211,10 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      // await new Promise((resolve) => setTimeout(resolve, 500));
+      const response = useCreateUpdateProperty(data);
+      
+
       reset();
       enqueueSnackbar(currentProperty ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.property.root);

@@ -158,7 +158,7 @@ export default function PropertyListView() {
 
   return (
     <>
-      <Container maxWidth={settings.themeStretch ? false : 'lg'}>
+       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
           heading="List"
           links={[
@@ -182,7 +182,7 @@ export default function PropertyListView() {
           sx={{ mb: { xs: 3, md: 5 } }}
         />
 
-        {/* <Card>
+       {/* <Card>
           <ProductTableToolbar
             filters={filters}
             onFilters={handleFilters}
@@ -287,8 +287,8 @@ export default function PropertyListView() {
             dense={table.dense}
             onChangeDense={table.onChangeDense}
           />
-        </Card> */}
-      </Container>
+        </Card>*/}
+      </Container> 
 
       <ConfirmDialog
         open={confirm.value}

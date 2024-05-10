@@ -25,6 +25,8 @@ export const fetcher = async (args: string | [string, AxiosRequestConfig]) => {
 
 // ----------------------------------------------------------------------
 
+// ----------------------------------------------------------------------
+
 export const endpoints = {
   chat: '/api/chat',
   kanban: '/api/kanban',
@@ -51,8 +53,9 @@ export const endpoints = {
     search: '/api/product/search',
   },
   property: {
-    list: '/api/property/list',
-    details: '/api/property/details',
-    search: '/api/property/search',
+    list: '/property/list',
+    details: '/property/details',
+    search: '/property/search',
+    createUpdate: '/admin/property/createUpdateProperty',
   }
 };
