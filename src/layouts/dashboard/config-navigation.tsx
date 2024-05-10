@@ -353,6 +353,21 @@ export function useNavData() {
               { title: t('edit'), path: paths.dashboard.property.demo.edit },
             ],
           },
+          {
+            title: t('propertyType'),
+            path: paths.dashboard.propertyType.root,
+            icon: ICONS.product,
+            children: [
+              { title: t('list'), path: paths.dashboard.propertyType.root },
+              // {
+              //   title: t('details'),
+              //   path: paths.dashboard.propertyType.demo.details,
+              // },
+              { title: t('create'), path: paths.dashboard.propertyType.new },
+              { title: t('edit'), path: paths.dashboard.propertyType.demo.edit },
+            ],
+          },
+
         ],
       },
     ],

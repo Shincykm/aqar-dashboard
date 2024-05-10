@@ -6,6 +6,9 @@ import { AuthGuard } from 'src/auth/guard';
 import DashboardLayout from 'src/layouts/dashboard';
 // components
 import { LoadingScreen } from 'src/components/loading-screen';
+import PropertyTypeListPage from 'src/pages/dashboard/propertyType/list';
+import PropertyTypeCreatePage from 'src/pages/dashboard/propertyType/new';
+import PropertyTypeEditPage from 'src/pages/dashboard/propertyType/edit';
 
 // ----------------------------------------------------------------------
 
@@ -179,6 +182,15 @@ export const dashboardRoutes = [
           { path: ':id', element: <PropertyDetailsPage /> },
           { path: 'new', element: <PropertyCreatePage /> },
           { path: ':id/edit', element: <PropertyEditPage /> },
+        ],
+      },
+      {
+        path: 'property-type',
+        children: [
+          { element: <PropertyTypeListPage />, index: true },
+          { path: 'list', element: <PropertyTypeListPage /> },
+          { path: 'new', element: <PropertyTypeCreatePage /> },
+          { path: ':id/edit', element: <PropertyTypeEditPage /> },
         ],
       },
     ],
