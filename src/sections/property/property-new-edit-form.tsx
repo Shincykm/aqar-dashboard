@@ -33,7 +33,7 @@ import FormProvider, {
   RHFEditor,
   RHFUpload,
   RHFTextField,
-  RHFDatePicker,
+  // RHFDatePicker,
 } from 'src/components/hook-form';
 // types
 import { IPropertyItem } from 'src/types/property';
@@ -116,8 +116,6 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
     nameEn: Yup.string().required('Title is required'),
     descriptionAr: Yup.string().nullable(),
     descriptionEn: Yup.string().nullable(),
-
-    // boolean
     active: Yup.boolean().required(),
     isFeatured: Yup.boolean().required(),
     isFurnished: Yup.boolean().required(),
@@ -126,35 +124,24 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
     countParking: Yup.number().nullable(),
     sizeSqm: Yup.number().nullable(),
     // sizeSqft: Yup.number().nullable(),
-
-    //price
     maintenanceFee: Yup.number().nullable(),
     oldAmount: Yup.number().nullable(),
     amount: Yup.number().nullable(),
-
-    // owner Details
     ownership: Yup.string().nullable(),
     referenceNumber: Yup.string().nullable(),
     // constructedDate: Yup.date().nullable(),
-    constructedDate: Yup.mixed<any>().nullable().required('Expired date is required'),
-
-    // populate data and select
+    constructedDate: Yup.mixed<any>().nullable().required('Constructed date is required'),
     propertyTypeId: Yup.number().nullable(),
     // subType: Yup.string().nullable(),
     propertyPurposeId: Yup.number().nullable(),
     propertyStyleId: Yup.number().nullable(),
-
-    // location - populate data and select
     addressId: Yup.number().nullable(),
     buildingId: Yup.number().nullable(),
     countryId: Yup.number().nullable(),
     stateProvinceId: Yup.number().nullable(),
     cityId: Yup.number().nullable(),
-    // displayOrder: Yup.number().nullable(),
-
-    // property image
+    displayOrder: Yup.number().nullable(),
     images: Yup.array().min(1, 'Images is required'),
-
     //auto populate to db
     // createdAt: Yup.date().required(),
     // updatedAt: Yup.date().required(),
@@ -691,6 +678,16 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                 </RHFSelect>
               )}
             </Box>
+          </Stack>
+
+          <Stack spacing={3} sx={{ p: 3 }}>
+            <RHFTextField
+                name="displayOrder"
+                label="Display Order"
+                placeholder="0"
+                type="number"
+                InputLabelProps={{ shrink: true }}
+              />
           </Stack>
         </Card>
       </Grid>
