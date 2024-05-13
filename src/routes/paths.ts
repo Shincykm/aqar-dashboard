@@ -194,8 +194,8 @@ export const paths = {
       // details: (id: string) => `${ROOTS.DASHBOARD}/property-type/${id}`,
       edit: (id: string) => `${ROOTS.DASHBOARD}/property-type/${id}/edit`,
       demo: {
-        details: `${ROOTS.DASHBOARD}/property/${MOCK_ID}`,
-        edit: `${ROOTS.DASHBOARD}/property/${MOCK_ID}/edit`,
+        details: `${ROOTS.DASHBOARD}/property-type/${MOCK_ID}`,
+        edit: `${ROOTS.DASHBOARD}/property-type/${MOCK_ID}/edit`,
       },
     },
   },

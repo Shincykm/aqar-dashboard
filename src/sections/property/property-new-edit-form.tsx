@@ -37,29 +37,21 @@ import FormProvider, {
 } from 'src/components/hook-form';
 // types
 import { IPropertyItem } from 'src/types/property';
-import { IPropertyType } from 'src/types/propertyType';
+import { IPropertyType, IPropertyTypeItem } from 'src/types/propertyType';
 import { useCreateUpdateProperty } from 'src/api/property';
 
 // ----------------------------------------------------------------------
 
 // Tempdata to be populated from database
-const PROPERTY_TYPE: IPropertyType[] = [
+const PROPERTY_TYPE: IPropertyTypeItem[] = [
   {
     id: 1,
-    nameEn: 'Villa',
-    nameAr: 'Villa',
-  },
-  {
-    id: 2,
-    nameEn: 'Apartment',
-    nameAr: 'Apartment',
-  },
-  {
-    id: 3,
-    nameEn: 'Sub- Villa',
-    nameAr: 'Sub- Villa',
-    parentId: 1,
-  },
+    name_en: 'Villa',
+    name_ar: '',
+    description_ar : '',
+    description_en : '',
+    parent_id : null
+  }
 ];
 
 const POPERTY_PURPOSE: IPropertyType[] = [
@@ -525,9 +517,9 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                 >
                   {PROPERTY_TYPE?.map(
                     (type) =>
-                      !type?.parentId && (
+                      !type?.parent_id && (
                         <option key={type?.id} value={type?.id}>
-                          {type?.nameEn}
+                          {type?.name_en}
                         </option>
                       )
                   )}

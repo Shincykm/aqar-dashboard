@@ -6,9 +6,6 @@ import { AuthGuard } from 'src/auth/guard';
 import DashboardLayout from 'src/layouts/dashboard';
 // components
 import { LoadingScreen } from 'src/components/loading-screen';
-import PropertyTypeListPage from 'src/pages/dashboard/propertyType/list';
-import PropertyTypeCreatePage from 'src/pages/dashboard/propertyType/new';
-import PropertyTypeEditPage from 'src/pages/dashboard/propertyType/edit';
 
 // ----------------------------------------------------------------------
 
@@ -72,6 +69,11 @@ const PropertyDetailsPage = lazy(() => import('src/pages/dashboard/property/deta
 const PropertyListPage = lazy(() => import('src/pages/dashboard/property/list'));
 const PropertyCreatePage = lazy(() => import('src/pages/dashboard/property/new'));
 const PropertyEditPage = lazy(() => import('src/pages/dashboard/property/edit'));
+
+// PROPERTY TYPE
+const PropertyTypeListPage = lazy(() => import('src/pages/dashboard/property-type/list'));
+const PropertyTypeCreatePage = lazy(() => import('src/pages/dashboard/property-type/new'));
+const PropertyTypeEditPage = lazy(() => import('src/pages/dashboard/property-type/edit'));
 
 // ----------------------------------------------------------------------
 

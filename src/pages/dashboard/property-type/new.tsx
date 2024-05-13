@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 // sections
-import { PropertyCreateView } from 'src/sections/property/view';
+import {PropertyTypeCreateView} from 'src/sections/property-type/view';
 
 // ----------------------------------------------------------------------
 
@@ -11,7 +11,7 @@ export default function PropertyTypeCreatePage() {
         <title> Dashboard: Create a new property type</title>
       </Helmet>
 
-      {/* <PropertyCreateView /> */}
+      <PropertyTypeCreateView />
     </>
   );
 }

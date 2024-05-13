@@ -5,7 +5,6 @@ import { fetcher, endpoints } from 'src/utils/axios';
 // types
 import { IPropertyItem } from 'src/types/property';
 import axios from 'axios';
-import { camelToSnakeCase } from 'src/utils/camelToSnakeCase';
 
 // ----------------------------------------------------------------------
 
@@ -54,24 +53,24 @@ export function useGetProperty(propertyId: string) {
 export async function useCreateUpdateProperty(propertyData : any) {
   const URL =  endpoints.property.createUpdate;
   let images = [];
-  const formData = new FormData();
-  Object.keys(propertyData).map(key => {
-   if(key === "images"){
-     images = propertyData[key];
-   }else{
-     formData.append(camelToSnakeCase(key), propertyData[key]);
-   }
-  });
+  // const formData = new FormData();
+  // Object.keys(propertyData).map(key => {
+  //  if(key === "images"){
+  //    images = propertyData[key];
+  //  }else{
+  //    formData.append(camelToSnakeCase(key), propertyData[key]);
+  //  }
+  // });
 
-  try {
-    // upload formdata to property table in db
-    const response = await axios.post('https://aqar.api.mvp-apps.ae/api/admin/property/createUpdateProperty',formData);
-    // upload image to property image table in db
-    console.log(response.data);
-    return response.data; 
-  } catch (error) {
-    console.log(error);
-  }
+  // try {
+  //   // upload formdata to property table in db
+  //   const response = await axios.post('https://aqar.api.mvp-apps.ae/api/admin/property/createUpdateProperty',formData);
+  //   // upload image to property image table in db
+  //   console.log(response.data);
+  //   return response.data; 
+  // } catch (error) {
+  //   console.log(error);
+  // }
 }
 
 // ----------------------------------------------------------------------
