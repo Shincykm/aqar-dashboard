@@ -142,11 +142,15 @@ export default function PropertyTypeNewEditForm({ currentPropertyType }: Props) 
 
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">Description</Typography>
-              <RHFEditor simple name="description_en" />
+              {/* <RHFEditor simple name="description_en" /> */}
+            <RHFTextField name="description_en" label="Description" multiline rows={4} />
+
             </Stack>
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">Description (Arabic)</Typography>
-              <RHFEditor simple name="description_ar" />
+              {/* <RHFEditor simple name="description_ar" /> */}
+            <RHFTextField name="description_ar" label="Description (Arabic)" multiline rows={4} />
+
             </Stack>
 
             {!propertyTypeEmpty && (

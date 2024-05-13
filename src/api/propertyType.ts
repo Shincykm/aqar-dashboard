@@ -1,7 +1,7 @@
 import useSWR from 'swr';
 import { useMemo } from 'react';
 // utils
-import axiosInstance, { fetcher, endpoints, poster, fetcher1 } from 'src/utils/axios';
+import { endpoints, fetcher1, performRequest } from 'src/utils/axios';
 // types
 import { IPropertyTypeItem } from 'src/types/propertyType';
 
@@ -30,8 +30,16 @@ export function useGetPropertyTypeList(page = 1, limit=10 ) {
 
 export async function useCreateUpdatePropertyType(propertyTypeData : any){
   const URL = endpoints.propertyType.createUpdate;
-  console.log(propertyTypeData, "==propertyTypeData api/propertyType.ts");
 
-  const response = poster([URL, propertyTypeData]);
+  const response = await performRequest('POST', URL ,{data : propertyTypeData});
+  return response;
+}
+
+// ----------------------------------------------------------------------
+
+export async function useDeletePropertyType(propertyTypeId : number){
+  const URL = endpoints.propertyType.delete;
+
+  const response = await performRequest<any>('DELETE',`${URL}/${propertyTypeId}`);
   return response;
 }

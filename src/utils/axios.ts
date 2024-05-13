@@ -1,8 +1,10 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig, Method } from 'axios';
 // config
 import { HOST_API } from 'src/config-global';
 import { HOST_AQAR_API } from 'src/config-global';
 
+// ----------------------------------------------------------------------
+//  Replace when login is completed with axiosInstance1 with HOst_aqar_api
 // ----------------------------------------------------------------------
 const axiosInstance = axios.create({ baseURL: HOST_API });
 
@@ -35,7 +37,6 @@ axiosInstance.interceptors.request.use(
   }
 );
 
-
 // Add an interceptor to handle errors globally
 axiosInstance.interceptors.response.use(
   (res) => res,
@@ -46,6 +47,19 @@ export default axiosInstance;
 
 // ----------------------------------------------------------------------
 
+export const fetcher = async (args: string | [string, AxiosRequestConfig]) => {
+  const [url, config] = Array.isArray(args) ? args : [args];
+
+  const res = await axiosInstance.get(url, { ...config });
+
+  return res.data;
+};
+
+
+
+
+
+// ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 const axiosInstance1 = axios.create({ baseURL: HOST_AQAR_API });
 
@@ -62,12 +76,8 @@ axiosInstance1.interceptors.request.use(
 
     // Add your data to the request body
     if (config.method === 'post' || config.method === 'put' || config.method === 'patch') {
-      // Here, you can add your data to the request body
-      // For example, assuming you have a globally accessible object `postData`
-      // You can attach it to the `data` property of the config object
       config.data = {
         ...config.data,
-        // Your data goes here
       };
     }
 
@@ -80,16 +90,6 @@ axiosInstance1.interceptors.request.use(
 
 // ----------------------------------------------------------------------
 
-export const fetcher = async (args: string | [string, AxiosRequestConfig]) => {
-  const [url, config] = Array.isArray(args) ? args : [args];
-
-  const res = await axiosInstance.get(url, { ...config });
-
-  return res.data;
-};
-
-// ----------------------------------------------------------------------
-
 export const fetcher1 = async (args: string | [string, AxiosRequestConfig]) => {
   const [url, config] = Array.isArray(args) ? args : [args];
 
@@ -98,33 +98,26 @@ export const fetcher1 = async (args: string | [string, AxiosRequestConfig]) => {
   return res.data;
 };
 
-export const poster = async (args: string | [string, AxiosRequestConfig]) => {
-  const [url, config] = Array.isArray(args) ? args : [args];
+// ----------------------------------------------------------------------
 
-  const res = await axiosInstance1.post(url, { ...config });
-
-  return res.data;
+export const performRequest = async <T>(
+  method: Method,
+  url: string,
+  config?: AxiosRequestConfig
+): Promise<T> => {
+  try {
+    const res = await axiosInstance1.request<T>({
+      method,
+      url,
+      ...config,
+    });
+    return res.data;
+  } catch (error) {
+    throw new Error(`Failed to make ${method} request to ${url}: ${error.message}`);
+  }
 };
 
 // ----------------------------------------------------------------------
-
-// const ovadAxiosInstanace = axios.create({
-//   baseURL: HOST_API,
-//   headers: {
-//     Authorization: `Bearer ${sessionStorage.getItem('accessToken')}`,
-//   },
-// });
-// export const creatorFunction = async (args: string | [string, AxiosRequestConfig]) => {
-//   const [url, config] = Array.isArray(args) ? args : [args];
-//   const res = await ovadAxiosInstanace.post(url, config);
-//   return res.data;
-// };
-
-// export function SetDefaulComb(body: any) {
-//   const URL = endpoints.attribute.setDefault;
-//   const response = creatorFunction([URL, body]);
-//   return response;
-// }
 
 // ----------------------------------------------------------------------
 
@@ -163,5 +156,6 @@ export const endpoints = {
     list: '/api/admin/propertyType/getPropertyTypeList',
     // search: '/api/property-type/search',
     createUpdate: '/api/admin/propertyType/createUpdatePropertyType',
+    delete: '/api/admin/propertyType/deletePropertyType',
   },
 };
