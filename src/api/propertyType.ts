@@ -28,6 +28,27 @@ export function useGetPropertyTypeList(page = 1, limit=10 ) {
 
 // ----------------------------------------------------------------------
 
+export function useGetPropertyType(propertyTypeId: string | number) {
+  // const URL = propertyTypeId ? [endpoints.propertyType.details, { params: { propertyTypeId } }] : null;
+  const URL = propertyTypeId ? `${endpoints.propertyType.details}/${propertyTypeId}` : null;
+
+  const { data, isLoading, error, isValidating } = useSWR(URL, fetcher1);
+
+  const memoizedValue = useMemo(
+    () => ({
+      propertyType: data?.data as IPropertyTypeItem,
+      propertyTypeLoading: isLoading,
+      propertyTypeError: error,
+      propertyTypeValidating: isValidating,
+    }),
+    [data?.data, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+}
+
+// ----------------------------------------------------------------------
+
 export async function useCreateUpdatePropertyType(propertyTypeData : any){
   const URL = endpoints.propertyType.createUpdate;
 

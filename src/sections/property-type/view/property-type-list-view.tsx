@@ -44,6 +44,7 @@ import PropertyTypeTableToolbar from '../property-type-table-toolbar';
 import PropertyTypeTableFiltersResult from '../property-type-table-filters-result';
 import PropertyTypeTableRow from '../property-type-table-row';
 import { useDeletePropertyType, useGetPropertyTypeList } from 'src/api/propertyType';
+import { textAlign } from '@mui/system';
 
 // ----------------------------------------------------------------------
 
@@ -315,11 +316,11 @@ function applyFilter({
 
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
-  // stabilizedThis.sort((a, b) => {
-  //   const order = comparator(a[0], b[0]);
-  //   if (order !== 0) return order;
-  //   return a[1] - b[1];
-  // });
+  stabilizedThis.sort((a, b) => {
+    const order = comparator(a[0], b[0]);
+    if (order !== 0) return order;
+    return a[1] - b[1];
+  });
 
   inputData = stabilizedThis.map((el) => el[0]);
 

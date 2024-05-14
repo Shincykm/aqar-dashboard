@@ -84,6 +84,8 @@ export default function PropertyTypeNewEditForm({ currentPropertyType }: Props) 
 
   useEffect(() => {
     if (currentPropertyType) {
+     console.log(currentPropertyType, "==currentPropertyType");
+     
       reset(defaultValues);
     }
   }, [currentPropertyType, defaultValues, reset]);

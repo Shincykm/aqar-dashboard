@@ -1,20 +1,19 @@
 import { useCallback } from 'react';
 // @mui
 import Stack from '@mui/material/Stack';
-import MenuItem from '@mui/material/MenuItem';
-import Checkbox from '@mui/material/Checkbox';
+// import MenuItem from '@mui/material/MenuItem';
+// import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
-import InputLabel from '@mui/material/InputLabel';
-import IconButton from '@mui/material/IconButton';
-import FormControl from '@mui/material/FormControl';
-import OutlinedInput from '@mui/material/OutlinedInput';
+// import InputLabel from '@mui/material/InputLabel';
+// import IconButton from '@mui/material/IconButton';
+// import FormControl from '@mui/material/FormControl';
+// import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+// import Select, { SelectChangeEvent } from '@mui/material/Select';
 // components
 import Iconify from 'src/components/iconify';
-import CustomPopover, { usePopover } from 'src/components/custom-popover';
+// import CustomPopover, { usePopover } from 'src/components/custom-popover';
 // types
-import { IProductTableFilters, IProductTableFilterValue } from 'src/types/product';
 import { IPropertyTypeTableFilters, IPropertyTypeTableFilterValue } from 'src/types/propertyType';
 
 // ----------------------------------------------------------------------
@@ -40,7 +39,7 @@ export default function PropertyTypeTableToolbar({
   // stockOptions,
   // publishOptions,
 }: Props) {
-  const popover = usePopover();
+  // const popover = usePopover();
 
   const handleFilterName = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,26 +47,6 @@ export default function PropertyTypeTableToolbar({
     },
     [onFilters]
   );
-
-  // const handleFilterStock = useCallback(
-  //   (event: SelectChangeEvent<string[]>) => {
-  //     onFilters(
-  //       'stock',
-  //       typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
-  //     );
-  //   },
-  //   [onFilters]
-  // );
-
-  // const handleFilterPublish = useCallback(
-  //   (event: SelectChangeEvent<string[]>) => {
-  //     onFilters(
-  //       'publish',
-  //       typeof event.target.value === 'string' ? event.target.value.split(',') : event.target.value
-  //     );
-  //   },
-  //   [onFilters]
-  // );
 
   return (
     <>
@@ -83,63 +62,6 @@ export default function PropertyTypeTableToolbar({
           pr: { xs: 2.5, md: 1 },
         }}
       >
-        {/* <FormControl
-          sx={{
-            flexShrink: 0,
-            width: { xs: 1, md: 200 },
-          }}
-        >
-          <InputLabel>Stock</InputLabel>
-
-          <Select
-            multiple
-            value={filters.stock}
-            onChange={handleFilterStock}
-            input={<OutlinedInput label="Stock" />}
-            renderValue={(selected) => selected.map((value) => value).join(', ')}
-            sx={{ textTransform: 'capitalize' }}
-          >
-            {stockOptions.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                <Checkbox
-                  disableRipple
-                  size="small"
-                  checked={filters.stock.includes(option.value)}
-                />
-                {option.label}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl> */}
-
-        {/* <FormControl
-          sx={{
-            flexShrink: 0,
-            width: { xs: 1, md: 200 },
-          }}
-        >
-          <InputLabel>Publish</InputLabel>
-
-          <Select
-            multiple
-            value={filters.publish}
-            onChange={handleFilterPublish}
-            input={<OutlinedInput label="Publish" />}
-            renderValue={(selected) => selected.map((value) => value).join(', ')}
-            sx={{ textTransform: 'capitalize' }}
-          >
-            {publishOptions.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                <Checkbox
-                  disableRipple
-                  size="small"
-                  checked={filters.publish.includes(option.value)}
-                />
-                {option.label}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl> */}
 
         <Stack direction="row" alignItems="center" spacing={2} flexGrow={1} sx={{ width: 1 }}>
           <TextField

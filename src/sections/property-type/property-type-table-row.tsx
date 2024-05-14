@@ -89,7 +89,7 @@ export default function PropertyTypeTableRow({
         </TableCell> */}
         
         <TableCell>
-        <ListItemText sx={{ textAlign : 'center' }}
+        <ListItemText
             disableTypography
             primary={
               <Link
@@ -97,7 +97,7 @@ export default function PropertyTypeTableRow({
                 color="inherit"
                 variant="subtitle2"
                 // onClick={onViewRow}
-                sx={{ cursor: 'pointer' }}
+                sx={{ cursor: 'pointer'}}
               >
                 {name_ar}
               </Link>

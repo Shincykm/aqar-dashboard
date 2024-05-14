@@ -157,5 +157,6 @@ export const endpoints = {
     // search: '/api/property-type/search',
     createUpdate: '/api/admin/propertyType/createUpdatePropertyType',
     delete: '/api/admin/propertyType/deletePropertyType',
+    details: '/api/admin/propertyType/getPropertyTypeById',
   },
 };
