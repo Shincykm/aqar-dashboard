@@ -84,15 +84,17 @@ export default function PropertyTypeNewEditForm({ currentPropertyType }: Props) 
 
   useEffect(() => {
     if (currentPropertyType) {
-     console.log(currentPropertyType, "==currentPropertyType");
-     
       reset(defaultValues);
     }
   }, [currentPropertyType, defaultValues, reset]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      const response = await useCreateUpdatePropertyType(data);
+      const tempData = {
+        ...currentPropertyType,
+        ...data
+      }
+      const response = await useCreateUpdatePropertyType(tempData);
       reset();
       if (response) {
         enqueueSnackbar(currentPropertyType ? 'Update success!' : 'Create success!');

@@ -9,7 +9,6 @@ import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
-import { Divider } from '@mui/material';
 // routes
 import { paths } from 'src/routes/paths';
 // hooks
@@ -24,17 +23,17 @@ import FormProvider, {
   // RHFDatePicker,
 } from 'src/components/hook-form';
 // types
-import { IPropertyStyleItem } from 'src/types/propertyStyle';
+import { IPropertyPurposeItem } from 'src/types/propertyPurpose';
 //api
-import { useCreateUpdatePropertyStyle } from 'src/api/propertyStyle';
+import { useCreateUpdatePropertyPurpose } from 'src/api/propertyPurpose';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  currentPropertyStyle?: IPropertyStyleItem;
+  currentPropertyPurpose?: IPropertyPurposeItem;
 };
 
-export default function PropertyStyleNewEditForm({ currentPropertyStyle }: Props) {
+export default function PropertyPurposeNewEditForm({ currentPropertyPurpose }: Props) {
   const router = useRouter();
 
   const mdUp = useResponsive('up', 'md');
@@ -51,12 +50,12 @@ export default function PropertyStyleNewEditForm({ currentPropertyStyle }: Props
 
   const defaultValues = useMemo(
     () => ({
-      name_en: currentPropertyStyle?.name_en || '',
-      name_ar: currentPropertyStyle?.name_ar || '',
-      //   created_at: currentPropertyStyle?.createdAt || null,
-      //   updated_at: currentPropertyStyle?.updatedAt || null,
+      name_en: currentPropertyPurpose?.name_en || '',
+      name_ar: currentPropertyPurpose?.name_ar || '',
+      //   created_at: currentPropertyPurpose?.createdAt || null,
+      //   updated_at: currentPropertyPurpose?.updatedAt || null,
     }),
-    [currentPropertyStyle]
+    [currentPropertyPurpose]
   );
 
   const methods = useForm({
@@ -76,23 +75,23 @@ export default function PropertyStyleNewEditForm({ currentPropertyStyle }: Props
   const values = watch();
 
   useEffect(() => {
-    if (currentPropertyStyle) {
+    if (currentPropertyPurpose) {
       reset(defaultValues);
     }
-  }, [currentPropertyStyle, defaultValues, reset]);
+  }, [currentPropertyPurpose, defaultValues, reset]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
       const tempData = {
-        ...currentPropertyStyle,
+        ...currentPropertyPurpose,
         ...data,
       }
-      const response = await useCreateUpdatePropertyStyle(tempData);
+      const response = await useCreateUpdatePropertyPurpose(tempData);
       reset();
       if (response) {
-        enqueueSnackbar(currentPropertyStyle ? 'Update success!' : 'Create success!');
+        enqueueSnackbar(currentPropertyPurpose ? 'Update success!' : 'Create success!');
       }
-      router.push(paths.dashboard.propertyStyle.root);
+      router.push(paths.dashboard.propertyPurpose.root);
     } catch (error) {
       console.error(error);
     }
@@ -116,9 +115,9 @@ export default function PropertyStyleNewEditForm({ currentPropertyStyle }: Props
           {!mdUp && <CardHeader title="Details" />}
 
           <Stack spacing={3} sx={{ p: 3 }}>
-            <Typography variant="subtitle2">Property Style Name</Typography>
+            <Typography variant="subtitle2">Property Purpose Name</Typography>
             <RHFTextField name="name_en" label="Name" />
-            <Typography variant="subtitle2">Property Style Name (Arabic)</Typography>
+            <Typography variant="subtitle2">Property Purpose Name (Arabic)</Typography>
             <RHFTextField name="name_ar" label="Name" />
           </Stack>
         </Card>
@@ -131,7 +130,7 @@ export default function PropertyStyleNewEditForm({ currentPropertyStyle }: Props
       {mdUp && <Grid md={4} />}
       <Grid xs={12} md={8} sx={{ display: 'flex', alignItems: 'center' }}>
         <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
-          {!currentPropertyStyle ? 'Create Property Style' : 'Save Changes Style'}
+          {!currentPropertyPurpose ? 'Create Property Purpose' : 'Save Changes Purpose'}
         </LoadingButton>
       </Grid>
     </>

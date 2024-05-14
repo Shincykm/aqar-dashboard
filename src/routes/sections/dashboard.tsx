@@ -81,9 +81,9 @@ const PropertyStyleCreatePage = lazy(() => import('src/pages/dashboard/property-
 const PropertyStyleEditPage = lazy(() => import('src/pages/dashboard/property-style/edit'));
 
 // PROPERTY Purpose
-// const PropertyPurposeListPage = lazy(() => import('src/pages/dashboard/property-purpose/list'));
-// const PropertyPurposeCreatePage = lazy(() => import('src/pages/dashboard/property-purpose/new'));
-// const PropertyPurposeEditPage = lazy(() => import('src/pages/dashboard/property-purpose/edit'));
+const PropertyPurposeListPage = lazy(() => import('src/pages/dashboard/property-purpose/list'));
+const PropertyPurposeCreatePage = lazy(() => import('src/pages/dashboard/property-purpose/new'));
+const PropertyPurposeEditPage = lazy(() => import('src/pages/dashboard/property-purpose/edit'));
 
 // ----------------------------------------------------------------------
 
@@ -214,15 +214,15 @@ export const dashboardRoutes = [
           { path: ':id/edit', element: <PropertyStyleEditPage /> },
         ],
       },
-      // {
-      //   path: 'property-purpose',
-      //   children: [
-      //     { element: <PropertyPurposeListPage />, index: true },
-      //     { path: 'list', element: <PropertyPurposeListPage /> },
-      //     { path: 'new', element: <PropertyPurposeCreatePage /> },
-      //     { path: ':id/edit', element: <PropertyPurposeEditPage /> },
-      //   ],
-      // },
+      {
+        path: 'property-purpose',
+        children: [
+          { element: <PropertyPurposeListPage />, index: true },
+          { path: 'list', element: <PropertyPurposeListPage /> },
+          { path: 'new', element: <PropertyPurposeCreatePage /> },
+          { path: ':id/edit', element: <PropertyPurposeEditPage /> },
+        ],
+      },
     ],
   },
 ];

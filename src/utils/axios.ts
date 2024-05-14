@@ -165,4 +165,10 @@ export const endpoints = {
     delete: '/api/admin/propertyStyle/deletePropertyStyle',
     details: '/api/admin/propertyStyle/getPropertyStyleById',
   },
+  propertyPurpose: {
+    list: '/api/admin/propertyPurpose/getPropertyPurposeList',
+    createUpdate: '/api/admin/propertyPurpose/createUpdatePropertyPurpose',
+    delete: '/api/admin/propertyPurpose/deletePropertyPurpose',
+    details: '/api/admin/propertyPurpose/getPropertyPurposeById',
+  },
 };

@@ -35,50 +35,50 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 // types
 import {
-  IPropertyStyleItem,
-  IPropertyStyleTableFilters,
-  IPropertyStyleTableFilterValue,
-} from 'src/types/propertyStyle';
+  IPropertyPurposeItem,
+  IPropertyPurposeTableFilters,
+  IPropertyPurposeTableFilterValue,
+} from 'src/types/propertyPurpose';
 //
-import PropertyStyleTableToolbar from '../property-style-table-toolbar';
-import PropertyStyleTableFiltersResult from '../property-style-table-filters-result';
-import PropertyStyleTableRow from '../property-style-table-row';
-import { useDeletePropertyStyle, useGetPropertyStyleList } from 'src/api/propertyStyle';
+import PropertyPurposeTableToolbar from '../property-purpose-table-toolbar';
+import PropertyPurposeTableFiltersResult from '../property-purpose-table-filters-result';
+import PropertyPurposeTableRow from '../property-purpose-table-row';
+import { useDeletePropertyPurpose, useGetPropertyPurposeList } from 'src/api/propertyPurpose';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Property Type' },
+  { id: 'name', label: 'Property Purpose' },
   // { id: 'created_at', label: 'Create at', width: 160 },
   { id: '', width: 88 },
 ];
 
-const defaultFilters: IPropertyStyleTableFilters = {
+const defaultFilters: IPropertyPurposeTableFilters = {
   name_en: '',
 };
 
 // ----------------------------------------------------------------------
 
-export default function PropertyStyleListView() {
+export default function PropertyPurposeListView() {
   const router = useRouter();
 
   const table = useTable();
 
   const settings = useSettingsContext();
 
-  const [tableData, setTableData] = useState<IPropertyStyleItem[]>([]);
+  const [tableData, setTableData] = useState<IPropertyPurposeItem[]>([]);
 
   const [filters, setFilters] = useState(defaultFilters);
 
-  const { propertyStyles, propertyStyleLoading, propertyStyleEmpty } = useGetPropertyStyleList();
+  const { propertyPurposes, propertyPurposeLoading, propertyPurposeEmpty } = useGetPropertyPurposeList();
 
   const confirm = useBoolean();
 
   useEffect(() => {
-    if (propertyStyles.length) {
-      setTableData(propertyStyles);
+    if (propertyPurposes.length) {
+      setTableData(propertyPurposes);
     }
-  }, [propertyStyles]);
+  }, [propertyPurposes]);
 
   const dataFiltered = applyFilter({
     inputData: tableData,
@@ -95,10 +95,10 @@ export default function PropertyStyleListView() {
 
   const canReset = !isEqual(defaultFilters, filters);
 
-  const notFound = (!dataFiltered.length && canReset) || propertyStyleEmpty;
+  const notFound = (!dataFiltered.length && canReset) || propertyPurposeEmpty;
 
   const handleFilters = useCallback(
-    (name: string, value: IPropertyStyleTableFilterValue) => {
+    (name: string, value: IPropertyPurposeTableFilterValue) => {
       table.onResetPage();
       setFilters((prevState) => ({
         ...prevState,
@@ -112,7 +112,7 @@ export default function PropertyStyleListView() {
     (id: string) => {
       const deleteRow = tableData.filter((row: any) => row.id !== id);
       // Delete row - api
-      const deletedRow = useDeletePropertyStyle(parseInt(id));
+      const deletedRow = useDeletePropertyPurpose(parseInt(id));
       setTableData(deleteRow);
 
       table.onUpdatePageDeleteRow(dataInPage.length);
@@ -135,7 +135,7 @@ export default function PropertyStyleListView() {
 
   const handleEditRow = useCallback(
     (id: string) => {
-      router.push(paths.dashboard.propertyStyle.edit(id));
+      router.push(paths.dashboard.propertyPurpose.edit(id));
     },
     [router]
   );
@@ -152,29 +152,29 @@ export default function PropertyStyleListView() {
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             {
-              name: 'Property Style',
-              href: paths.dashboard.propertyStyle.root,
+              name: 'Property Purpose',
+              href: paths.dashboard.propertyPurpose.root,
             },
             { name: 'List' },
           ]}
           action={
             <Button
               component={RouterLink}
-              href={paths.dashboard.propertyStyle.new}
+              href={paths.dashboard.propertyPurpose.new}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New Property Type
+              New Property Purpose
             </Button>
           }
           sx={{ mb: { xs: 3, md: 5 } }}
         />
 
         <Card>
-          <PropertyStyleTableToolbar filters={filters} onFilters={handleFilters} />
+          <PropertyPurposeTableToolbar filters={filters} onFilters={handleFilters} />
 
           {canReset && (
-            <PropertyStyleTableFiltersResult
+            <PropertyPurposeTableFiltersResult
               filters={filters}
               onFilters={handleFilters}
               //
@@ -223,7 +223,7 @@ export default function PropertyStyleListView() {
                 />
 
                 <TableBody>
-                  {propertyStyleLoading ? (
+                  {propertyPurposeLoading ? (
                     [...Array(table.rowsPerPage)].map((i, index) => (
                       <TableSkeleton key={index} sx={{ height: denseHeight }} />
                     ))
@@ -235,7 +235,7 @@ export default function PropertyStyleListView() {
                           table.page * table.rowsPerPage + table.rowsPerPage
                         )
                         .map((row) => (
-                          <PropertyStyleTableRow
+                          <PropertyPurposeTableRow
                             key={row.id}
                             row={row}
                             selected={table.selected.includes(row.id)}
@@ -305,9 +305,9 @@ function applyFilter({
   comparator,
   filters,
 }: {
-  inputData: IPropertyStyleItem[];
+  inputData: IPropertyPurposeItem[];
   comparator: (a: any, b: any) => number;
-  filters: IPropertyStyleTableFilters;
+  filters: IPropertyPurposeTableFilters;
 }) {
   const { name_en } = filters;
 
@@ -323,7 +323,7 @@ function applyFilter({
 
   if (name_en) {
     inputData = inputData.filter(
-      (propertyStyle) => propertyStyle.name_en.toLowerCase().indexOf(name_en.toLowerCase()) !== -1
+      (propertyPurpose) => propertyPurpose.name_en.toLowerCase().indexOf(name_en.toLowerCase()) !== -1
     );
   }
 
