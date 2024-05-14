@@ -1,7 +1,7 @@
 import { Helmet } from 'react-helmet-async';
 import { useParams } from 'react-router';
 
-import { PropertyTypeEditView } from 'src/sections/property-type/view';
+import { PropertyStyleEditView } from 'src/sections/property-style/view';
 
 export default function  PropertyTypeEditPage() {
   const params = useParams();
@@ -13,7 +13,7 @@ export default function  PropertyTypeEditPage() {
         <title> Dashboard: Property type Edit</title>
       </Helmet>
 
-      <PropertyTypeEditView id={`${id}`} />
+      <PropertyStyleEditView id={`${id}`} />
     </>
   );
 };

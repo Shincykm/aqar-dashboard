@@ -198,5 +198,15 @@ export const paths = {
       //   edit: `${ROOTS.DASHBOARD}/property-type/${MOCK_ID}/edit`,
       // },
     },
+    propertyStyle: {
+      root: `${ROOTS.DASHBOARD}/property-style`,
+      new: `${ROOTS.DASHBOARD}/property-style/new`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/property-style/${id}/edit`,
+    },
+    propertyPurpose: {
+      root: `${ROOTS.DASHBOARD}/property-purpose`,
+      new: `${ROOTS.DASHBOARD}/property-purpose/new`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/property-purpose/${id}/edit`,
+    },
   },
 };

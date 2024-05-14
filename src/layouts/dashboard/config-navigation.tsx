@@ -350,7 +350,7 @@ export function useNavData() {
       {
         subheader: t('property'),
         items: [
-          // Property
+          // Properties
           {
             title: t('property'),
             path: paths.dashboard.property.root,
@@ -365,6 +365,8 @@ export function useNavData() {
               { title: t('edit'), path: paths.dashboard.property.demo.edit },
             ],
           },
+
+          // Property Types
           {
             title: t('property Type'),
             path: paths.dashboard.propertyType.root,
@@ -372,6 +374,28 @@ export function useNavData() {
             children: [
               { title: t('list'), path: paths.dashboard.propertyType.root },
               { title: t('create'), path: paths.dashboard.propertyType.new },
+            ],
+          },
+
+          // Property Style
+          {
+            title: t('property style'),
+            path: paths.dashboard.propertyStyle.root,
+            icon: ICONS.propertyStyle,
+            children: [
+              { title: t('list'), path: paths.dashboard.propertyStyle.root },
+              { title: t('create'), path: paths.dashboard.propertyStyle.new },
+            ],
+          },
+
+          // Property Purpose
+          {
+            title: t('property purpose'),
+            path: paths.dashboard.propertyPurpose.root,
+            icon: ICONS.propertyPurpose,
+            children: [
+              { title: t('list'), path: paths.dashboard.propertyPurpose.root },
+              { title: t('create'), path: paths.dashboard.propertyPurpose.new },
             ],
           },
         ],
