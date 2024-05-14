@@ -85,6 +85,11 @@ const PropertyPurposeListPage = lazy(() => import('src/pages/dashboard/property-
 const PropertyPurposeCreatePage = lazy(() => import('src/pages/dashboard/property-purpose/new'));
 const PropertyPurposeEditPage = lazy(() => import('src/pages/dashboard/property-purpose/edit'));
 
+// Amenities
+const AmenitiesListPage = lazy(() => import('src/pages/dashboard/amenities/list'));
+const AmenitiesCreatePage = lazy(() => import('src/pages/dashboard/amenities/new'));
+const AmenitiesEditPage = lazy(() => import('src/pages/dashboard/amenities/edit'));
+
 // ----------------------------------------------------------------------
 
 export const dashboardRoutes = [
@@ -221,6 +226,16 @@ export const dashboardRoutes = [
           { path: 'list', element: <PropertyPurposeListPage /> },
           { path: 'new', element: <PropertyPurposeCreatePage /> },
           { path: ':id/edit', element: <PropertyPurposeEditPage /> },
+        ],
+      },
+
+      {
+        path: 'amenities',
+        children: [
+          { element: <AmenitiesListPage />, index: true },
+          { path: 'list', element: <AmenitiesListPage /> },
+          { path: 'new', element: <AmenitiesCreatePage /> },
+          { path: ':id/edit', element: <AmenitiesEditPage /> },
         ],
       },
     ],

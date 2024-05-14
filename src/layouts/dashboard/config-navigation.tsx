@@ -400,6 +400,23 @@ export function useNavData() {
           },
         ],
       },
+
+      {
+        subheader: t('amenities'),
+        items: [
+          // Amenities
+          {
+            title: t('amenities'),
+            path: paths.dashboard.amenities.root,
+            icon: ICONS.amenities,
+            children: [
+              { title: t('list'), path: paths.dashboard.amenities.root },
+              { title: t('create'), path: paths.dashboard.amenities.new },
+            ],
+          },
+
+        ],
+      },
     ],
     [t]
   );

@@ -208,5 +208,10 @@ export const paths = {
       new: `${ROOTS.DASHBOARD}/property-purpose/new`,
       edit: (id: string) => `${ROOTS.DASHBOARD}/property-purpose/${id}/edit`,
     },
+    amenities: {
+      root: `${ROOTS.DASHBOARD}/amenities`,
+      new: `${ROOTS.DASHBOARD}/amenities/new`,
+      edit: (id: string) => `${ROOTS.DASHBOARD}/amenities/${id}/edit`,
+    },
   },
 };

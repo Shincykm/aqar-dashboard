@@ -119,8 +119,6 @@ export const performRequest = async <T>(
 
 // ----------------------------------------------------------------------
 
-// ----------------------------------------------------------------------
-
 export const endpoints = {
   chat: '/api/chat',
   kanban: '/api/kanban',
@@ -170,5 +168,11 @@ export const endpoints = {
     createUpdate: '/api/admin/propertyPurpose/createUpdatePropertyPurpose',
     delete: '/api/admin/propertyPurpose/deletePropertyPurpose',
     details: '/api/admin/propertyPurpose/getPropertyPurposeById',
+  },
+  amenities: {
+    list: '/api/admin/amenities/getListAmenities',
+    createUpdate: '/api/admin/amenities/createUpdateAmenities',
+    delete: '/api/admin/amenities/deleteAmenity',
+    details: '/api/admin//amenities/getAmenityById',
   },
 };
