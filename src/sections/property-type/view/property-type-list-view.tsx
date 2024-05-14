@@ -209,7 +209,7 @@ export default function ProductListView() {
             />
 
             <Scrollbar>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
+              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960, textTransform : 'capitalize' }}>
                 <TableHeadCustom
                   order={table.order}
                   orderBy={table.orderBy}

@@ -43,6 +43,12 @@ const ICONS = {
   ecommerce: icon('ic_ecommerce'),
   analytics: icon('ic_analytics'),
   dashboard: icon('ic_dashboard'),
+
+  properties: icon('ic_properties'),
+  propertyTypes: icon('ic_propertytypes'),
+  propertyPurpose: icon('ic_propertypurpose'),
+  propertyStyle: icon('ic_propertystyle'),
+  amenities: icon('ic_amenities'),
 };
 
 // ----------------------------------------------------------------------
@@ -317,10 +323,10 @@ export function useNavData() {
         ],
       },
 
-      // Property
+      // User
       // ----------------------------------------------------------------------
       {
-        subheader: t('property'),
+        subheader: t('user'),
         items: [
           // USER
           {
@@ -336,13 +342,19 @@ export function useNavData() {
               { title: t('account'), path: paths.dashboard.user.account },
             ],
           },
+        ],
+      },
 
-          // ////////////////////
+      // Property
+      // ----------------------------------------------------------------------
+      {
+        subheader: t('property'),
+        items: [
           // Property
           {
             title: t('property'),
             path: paths.dashboard.property.root,
-            icon: ICONS.product,
+            icon: ICONS.properties,
             children: [
               { title: t('list'), path: paths.dashboard.property.root },
               {
@@ -354,20 +366,14 @@ export function useNavData() {
             ],
           },
           {
-            title: t('propertyType'),
+            title: t('property Type'),
             path: paths.dashboard.propertyType.root,
-            icon: ICONS.product,
+            icon: ICONS.propertyTypes,
             children: [
               { title: t('list'), path: paths.dashboard.propertyType.root },
-              // {
-              //   title: t('details'),
-              //   path: paths.dashboard.propertyType.demo.details,
-              // },
               { title: t('create'), path: paths.dashboard.propertyType.new },
-              { title: t('edit'), path: paths.dashboard.propertyType.demo.edit },
             ],
           },
-
         ],
       },
     ],
