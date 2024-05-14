@@ -1,45 +1,31 @@
 import * as Yup from 'yup';
-import { useCallback, useMemo, useEffect, useState } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { useMemo, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
-import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Switch from '@mui/material/Switch';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import { Chip, Divider } from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { Divider } from '@mui/material';
 // routes
 import { paths } from 'src/routes/paths';
 // hooks
 import { useResponsive } from 'src/hooks/use-responsive';
-// _mock
-import {
-  PRODUCT_SIZE_OPTIONS,
-  PRODUCT_GENDER_OPTIONS,
-  PRODUCT_COLOR_NAME_OPTIONS,
-  PRODUCT_CATEGORY_GROUP_OPTIONS,
-} from 'src/_mock';
 // components
 import { useSnackbar } from 'src/components/snackbar';
 import { useRouter } from 'src/routes/hooks';
 import FormProvider, {
   RHFSelect,
-  RHFEditor,
-  RHFUpload,
+  // RHFEditor,
   RHFTextField,
   // RHFDatePicker,
 } from 'src/components/hook-form';
 // types
 import { IPropertyTypeItem } from 'src/types/propertyType';
-// import { useCreateUpdateProperty } from 'src/api/property';
 import { useCreateUpdatePropertyType, useGetPropertyTypeList } from 'src/api/propertyType';
-import { useCreateUpdateProperty } from 'src/api/property';
 
 // ----------------------------------------------------------------------
 
@@ -104,14 +90,12 @@ export default function PropertyTypeNewEditForm({ currentPropertyType }: Props) 
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      // await new Promise((resolve) => setTimeout(resolve, 500));
       const response = await useCreateUpdatePropertyType(data);
-      console.log(response, '==response from server');
       reset();
-      enqueueSnackbar(currentPropertyType ? 'Update success!' : 'Create success!');
+      if (response) {
+        enqueueSnackbar(currentPropertyType ? 'Update success!' : 'Create success!');
+      }
       router.push(paths.dashboard.propertyType.root);
-      console.info('DATA', data);
-      console.log(data);
     } catch (error) {
       console.error(error);
     }
@@ -143,35 +127,35 @@ export default function PropertyTypeNewEditForm({ currentPropertyType }: Props) 
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">Description</Typography>
               {/* <RHFEditor simple name="description_en" /> */}
-            <RHFTextField name="description_en" label="Description" multiline rows={4} />
-
+              <RHFTextField name="description_en" label="Description" multiline rows={4} />
             </Stack>
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">Description (Arabic)</Typography>
               {/* <RHFEditor simple name="description_ar" /> */}
-            <RHFTextField name="description_ar" label="Description (Arabic)" multiline rows={4} />
-
+              <RHFTextField name="description_ar" label="Description (Arabic)" multiline rows={4} />
             </Stack>
 
             {!propertyTypeEmpty && (
               <Stack spacing={1.5}>
                 <Divider sx={{ borderStyle: 'dashed' }} />
                 <Typography variant="subtitle2">Parent Type (If Type is a Sub-type)</Typography>
-                {propertyTypeLoading ? <LoadingButton /> :
-                (<RHFSelect
-                  native
-                  name="parent_id"
-                  label="Parent Type"
-                  InputLabelProps={{ shrink: true }}
-                >
-                  <option value="">Property Type</option> {/* Default option */}
-                  {propertyTypes?.map((type) => (
-                    <option key={type?.id} value={type?.id}>
-                      {type?.name_en}
-                    </option>
-                  ))}
-                </RHFSelect>)
-                }
+                {propertyTypeLoading ? (
+                  <LoadingButton />
+                ) : (
+                  <RHFSelect
+                    native
+                    name="parent_id"
+                    label="Parent Type"
+                    InputLabelProps={{ shrink: true }}
+                  >
+                    <option value="">Property Type</option> {/* Default option */}
+                    {propertyTypes?.map((type) => (
+                      <option key={type?.id} value={type?.id}>
+                        {type?.name_en}
+                      </option>
+                    ))}
+                  </RHFSelect>
+                )}
               </Stack>
             )}
           </Stack>

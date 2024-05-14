@@ -16,7 +16,7 @@ type Props = StackProps & {
   results: number;
 };
 
-export default function ProductTableFiltersResult({
+export default function PropertyTypeTableFiltersResult({
   filters,
   onFilters,
   //

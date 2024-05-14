@@ -10,9 +10,6 @@ import Checkbox from '@mui/material/Checkbox';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
-import LinearProgress from '@mui/material/LinearProgress';
-// utils
-import { fCurrency } from 'src/utils/format-number';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 // components
@@ -40,7 +37,7 @@ export default function PropertyTypeTableRow({
   onDeleteRow,
   onEditRow,
 }: Props) {
-  const { name_en, name_ar, description_en, description_ar, parent_id } = row;
+  const { id, name_en, name_ar, description_en, description_ar, parent_id } = row;
   // const parentData = useGetPropertyTypeList(parent_id);
 
   const confirm = useBoolean();
@@ -76,7 +73,7 @@ export default function PropertyTypeTableRow({
           />
         </TableCell>
 
-        <TableCell>
+        {/* <TableCell>
           <ListItemText
             // primary={format(new Date(created_at), 'dd MMM yyyy')}
             primary={format(new Date(), 'dd MMM yyyy')}
@@ -89,10 +86,10 @@ export default function PropertyTypeTableRow({
               typography: 'caption',
             }}
           />
-        </TableCell>
+        </TableCell> */}
         
         <TableCell>
-        <ListItemText
+        <ListItemText sx={{ textAlign : 'center' }}
             disableTypography
             primary={
               <Link

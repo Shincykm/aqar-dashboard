@@ -15,12 +15,9 @@ import { useRouter } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
-// _mock
-import { PRODUCT_STOCK_OPTIONS } from 'src/_mock';
 // api
-import { useGetProducts } from 'src/api/product';
-// components
 import { useSettingsContext } from 'src/components/settings';
+// components
 import {
   useTable,
   getComparator,
@@ -37,12 +34,12 @@ import Scrollbar from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 // types
-import { IProductItem, IProductTableFilters, IProductTableFilterValue } from 'src/types/product';
-import { IPropertyTypeItem, IPropertyTypeTableFilters, IPropertyTypeTableFilterValue } from 'src/types/propertyType';
+import {
+  IPropertyTypeItem,
+  IPropertyTypeTableFilters,
+  IPropertyTypeTableFilterValue,
+} from 'src/types/propertyType';
 //
-// import ProductTableToolbar from 'src/sections/product/product-table-toolbar';
-// import ProductTableFiltersResult from 'src/sections/product/product-table-filters-result';
-// import ProductTableRow from 'src/sections/product/product-table-row';
 import PropertyTypeTableToolbar from '../property-type-table-toolbar';
 import PropertyTypeTableFiltersResult from '../property-type-table-filters-result';
 import PropertyTypeTableRow from '../property-type-table-row';
@@ -52,16 +49,11 @@ import { useDeletePropertyType, useGetPropertyTypeList } from 'src/api/propertyT
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Property Type' },
-  { id: 'created_at', label: 'Create at', width: 160 },
+  // { id: 'created_at', label: 'Create at', width: 160 },
   { id: 'description', label: 'Title & Description (Arabic)' },
-  { id: 'parent_id', label:'Parent Type', width: 110 },
-  { id: '', width:88},
+  { id: 'parent_id', label: 'Parent Type', width: 110 },
+  { id: '', width: 88 },
 ];
-
-// const PUBLISH_OPTIONS = [
-//   { value: 'published', label: 'Published' },
-//   { value: 'draft', label: 'Draft' },
-// ];
 
 const defaultFilters: IPropertyTypeTableFilters = {
   name_en: '',
@@ -86,12 +78,9 @@ export default function ProductListView() {
 
   useEffect(() => {
     if (propertyTypes.length) {
-      setTableData(prev=>(propertyTypes));
+      setTableData(propertyTypes);
     }
   }, [propertyTypes]);
-
-  console.log(tableData);
-  
 
   const dataFiltered = applyFilter({
     inputData: tableData,
@@ -111,7 +100,7 @@ export default function ProductListView() {
   const notFound = (!dataFiltered.length && canReset) || propertyTypeEmpty;
 
   const handleFilters = useCallback(
-    (name: string, value: IProductTableFilterValue) => {
+    (name: string, value: IPropertyTypeTableFilterValue) => {
       table.onResetPage();
       setFilters((prevState) => ({
         ...prevState,
@@ -123,7 +112,7 @@ export default function ProductListView() {
 
   const handleDeleteRow = useCallback(
     (id: string) => {
-      const deleteRow = tableData.filter((row : any) => row.id !== id);
+      const deleteRow = tableData.filter((row: any) => row.id !== id);
       // Delete row - api
       const deletedRow = useDeletePropertyType(parseInt(id));
       setTableData(deleteRow);
@@ -134,9 +123,9 @@ export default function ProductListView() {
   );
 
   const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row : any) => !table.selected.includes(row.id));
+    const deleteRows = tableData.filter((row: any) => !table.selected.includes(row.id));
     // Delete row - api bulk delete
-    
+
     setTableData(deleteRows);
 
     table.onUpdatePageDeleteRows({
@@ -177,20 +166,14 @@ export default function ProductListView() {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New PropertyType
+              New Property Type
             </Button>
           }
           sx={{ mb: { xs: 3, md: 5 } }}
         />
 
         <Card>
-          <PropertyTypeTableToolbar
-            filters={filters}
-            onFilters={handleFilters}
-            //
-            // stockOptions={PRODUCT_STOCK_OPTIONS}
-            // publishOptions={PUBLISH_OPTIONS}
-          />
+          <PropertyTypeTableToolbar filters={filters} onFilters={handleFilters} />
 
           {canReset && (
             <PropertyTypeTableFiltersResult
@@ -212,7 +195,7 @@ export default function ProductListView() {
               onSelectAllRows={(checked) =>
                 table.onSelectAllRows(
                   checked,
-                  tableData.map((row:any) => row.id)
+                  tableData.map((row: any) => row.id)
                 )
               }
               action={
@@ -232,7 +215,7 @@ export default function ProductListView() {
                   headLabel={TABLE_HEAD}
                   rowCount={tableData.length}
                   numSelected={table.selected.length}
-                  onSort={table.onSort}
+                  // onSort={table.onSort}
                   onSelectAllRows={(checked) =>
                     table.onSelectAllRows(
                       checked,
@@ -277,6 +260,7 @@ export default function ProductListView() {
             </Scrollbar>
           </TableContainer>
 
+          {/* pagination */}
           <TablePaginationCustom
             count={dataFiltered.length}
             page={table.page}
@@ -327,32 +311,23 @@ function applyFilter({
   comparator: (a: any, b: any) => number;
   filters: IPropertyTypeTableFilters;
 }) {
-  // const { name, stock, publish } = filters;
   const { name_en } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
+  // stabilizedThis.sort((a, b) => {
+  //   const order = comparator(a[0], b[0]);
+  //   if (order !== 0) return order;
+  //   return a[1] - b[1];
+  // });
 
   inputData = stabilizedThis.map((el) => el[0]);
 
   if (name_en) {
     inputData = inputData.filter(
-      (product) => product.name_en.toLowerCase().indexOf(name_en.toLowerCase()) !== -1
+      (propertyType) => propertyType.name_en.toLowerCase().indexOf(name_en.toLowerCase()) !== -1
     );
   }
-
-  // if (stock.length) {
-  //   inputData = inputData.filter((product) => stock.includes(product.inventoryType));
-  // }
-
-  // if (publish.length) {
-  //   inputData = inputData.filter((product) => publish.includes(product.publish));
-  // }
 
   return inputData;
 }
