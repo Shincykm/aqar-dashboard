@@ -23,7 +23,7 @@ export default function AmenityCreateView() {
             href: paths.dashboard.root,
           },
           {
-            name: 'Amenity',
+            name: 'Amenities',
             href: paths.dashboard.amenities.root,
           },
           { name: 'New Amenity' },

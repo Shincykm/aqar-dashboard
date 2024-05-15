@@ -154,7 +154,7 @@ export default function AmenityView() {
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             {
-              name: 'Property Type',
+              name: 'Amenities',
               href: paths.dashboard.amenities.root,
             },
             { name: 'List' },

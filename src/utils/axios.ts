@@ -171,6 +171,6 @@ export const endpoints = {
     list: '/api/admin/amenities/getListAmenities',
     createUpdate: '/api/admin/amenities/createUpdateAmenities',
     delete: '/api/admin/amenities/deleteAmenity',
-    details: '/api/admin//amenities/getAmenityById',
+    details: '/api/admin/amenities/getAmenityById',
   },
 };

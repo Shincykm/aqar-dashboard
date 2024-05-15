@@ -43,9 +43,6 @@ export default function AmenityNewEditForm({ currentAmenity }: Props) {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  // const[formData, setFormData] = useState(new FormData());
-  const { amenities, amenitiesEmpty, amenitiesLoading } = useGetAmenitiesList();
-
   const NewPropertyTypeSchema = Yup.object().shape({
     name_en: Yup.string().required('Title is required'),
     name_ar: Yup.string().required('Title is required in Arabic'),
@@ -60,6 +57,7 @@ export default function AmenityNewEditForm({ currentAmenity }: Props) {
       name_en: currentAmenity?.name_en || '',
       name_ar: currentAmenity?.name_ar || '',
       icon: currentAmenity?.icon || null,
+      icon_picture: currentAmenity?.icon_picture.virtual_path || null,
       //   created_at: currentAmenity?.createdAt || null,
       //   updated_at: currentAmenity?.updatedAt || null,
     }),
@@ -84,21 +82,10 @@ export default function AmenityNewEditForm({ currentAmenity }: Props) {
 
   useEffect(() => {
     if (currentAmenity) {
+      console.log(currentAmenity);
       reset(defaultValues);
     }
   }, [currentAmenity, defaultValues, reset]);
-
-  const appendFormData = (formData: any, data: any, parentKey = '') => {
-    for (const [key, value] of Object.entries(data)) {
-      const newKey = parentKey ? `${parentKey}[${key}]` : key;
-
-      if (typeof value === 'object' && value !== null) {
-        appendFormData(formData, value, newKey); // Recursively handle nested objects
-      } else {
-        formData.append(newKey, value); // Append non-object values directly
-      }
-    }
-  };
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -107,6 +94,7 @@ export default function AmenityNewEditForm({ currentAmenity }: Props) {
         ...currentAmenity,
         ...data,
       };
+      console.log(tempData, "==tempDtaa");
 
       // Hnadle form Data
       formData.append('name_en', tempData.name_en);
@@ -114,19 +102,12 @@ export default function AmenityNewEditForm({ currentAmenity }: Props) {
       if (tempData.icon) {
         formData.append('icon', tempData.icon);
       }
-      console.log(tempData);
 
-      // for (const entry of formData?.entries()) {
-      //   const [key, value] = entry;
-      //   console.log(`Key: ${key}, Value: ${value}`);
-      // }
       const response = await useCreateUpdateAmenities(formData);
-      console.log(response, '==response');
-
       reset();
-      if (response) {
+      // if (response) {
         enqueueSnackbar(currentAmenity ? 'Update success!' : 'Create success!');
-      }
+      // }
       router.push(paths.dashboard.amenities.root);
     } catch (error) {
       console.error(error);

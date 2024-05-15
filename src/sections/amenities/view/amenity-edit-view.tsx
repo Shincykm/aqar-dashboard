@@ -28,7 +28,7 @@ export default function AmenityEditView({ id }: Props) {
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           {
-            name: 'Amenity',
+            name: 'Amenities',
             href: paths.dashboard.amenities.root,
           },
           { name: currentAmenity?.name_en },
