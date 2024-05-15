@@ -1,9 +1,10 @@
 import useSWR from 'swr';
 import { useMemo } from 'react';
 // utils
-import { endpoints, fetcher1, performRequest } from 'src/utils/axios';
+import axiosInstance1, { endpoints, fetcher1, performRequest } from 'src/utils/axios';
 // types
 import { IAmenityItem } from 'src/types/amenities';
+import axios from 'axios';
 
 // ----------------------------------------------------------------------
 
@@ -51,12 +52,42 @@ export function useGetAmenities(amenityId: string | number) {
 export async function useCreateUpdateAmenities(amenityData: any) {
   const URL = endpoints.amenities.createUpdate;
 
-  const response = await performRequest('POST', URL, {
+  let config: any = {
     data: amenityData,
-    headers: {
+  };
+
+  if (amenityData instanceof FormData) {
+    config.headers = {
+      'Accept': '*',
       'Content-Type': 'multipart/form-data',
-    },
+    };
+  }
+  const response = await axios(`${import.meta.env.VITE_HOST_AQAR_API}${URL}`,{
+    method : "POST",
+    ...config
   });
+
+  // let response;
+
+  // if (amenityData instanceof FormData) {
+  //   const config = {
+  //     data: amenityData,
+  //     headers: {
+  //       Accept: '*',
+  //       'Content-Type': 'multipart/form-data',
+  //     },
+  //   };
+  //   response = await performRequest('POST', URL,{
+  //     data: amenityData,
+  //     headers: {
+  //       Accept: '*',
+  //       'Content-Type': 'multipart/form-data',
+  //     },
+  //   });
+  // }else{
+  //   response = await performRequest('POST', URL, {data : amenityData});
+  // }
+
   return response;
 }
 

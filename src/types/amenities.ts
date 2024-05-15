@@ -3,8 +3,17 @@ export type IAmenityItem = {
   id: number | any;
   name_en: string;
   name_ar: string | null;
-  icon :any
+  icon :any | null;
+  icon_picture : any |null;
 } ;
+
+// export type IAmenityItemRow = {
+//   id: number | any;
+//   name_en: string;
+//   name_ar: string | null;
+//   icon :any | null;
+//   icon_picture : any |null;
+// } ;
 
 // ----------------------------------------------------------------------
 

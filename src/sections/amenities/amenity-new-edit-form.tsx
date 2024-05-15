@@ -48,7 +48,7 @@ export default function AmenityNewEditForm({ currentAmenity }: Props) {
 
   const NewPropertyTypeSchema = Yup.object().shape({
     name_en: Yup.string().required('Title is required'),
-    name_ar: Yup.string().nullable(),
+    name_ar: Yup.string().required('Title is required in Arabic'),
     icon: Yup.mixed<any>().nullable(),
     //auto populate to db
     // created_at: Yup.date().required(),
@@ -110,14 +110,16 @@ export default function AmenityNewEditForm({ currentAmenity }: Props) {
 
       // Hnadle form Data
       formData.append('name_en', tempData.name_en);
-      formData.append('name_ar', tempData.name_ar);
-      formData.append('icon', tempData.icon);
-      console.log(tempData);
-      
-      for (const entry of formData.entries()) {
-        const [key, value] = entry;
-        console.log(`Key: ${key}, Value: ${value}`);
+      formData.append('name_ar', tempData?.name_ar || '');
+      if (tempData.icon) {
+        formData.append('icon', tempData.icon);
       }
+      console.log(tempData);
+
+      // for (const entry of formData?.entries()) {
+      //   const [key, value] = entry;
+      //   console.log(`Key: ${key}, Value: ${value}`);
+      // }
       const response = await useCreateUpdateAmenities(formData);
       console.log(response, '==response');
 

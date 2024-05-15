@@ -56,12 +56,9 @@ export const fetcher = async (args: string | [string, AxiosRequestConfig]) => {
 };
 
 
-
-
-
 // ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
-const axiosInstance1 = axios.create({ baseURL: HOST_AQAR_API });
+export const axiosInstance1 = axios.create({ baseURL: HOST_AQAR_API });
 
 // Add an interceptor to attach the token and data to outgoing requests
 axiosInstance1.interceptors.request.use(
@@ -76,6 +73,7 @@ axiosInstance1.interceptors.request.use(
 
     // Add your data to the request body
     if (config.method === 'post' || config.method === 'put' || config.method === 'patch') {
+      // config.url = `${config.baseURL}${config.url}`;
       config.data = {
         ...config.data,
       };

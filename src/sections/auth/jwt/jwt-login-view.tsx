@@ -49,6 +49,11 @@ export default function JwtLoginView() {
     password: 'demo1234',
   };
 
+  // const defaultValues = {
+  //   email: 'john@gmail.aeaaa',
+  //   password: '123456',
+  // };
+
   const methods = useForm({
     resolver: yupResolver(LoginSchema),
     defaultValues,
@@ -63,6 +68,8 @@ export default function JwtLoginView() {
   const onSubmit = handleSubmit(async (data) => {
     try {
       await login?.(data.email, data.password);
+      console.log("loggggging");
+      
 
       router.push(returnTo || PATH_AFTER_LOGIN);
     } catch (error) {
