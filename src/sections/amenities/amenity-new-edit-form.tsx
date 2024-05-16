@@ -26,7 +26,7 @@ import FormProvider, {
 } from 'src/components/hook-form';
 // types
 import { IAmenityItem } from 'src/types/amenities';
-import { useCreateUpdateAmenities, useGetAmenitiesList } from 'src/api/amenities';
+import { useCreateUpdateAmenities } from 'src/api/amenities';
 import { Box } from '@mui/system';
 import { fData } from 'src/utils/format-number';
 
@@ -56,8 +56,7 @@ export default function AmenityNewEditForm({ currentAmenity }: Props) {
     () => ({
       name_en: currentAmenity?.name_en || '',
       name_ar: currentAmenity?.name_ar || '',
-      icon: currentAmenity?.icon || null,
-      icon_picture: currentAmenity?.icon_picture.virtual_path || null,
+      icon: currentAmenity?.icon?.virtual_path || null,
       //   created_at: currentAmenity?.createdAt || null,
       //   updated_at: currentAmenity?.updatedAt || null,
     }),
@@ -90,24 +89,21 @@ export default function AmenityNewEditForm({ currentAmenity }: Props) {
   const onSubmit = handleSubmit(async (data) => {
     try {
       let formData = new FormData();
-      const tempData = {
-        ...currentAmenity,
-        ...data,
-      };
-      console.log(tempData, "==tempDtaa");
+      formData.append('name_en', data.name_en);
+      formData.append('name_ar', data?.name_ar || '');
+      if(data?.icon){
+        formData.append('icon', data.icon);
+      }
 
-      // Hnadle form Data
-      formData.append('name_en', tempData.name_en);
-      formData.append('name_ar', tempData?.name_ar || '');
-      if (tempData.icon) {
-        formData.append('icon', tempData.icon);
+      if(currentAmenity){
+        formData.append('id', currentAmenity.id);
       }
 
       const response = await useCreateUpdateAmenities(formData);
       reset();
-      // if (response) {
+      if (response) {
         enqueueSnackbar(currentAmenity ? 'Update success!' : 'Create success!');
-      // }
+      }
       router.push(paths.dashboard.amenities.root);
     } catch (error) {
       console.error(error);

@@ -4,7 +4,7 @@ export type IAmenityItem = {
   name_en: string;
   name_ar: string | null;
   icon :any | null;
-  icon_picture : any |null;
+  // icon_picture : any |null;
 } ;
 
 // export type IAmenityItemRow = {

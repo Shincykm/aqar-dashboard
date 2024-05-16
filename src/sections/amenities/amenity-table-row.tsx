@@ -37,7 +37,7 @@ export default function PropertyTypeTableRow({
   onDeleteRow,
   onEditRow,
 }: Props) {
-  const { id, name_en, name_ar, icon_picture, icon } = row;
+  const { id, name_en, name_ar, icon } = row;
   // const parentData = useGetPropertyTypeList(parent_id);
 
   const confirm = useBoolean();
@@ -54,7 +54,7 @@ export default function PropertyTypeTableRow({
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
           <Avatar
             alt={name_en}
-            src={icon_picture?.virtual_path}
+            src={icon?.virtual_path}
             variant="rounded"
             sx={{ width: 64, height: 64, mr: 2 }}
           />
