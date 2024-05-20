@@ -71,14 +71,6 @@ axiosInstance1.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    // Add your data to the request body
-    if (config.method === 'post' || config.method === 'put' || config.method === 'patch') {
-      // config.url = `${config.baseURL}${config.url}`;
-      config.data = {
-        ...config.data,
-      };
-    }
-
     return config;
   },
   (error) => {
@@ -86,6 +78,11 @@ axiosInstance1.interceptors.request.use(
   }
 );
 
+// Add an interceptor to handle errors globally
+axiosInstance1.interceptors.response.use(
+  (res) => res,
+  (error) => Promise.reject((error.response && error.response.data) || 'Something went wrong')
+);
 // ----------------------------------------------------------------------
 
 export const fetcher1 = async (args: string | [string, AxiosRequestConfig]) => {
@@ -100,7 +97,7 @@ export const fetcher1 = async (args: string | [string, AxiosRequestConfig]) => {
 
 export const performRequest = async <T>(
   method: Method,
-  url: string,
+  url: string | any,
   config?: AxiosRequestConfig
 ): Promise<T> => {
   try {

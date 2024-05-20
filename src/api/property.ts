@@ -1,7 +1,7 @@
 import useSWR from 'swr';
 import { useMemo } from 'react';
 // utils
-import { fetcher, endpoints } from 'src/utils/axios';
+import { fetcher, endpoints, performRequest } from 'src/utils/axios';
 // types
 import { IPropertyItem } from 'src/types/property';
 import axios from 'axios';
@@ -50,27 +50,22 @@ export function useGetProperty(propertyId: string) {
 
 // ----------------------------------------------------------------------
 
-export async function useCreateUpdateProperty(propertyData : any) {
-  const URL =  endpoints.property.createUpdate;
-  let images = [];
-  // const formData = new FormData();
-  // Object.keys(propertyData).map(key => {
-  //  if(key === "images"){
-  //    images = propertyData[key];
-  //  }else{
-  //    formData.append(camelToSnakeCase(key), propertyData[key]);
-  //  }
-  // });
+export async function useCreateUpdateProperty(propertyData: any) {
+  const URL = endpoints.property.createUpdate;
 
-  // try {
-  //   // upload formdata to property table in db
-  //   const response = await axios.post('https://aqar.api.mvp-apps.ae/api/admin/property/createUpdateProperty',formData);
-  //   // upload image to property image table in db
-  //   console.log(response.data);
-  //   return response.data; 
-  // } catch (error) {
-  //   console.log(error);
-  // }
+  try {
+    // const response = await axios.post('https://aqar.api.mvp-apps.ae/api/admin/property/createUpdateProperty',formData);
+    const response = await performRequest<any>('post', URL, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      data: propertyData,
+    });
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 // ----------------------------------------------------------------------
@@ -97,4 +92,3 @@ export async function useCreateUpdateProperty(propertyData : any) {
 // }
 
 // ----------------------------------------------------------------------
-

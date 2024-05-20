@@ -12,19 +12,12 @@ import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import { Chip, Divider } from '@mui/material';
+import { Divider } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 // routes
 import { paths } from 'src/routes/paths';
 // hooks
 import { useResponsive } from 'src/hooks/use-responsive';
-// _mock
-import {
-  PRODUCT_SIZE_OPTIONS,
-  PRODUCT_GENDER_OPTIONS,
-  PRODUCT_COLOR_NAME_OPTIONS,
-  PRODUCT_CATEGORY_GROUP_OPTIONS,
-} from 'src/_mock';
 // components
 import { useSnackbar } from 'src/components/snackbar';
 import { useRouter } from 'src/routes/hooks';
@@ -33,52 +26,19 @@ import FormProvider, {
   RHFEditor,
   RHFUpload,
   RHFTextField,
+  RHFSwitch,
   // RHFDatePicker,
 } from 'src/components/hook-form';
 // types
 import { IPropertyItem } from 'src/types/property';
 import { IPropertyType, IPropertyTypeItem } from 'src/types/propertyType';
+// api
+import { useGetPropertyTypeList } from 'src/api/propertyType';
+import { useGetPropertyPurposeList } from 'src/api/propertyPurpose';
+import { useGetPropertyStyleList } from 'src/api/propertyStyle';
 import { useCreateUpdateProperty } from 'src/api/property';
 
 // ----------------------------------------------------------------------
-
-// Tempdata to be populated from database
-const PROPERTY_TYPE: IPropertyTypeItem[] = [
-  {
-    id: 1,
-    name_en: 'Villa',
-    name_ar: '',
-    description_ar : '',
-    description_en : '',
-    parent_id : null
-  }
-];
-
-const POPERTY_PURPOSE: IPropertyType[] = [
-  {
-    id: 1,
-    nameEn: 'Rent',
-    nameAr: 'Rent',
-  },
-  {
-    id: 2,
-    nameEn: 'Sale',
-    nameAr: 'Sale',
-  },
-];
-
-const PROPERTY_STYLE: IPropertyType[] = [
-  {
-    id: 1,
-    nameEn: 'A frame',
-    nameAr: 'A frame',
-  },
-  {
-    id: 2,
-    nameEn: 'Cottage',
-    nameAr: 'Cottage',
-  },
-];
 
 const ADDRESS = [
   {
@@ -104,36 +64,41 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
 
   const { enqueueSnackbar } = useSnackbar();
 
+  const [subTypeList, setSubTypeList] = useState<any>(null);
+  const {propertyTypes, propertyTypeEmpty, propertyTypeLoading} = useGetPropertyTypeList();
+  const {propertyPurposes, propertyPurposeEmpty, propertyPurposeLoading} = useGetPropertyPurposeList();
+  const {propertyStyles, propertyStyleEmpty, propertyStyleLoading} = useGetPropertyStyleList();
+  
   const NewPropertySchema = Yup.object().shape({
-    nameAr: Yup.string().nullable(),
-    nameEn: Yup.string().required('Title is required'),
-    descriptionAr: Yup.string().nullable(),
-    descriptionEn: Yup.string().nullable(),
+    name_ar: Yup.string().nullable(),
+    name_en: Yup.string().required('Title is required'),
+    description_ar: Yup.string().nullable(),
+    description_en: Yup.string().nullable(),
     active: Yup.boolean().required(),
-    isFeatured: Yup.boolean().required(),
-    isFurnished: Yup.boolean().required(),
-    countBathrooms: Yup.number().nullable(),
-    countBedrooms: Yup.number().nullable(),
-    countParking: Yup.number().nullable(),
-    sizeSqm: Yup.number().nullable(),
+    is_featured: Yup.boolean().required(),
+    is_furnished: Yup.boolean().required(),
+    count_bathrooms: Yup.number().nullable(),
+    count_bedrooms: Yup.number().nullable(),
+    count_parking: Yup.number().nullable(),
+    size_sqm: Yup.number().nullable(),
     // sizeSqft: Yup.number().nullable(),
-    maintenanceFee: Yup.number().nullable(),
-    oldAmount: Yup.number().nullable(),
+    maintenance_fee: Yup.number().nullable(),
+    old_amount: Yup.number().nullable(),
     amount: Yup.number().nullable(),
     ownership: Yup.string().nullable(),
-    referenceNumber: Yup.string().nullable(),
-    // constructedDate: Yup.date().nullable(),
-    constructedDate: Yup.mixed<any>().nullable().required('Constructed date is required'),
-    propertyTypeId: Yup.number().nullable(),
-    // subType: Yup.string().nullable(),
-    propertyPurposeId: Yup.number().nullable(),
-    propertyStyleId: Yup.number().nullable(),
-    addressId: Yup.number().nullable(),
-    buildingId: Yup.number().nullable(),
-    countryId: Yup.number().nullable(),
-    stateProvinceId: Yup.number().nullable(),
-    cityId: Yup.number().nullable(),
-    displayOrder: Yup.number().nullable(),
+    reference_number: Yup.string().nullable(),
+    // constructed_date: Yup.date().nullable(),
+    constructed_date: Yup.mixed<any>().nullable().required('Constructed date is required'),
+    property_type_id: Yup.number().nullable(),
+    sub_type: Yup.string().nullable(),
+    property_purpose_id: Yup.number().nullable(),
+    property_style_id: Yup.number().nullable(),
+    address_id: Yup.number().nullable(),
+    building_id: Yup.number().nullable(),
+    country_id: Yup.number().nullable(),
+    state_province_id: Yup.number().nullable(),
+    city_id: Yup.number().nullable(),
+    display_order: Yup.number().nullable(),
     images: Yup.array().min(1, 'Images is required'),
     //auto populate to db
     // createdAt: Yup.date().required(),
@@ -143,35 +108,35 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
 
   const defaultValues = useMemo(
     () => ({
-      nameAr: currentProperty?.nameAr || '',
-      nameEn: currentProperty?.nameEn || '',
-      descriptionAr: currentProperty?.descriptionAr || '',
-      descriptionEn: currentProperty?.descriptionEn || '',
+      name_ar: currentProperty?.name_ar || '',
+      name_en: currentProperty?.name_en || '',
+      description_ar: currentProperty?.description_ar || '',
+      description_en: currentProperty?.description_en || '',
       active: currentProperty?.active || true,
-      isFeatured: currentProperty?.isFeatured || false,
-      isFurnished: currentProperty?.isFurnished || false,
+      is_featured: currentProperty?.is_featured || false,
+      is_furnished: currentProperty?.is_furnished || false,
       images: currentProperty?.images || [],
-      countBathrooms: currentProperty?.countBathrooms || 0,
-      countBedrooms: currentProperty?.countBedrooms || 0,
-      countParking: currentProperty?.countParking || 0,
-      sizeSqm: currentProperty?.sizeSqm || 0,
+      count_bathrooms: currentProperty?.count_bathrooms || 0,
+      count_bedrooms: currentProperty?.count_bedrooms || 0,
+      count_parking: currentProperty?.count_parking || 0,
+      size_sqm: currentProperty?.size_sqm || 0,
       // sizeSqft: currentProperty?.sizeSqft || 0,
       ownership: currentProperty?.ownership || '',
-      referenceNumber: currentProperty?.referenceNumber || '',
-      constructedDate: currentProperty?.constructedDate || null,
-      maintenanceFee: currentProperty?.maintenanceFee || 0,
-      oldAmount: currentProperty?.oldAmount || 0,
+      reference_number: currentProperty?.reference_number || '',
+      constructed_date: currentProperty?.constructed_date || null,
+      maintenance_fee: currentProperty?.maintenance_fee || 0,
+      old_amount: currentProperty?.old_amount || 0,
       amount: currentProperty?.amount || 0,
-      propertyTypeId: currentProperty?.propertyTypeId || 0,
-      // subType: currentProperty?.subType || '',
-      propertyPurposeId: currentProperty?.propertyPurposeId || 0,
-      propertyStyleId: currentProperty?.propertyStyleId || 0,
-      addressId: currentProperty?.addressId || 0,
-      buildingId: currentProperty?.buildingId || 0,
-      countryId: currentProperty?.countryId || 0,
-      stateProvinceId: currentProperty?.stateProvinceId || 0,
-      cityId: currentProperty?.cityId || 0,
-      displayOrder: currentProperty?.displayOrder || 0,
+      property_type_id: currentProperty?.property_type_id || 0,
+      sub_type: currentProperty?.sub_type || '',
+      property_purpose_id: currentProperty?.property_purpose_id || 0,
+      property_style_id: currentProperty?.property_style_id || 0,
+      address_id: currentProperty?.address_id || 0,
+      building_id: currentProperty?.building_id || 0,
+      country_id: currentProperty?.country_id || 0,
+      state_province_id: currentProperty?.state_province_id || 0,
+      city_id: currentProperty?.city_id || 0,
+      display_order: currentProperty?.display_order || 0,
       //   createdAt: currentProperty?.createdAt || null,
       //   updatedAt: currentProperty?.updatedAt || null,
       //   deletedAt: currentProperty?.deletedAt || null,
@@ -201,17 +166,32 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
     }
   }, [currentProperty, defaultValues, reset]);
 
-  const onSubmit = handleSubmit(async (data) => {
+  const onSubmit = handleSubmit(async (data:any) => {
     try {
-      // await new Promise((resolve) => setTimeout(resolve, 500));
-      const response = useCreateUpdateProperty(data);
-      
-
+      const formData = new FormData();
+      Object.keys(data)?.forEach((key) => {
+        if (key === ('is_active')) {
+          // Handle is_active separately
+          const isActiveValue = data[key];
+          if (isActiveValue === 'true' || isActiveValue === true) {
+            formData.append('is_active', 1);
+          } else {
+            formData.append('is_active', 0);
+          }
+        } else {
+          // For other keys, append their values directly
+          const value = data[key];
+          if (value !== '' && value !== 0) {
+            formData.append(key, value);
+          }
+        }
+      });
+    
+      const response = useCreateUpdateProperty(formData);
       reset();
       enqueueSnackbar(currentProperty ? 'Update success!' : 'Create success!');
       router.push(paths.dashboard.property.root);
       console.info('DATA', data);
-      console.log(data);
     } catch (error) {
       console.error(error);
     }
@@ -244,6 +224,14 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
     setValue('images', []);
   }, [setValue]);
 
+  const handleSelectPropertyType = useCallback((e:any)=>{
+    const {value} = e.target;
+
+    setSubTypeList(propertyTypes.filter((type) => type?.parent_id === value));
+    setValue('property_type_id', value);
+  },[setValue, propertyTypes]);
+
+  
   const renderDetails = (
     <>
       {mdUp && (
@@ -262,18 +250,21 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
           {!mdUp && <CardHeader title="Details" />}
 
           <Stack spacing={3} sx={{ p: 3 }}>
-            <Typography variant="subtitle2">Property Name (Arabic)</Typography>
-            <RHFTextField name="nameAr" label="Name" />
             <Typography variant="subtitle2">Property Name</Typography>
-            <RHFTextField name="nameEn" label="Name" />
+            <RHFTextField name="name_en" label="Name" />
+            <Typography variant="subtitle2">Property Name (Arabic)</Typography>
+            <RHFTextField name="name_ar" label="Name" />
+
+            <Stack spacing={1.5}>
+              <Typography variant="subtitle2">Description</Typography>
+              {/* <RHFEditor simple name="description_en" /> */}
+              <RHFTextField name="description_en" label="Description Arabic" multiline rows={4} />
+            </Stack> 
 
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">Description (Arabic)</Typography>
-              <RHFEditor simple name="descriptionAr" />
-            </Stack>
-            <Stack spacing={1.5}>
-              <Typography variant="subtitle2">Description</Typography>
-              <RHFEditor simple name="descriptionEn" />
+              {/* <RHFEditor simple name="description_ar" /> */}
+              <RHFTextField name="description_ar" label="Description Arabic" multiline rows={4} />
             </Stack>
 
             <Stack spacing={1.5}>
@@ -287,21 +278,19 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                   md: 'repeat(3, 1fr)',
                 }}
               >
-                <FormControlLabel
-                  control={<Switch defaultChecked />}
-                  label="Active"
-                  sx={{ flexGrow: 1, pl: 3 }}
+                <RHFSwitch 
+                name='active'
+                label="Active"
                 />
-                <FormControlLabel
-                  control={<Switch />}
-                  label="Featured"
-                  sx={{ flexGrow: 1, pl: 3 }}
+                <RHFSwitch 
+                label="Featured"
+                name='is_featured'
                 />
-                <FormControlLabel
-                  control={<Switch />}
-                  label="Furnished"
-                  sx={{ flexGrow: 1, pl: 3 }}
+                <RHFSwitch 
+                label="Furnished"
+                name='is_furnished'
                 />
+
               </Box>
             </Stack>
             <Divider sx={{ borderStyle: 'dashed' }} />
@@ -316,35 +305,35 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                 }}
               >
                 <RHFTextField
-                  name="countBedrooms"
+                  name="count_bedrooms"
                   label="Bedrooms"
                   placeholder="0"
                   type="number"
                   InputLabelProps={{ shrink: true }}
                 />
                 <RHFTextField
-                  name="countBathrooms"
+                  name="count_bathrooms"
                   label="Bathrooms"
                   placeholder="0"
                   type="number"
                   InputLabelProps={{ shrink: true }}
                 />
                 <RHFTextField
-                  name="countParking"
+                  name="count_parking"
                   label="Parking Slots"
                   placeholder="0"
                   type="number"
                   InputLabelProps={{ shrink: true }}
                 />
                 <RHFTextField
-                  name="sizeSqm"
+                  name="size_sqm"
                   label="Area in Sqm"
                   placeholder="0"
                   type="number"
                   InputLabelProps={{ shrink: true }}
                 />
                 {/* <RHFTextField
-                name="sizeSqft"
+                name="size_sqft"
                 label="Area in Sqm"
                 placeholder="0"
                 type="number"
@@ -397,13 +386,13 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
             </Stack>
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">Reference Number</Typography>
-              <RHFTextField name="referenceNumber" label="Reference Number" />
+              <RHFTextField name="reference_number" label="Reference Number" />
             </Stack>
-            {/* <RHFDatePicker name="constructedDate" label="Constructed Date" /> */}
+            {/* <RHFDatePicker name="constructed_date" label="Constructed Date" /> */}
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">Constructed Date</Typography>
               <Controller
-                name="constructedDate"
+                name="constructed_date"
                 control={control}
                 render={({ field, fieldState: { error } }) => (
                   <DatePicker
@@ -461,14 +450,14 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                 InputLabelProps={{ shrink: true }}
               />
               <RHFTextField
-                name="oldAmount"
+                name="old_amount"
                 label="Old Amount"
                 placeholder="0"
                 type="number"
                 InputLabelProps={{ shrink: true }}
               />
               <RHFTextField
-                name="maintenanceFee"
+                name="maintenance_fee"
                 label="Maintenance Fee"
                 placeholder="0"
                 type="number"
@@ -508,64 +497,76 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                 md: 'repeat(2, 1fr)',
               }}
             >
-              {PROPERTY_TYPE && (
-                <RHFSelect
-                  native
-                  name="propertyTypeId"
-                  label="Property Type"
-                  InputLabelProps={{ shrink: true }}
-                >
-                  {PROPERTY_TYPE?.map(
-                    (type) =>
-                      !type?.parent_id && (
-                        <option key={type?.id} value={type?.id}>
-                          {type?.name_en}
-                        </option>
-                      )
-                  )}
-                </RHFSelect>
-              )}
+              {!propertyTypeEmpty && (
+              propertyTypeLoading 
+              ? <LoadingButton />
+              : (
+                <>
+                  <RHFSelect
+                    native
+                    name="property_type_id"
+                    label="Property Type"
+                    InputLabelProps={{ shrink: true }}
+                    onChange = {handleSelectPropertyType}
+                  >
+                    <option value="">Select Property Type</option>
+                    {propertyTypes?.map((type) =>
+                      <option key={type?.id} value={type?.id} >
+                        {type?.name_en}
+                      </option>
+                    )}
+                  </RHFSelect>
 
-              {/* <RHFSelect
-                  native
-                  name="propertySubType"
-                  label="Property Sub-Type"
-                  InputLabelProps={{ shrink: true }}
-                  disabled={subTypeList.length < 1}
-                >
-                  {subTypeList?.map((subType) => (
-                    <option key={subType?.id} value={subType?.nameEn}>
-                      {subType?.nameEn}
-                    </option>
-                  ))}
-                  <option value=""></option>
-                </RHFSelect> */}
+                  <RHFSelect
+                    native
+                    name="sub_type"
+                    label="Property Sub-Type"
+                    InputLabelProps={{ shrink: true }}
+                    disabled={subTypeList?.length > 0 ? false : true}
+                  >
+                    <option value="">Select Property Sub-Type</option>
+                    {subTypeList?.map((type:any) => 
+                          <option key={type?.id} value={type?.id} >
+                            {type?.name_en}
+                          </option>
+                    )}
+                  </RHFSelect>
+                </>
+              )
+                )}
 
-              {POPERTY_PURPOSE && (
-                <RHFSelect
+              {!propertyPurposeEmpty && (
+              propertyPurposeLoading 
+              ? <LoadingButton />
+              : <RHFSelect
                   native
-                  name="propertyPurposeId"
+                  name="property_purpose_id"
                   label="Property Purpose"
                   InputLabelProps={{ shrink: true }}
                 >
-                  {POPERTY_PURPOSE?.map((item) => (
+                  <option value="">Select Property Purpose</option>
+                  {propertyPurposes?.map((item) => (
                     <option key={item?.id} value={item?.id}>
-                      {item?.nameEn}
+                      {item?.name_en}
                     </option>
                   ))}
                 </RHFSelect>
               )}
 
-              {PROPERTY_STYLE && (
+            {!propertyStyleEmpty && (
+              propertyStyleLoading 
+              ? <LoadingButton />
+              :
                 <RHFSelect
                   native
-                  name="propertyStyleId"
+                  name="property_style_id"
                   label="Property Style"
                   InputLabelProps={{ shrink: true }}
                 >
-                  {PROPERTY_STYLE?.map((item) => (
+                  <option value="">Select Property Style</option>
+                  {propertyStyles?.map((item) => (
                     <option key={item?.id} value={item?.id}>
-                      {item?.nameEn}
+                      {item?.name_en}
                     </option>
                   ))}
                 </RHFSelect>
@@ -604,13 +605,15 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                 md: 'repeat(2, 1fr)',
               }}
             >
-              {PROPERTY_TYPE && (
+              {ADDRESS && (
                 <RHFSelect
                   native
-                  name="addressId"
+                  name="address_id"
                   label="Address"
                   InputLabelProps={{ shrink: true }}
+                  onChange={handleSelectPropertyType}
                 >
+                  <option value="">Select Address</option>
                   {ADDRESS?.map((type) => (
                     <option key={type?.id} value={type?.id}>
                       {type?.name}
@@ -621,26 +624,28 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
 
               {/* <RHFSelect
                   native
-                  name="propertySubType"
+                  name="property_sub_type"
                   label="Property Sub-Type"
                   InputLabelProps={{ shrink: true }}
-                  disabled={subTypeList.length < 1}
+                  disabled={sub_typeList.length < 1}
                 >
-                  {subTypeList?.map((subType) => (
-                    <option key={subType?.id} value={subType?.nameEn}>
-                      {subType?.nameEn}
+                  <option value="">Select Property Sub-Type</option>
+                  {sub_typeList?.map((sub_type) => (
+                    <option key={sub_type?.id} value={sub_type?.name_en}>
+                      {sub_type?.name_en}
                     </option>
                   ))}
                   <option value=""></option>
                 </RHFSelect> */}
 
-              {PROPERTY_TYPE && (
+              {ADDRESS && (
                 <RHFSelect
                   native
-                  name="buildingId"
+                  name="building_id"
                   label="Building"
                   InputLabelProps={{ shrink: true }}
                 >
+                  <option value="">Select Building</option>
                   {ADDRESS?.map((type) => (
                     <option key={type?.id} value={type?.id}>
                       {type?.name}
@@ -649,8 +654,9 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                 </RHFSelect>
               )}
 
-              {PROPERTY_TYPE && (
-                <RHFSelect native name="cityId" label="City" InputLabelProps={{ shrink: true }}>
+              {ADDRESS && (
+                <RHFSelect native name="city_id" label="City" InputLabelProps={{ shrink: true }}>
+                  <option value="">Select City</option>
                   {ADDRESS?.map((type) => (
                     <option key={type?.id} value={type?.id}>
                       {type?.name}
@@ -659,13 +665,14 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                 </RHFSelect>
               )}
 
-              {PROPERTY_TYPE && (
+              {ADDRESS && (
                 <RHFSelect
                   native
-                  name="stateProvinceId"
+                  name="state_province_id"
                   label="State / Province"
                   InputLabelProps={{ shrink: true }}
                 >
+                  <option value="">Select State / Province</option>
                   {ADDRESS?.map((type) => (
                     <option key={type?.id} value={type?.id}>
                       {type?.name}
@@ -678,7 +685,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
 
           <Stack spacing={3} sx={{ p: 3 }}>
             <RHFTextField
-                name="displayOrder"
+                name="display_order"
                 label="Display Order"
                 placeholder="0"
                 type="number"

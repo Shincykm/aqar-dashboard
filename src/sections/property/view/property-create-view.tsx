@@ -32,8 +32,7 @@ export default function PropertyCreateView() {
               mb: { xs: 3, md: 5 },
             }}
           />
-    
-          {/* <ProductNewEditForm /> */}
+          
           <PropertyNewEditForm />
         </Container>
       );

@@ -1,7 +1,7 @@
 export type IPropertyType = {
   id: number;
-  nameEn: string;
-  nameAr: string | null;
+  name_en: string;
+  name_ar: string | null;
 };
 
 export type IPropertyTypeItem = {

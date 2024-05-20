@@ -2,38 +2,38 @@
 
 
 export type IPropertyItem = {
-  nameAr?: string | null;
-  nameEn: string;
-  descriptionAr?: string | null;
-  descriptionEn?: string | null;
+  name_ar?: string | null;
+  name_en: string;
+  description_ar?: string | null;
+  description_en?: string | null;
   active: boolean;
-  isFeatured: boolean;
-  isFurnished: boolean;
-  countBathrooms?: number | null;
-  countBedrooms?: number | null;
-  countParking?: number | null;
-  maintenanceFee?: number | null;
-  oldAmount?: number | null;
+  is_featured: boolean;
+  is_furnished: boolean;
+  count_bathrooms?: number | null;
+  count_bedrooms?: number | null;
+  count_parking?: number | null;
+  maintenance_fee?: number | null;
+  old_amount?: number | null;
   amount?: number | null;
-  sizeSqm?: number | null;
-  sizeSqft?: number | null;
+  size_sqm?: number | null;
+  // sizeSqft?: number | null;
   ownership?: string | null;
-  subType?: string | null;
-  referenceNumber?: string | null;
-  constructedDate?: Date | null;
-  addressId?: number | null;
-  buildingId?: number | null;
-  propertyTypeId?: number | null;
-  propertyPurposeId?: number | null;
-  propertyStyleId?: number | null;
-  countryId?: number | null;
-  cityId?: number | null;
-  stateProvinceId?: number | null;
-  displayOrder?: number | null;
+  sub_type?: string | null;
+  reference_number?: string | null;
+  constructed_date?: Date | null;
+  address_id?: number | null;
+  building_id?: number | null;
+  property_type_id?: number | null;
+  property_purpose_id?: number | null;
+  property_style_id?: number | null;
+  country_id?: number | null;
+  city_id?: number | null;
+  state_province_id?: number | null;
+  display_order?: number | null;
   images: [],
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt?: Date | null;
+  created_at: Date;
+  updated_at: Date;
+  deleted_at?: Date | null;
 };
 
 // //////////////////// Original Product code ///////////////////////////
