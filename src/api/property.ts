@@ -55,6 +55,7 @@ export async function useCreateUpdateProperty(propertyData: any) {
 
   try {
     // const response = await axios.post('https://aqar.api.mvp-apps.ae/api/admin/property/createUpdateProperty',formData);
+    
     const response = await performRequest<any>('post', URL, {
       headers: {
         'Content-Type': 'multipart/form-data',

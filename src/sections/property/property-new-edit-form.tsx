@@ -65,9 +65,10 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
   const { enqueueSnackbar } = useSnackbar();
 
   const [subTypeList, setSubTypeList] = useState<any>(null);
-  const {propertyTypes, propertyTypeEmpty, propertyTypeLoading} = useGetPropertyTypeList();
-  const {propertyPurposes, propertyPurposeEmpty, propertyPurposeLoading} = useGetPropertyPurposeList();
-  const {propertyStyles, propertyStyleEmpty, propertyStyleLoading} = useGetPropertyStyleList();
+
+  const {propertyTypes, propertyTypeEmpty, propertyTypeLoading} = useGetPropertyTypeList(1,10);
+  const {propertyPurposes, propertyPurposeEmpty, propertyPurposeLoading} = useGetPropertyPurposeList(1,10);
+  const {propertyStyles, propertyStyleEmpty, propertyStyleLoading} = useGetPropertyStyleList(1,10);
   
   const NewPropertySchema = Yup.object().shape({
     name_ar: Yup.string().nullable(),
@@ -170,23 +171,20 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
     try {
       const formData = new FormData();
       Object.keys(data)?.forEach((key) => {
-        if (key === ('is_active')) {
-          // Handle is_active separately
-          const isActiveValue = data[key];
-          if (isActiveValue === 'true' || isActiveValue === true) {
-            formData.append('is_active', 1);
-          } else {
-            formData.append('is_active', 0);
-          }
-        } else {
-          // For other keys, append their values directly
-          const value = data[key];
-          if (value !== '' && value !== 0) {
-            formData.append(key, value);
-          }
+        if(typeof data[key] === "boolean"){
+          data[key] == true ? formData.append(key, '1') : formData.append(key, '0');
         }
-      });
-    
+
+        if(typeof data[key] === "string" && data[key] !=''){
+          formData.append(key, data[key]);
+        }
+
+        if(typeof data[key] === "number" && data[key] !== 0){
+          formData.append(key, data[key].toString());
+        }
+    });
+      console.log(formData.get('is_active'),"==key");
+
       const response = useCreateUpdateProperty(formData);
       reset();
       enqueueSnackbar(currentProperty ? 'Update success!' : 'Create success!');
@@ -229,7 +227,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
 
     setSubTypeList(propertyTypes.filter((type) => type?.parent_id === value));
     setValue('property_type_id', value);
-  },[setValue, propertyTypes]);
+  },[propertyTypes]);
 
   
   const renderDetails = (
