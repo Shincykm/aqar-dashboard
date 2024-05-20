@@ -168,19 +168,19 @@ export default function TourListView() {
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           {
-            name: 'Tour',
-            href: paths.dashboard.tour.root,
+            name: 'Property',
+            href: paths.dashboard.property.root,
           },
           { name: 'List' },
         ]}
         action={
           <Button
             component={RouterLink}
-            href={paths.dashboard.tour.new}
+            href={paths.dashboard.property.new}
             variant="contained"
             startIcon={<Iconify icon="mingcute:add-line" />}
           >
-            New Tour
+            New Property
           </Button>
         }
         sx={{

@@ -1,357 +1,270 @@
-import isEqual from 'lodash/isEqual';
-import { useState, useEffect, useCallback } from 'react';
-// @mui
-import Card from '@mui/material/Card';
-import Table from '@mui/material/Table';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import Container from '@mui/material/Container';
-import TableBody from '@mui/material/TableBody';
-import IconButton from '@mui/material/IconButton';
-import TableContainer from '@mui/material/TableContainer';
-// routes
-import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
-import { RouterLink } from 'src/routes/components';
-// hooks
-import { useBoolean } from 'src/hooks/use-boolean';
-// _mock
-import { PRODUCT_STOCK_OPTIONS } from 'src/_mock';
-// api
-import { useGetProducts } from 'src/api/product';
-// components
-import { useSettingsContext } from 'src/components/settings';
-import {
-  useTable,
-  getComparator,
-  emptyRows,
-  TableNoData,
-  TableSkeleton,
-  TableEmptyRows,
-  TableHeadCustom,
-  TableSelectedAction,
-  TablePaginationCustom,
-} from 'src/components/table';
-import Iconify from 'src/components/iconify';
-import Scrollbar from 'src/components/scrollbar';
-import { ConfirmDialog } from 'src/components/custom-dialog';
-import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
-// types
-import { IProductItem, IProductTableFilters, IProductTableFilterValue } from 'src/types/product';
-import { IPropertyItem } from 'src/types/property';
-//
-import ProductTableRow from '../product-table-row';
-import ProductTableToolbar from '../product-table-toolbar';
-import ProductTableFiltersResult from '../product-table-filters-result';
+// import orderBy from 'lodash/orderBy';
+// import { useState, useCallback } from 'react';
+// // @mui
+// import Stack from '@mui/material/Stack';
+// import Button from '@mui/material/Button';
+// import Container from '@mui/material/Container';
+// // routes
+// import { paths } from 'src/routes/paths';
+// import { RouterLink } from 'src/routes/components';
+// // hooks
+// import { useBoolean } from 'src/hooks/use-boolean';
+// // utils
+// import { fTimestamp } from 'src/utils/format-time';
+// // _mock
+// import { _tours, _tourGuides, TOUR_SERVICE_OPTIONS, TOUR_SORT_OPTIONS } from 'src/_mock';
+// // assets
+// import { countries } from 'src/assets/data';
+// // components
+// import Iconify from 'src/components/iconify';
+// import EmptyContent from 'src/components/empty-content';
+// import { useSettingsContext } from 'src/components/settings';
+// import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+// // types
+// // import { ITourItem, ITourFilters, ITourFilterValue } from 'src/types/tour';
+// import { IPropertyFilters, IPropertyItem } from 'src/types/property';
+// //
+// // import TourList from '../tour-list';
+// // import TourSort from '../tour-sort';
+// // import TourSearch from '../tour-search';
+// // import TourFilters from '../tour-filters';
+// // import TourFiltersResult from '../tour-filters-result';
 
-// ----------------------------------------------------------------------
+// // ----------------------------------------------------------------------
 
-const TABLE_HEAD = [
-  { id: 'name', label: 'Product' },
-  { id: 'createdAt', label: 'Create at', width: 160 },
-  { id: 'inventoryType', label: 'Stock', width: 160 },
-  { id: 'price', label: 'Price', width: 140 },
-  { id: 'publish', label: 'Publish', width: 110 },
-  { id: '', width: 88 },
-];
+// const defaultFilters: IPropertyFilters = {
+//   agent: [],
+//   location: [],
+//   amenities: [],
+//   constructedDate: null,
+// };
 
-const PUBLISH_OPTIONS = [
-  { value: 'published', label: 'Published' },
-  { value: 'draft', label: 'Draft' },
-];
+// // ----------------------------------------------------------------------
 
-const defaultFilters: IProductTableFilters = {
-  name: '',
-  publish: [],
-  stock: [],
-};
+// export default function PropertyListView() {
+//   const settings = useSettingsContext();
 
-// ----------------------------------------------------------------------
+//   const openFilters = useBoolean();
 
-export default function PropertyListView() {
-  const router = useRouter();
+//   const [sortBy, setSortBy] = useState('latest');
 
-  const table = useTable();
+//   const [search, setSearch] = useState<{ query: string; results: IPropertyItem[] }>({
+//     query: '',
+//     results: [],
+//   });
 
-  const settings = useSettingsContext();
+//   const [filters, setFilters] = useState(defaultFilters);
 
-  const [tableData, setTableData] = useState<IProductItem[]>([]);
+//   const dataFiltered = applyFilter({
+//     inputData: _tours,
+//     filters,
+//     sortBy,
+//   });
 
-  const [filters, setFilters] = useState(defaultFilters);
+//   const canReset =
+//     !!filters.destination.length ||
+//     !!filters.tourGuides.length ||
+//     !!filters.services.length ||
+//     (!!filters.startDate && !!filters.endDate);
 
-  const { products, productsLoading, productsEmpty } = useGetProducts();
+//   const notFound = !dataFiltered.length && canReset;
 
-  const confirm = useBoolean();
+//   const handleFilters = useCallback((name: string, value: ITourFilterValue) => {
+//     setFilters((prevState) => ({
+//       ...prevState,
+//       [name]: value,
+//     }));
+//   }, []);
 
-  useEffect(() => {
-    if (products.length) {
-      setTableData(products);
-    }
-  }, [products]);
+//   const handleSortBy = useCallback((newValue: string) => {
+//     setSortBy(newValue);
+//   }, []);
 
-  const dataFiltered = applyFilter({
-    inputData: tableData,
-    comparator: getComparator(table.order, table.orderBy),
-    filters,
-  });
+//   const handleSearch = useCallback(
+//     (inputValue: string) => {
+//       setSearch((prevState) => ({
+//         ...prevState,
+//         query: inputValue,
+//       }));
 
-  const dataInPage = dataFiltered.slice(
-    table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage
-  );
+//       if (inputValue) {
+//         const results = _tours.filter(
+//           (tour) => tour.name.toLowerCase().indexOf(search.query.toLowerCase()) !== -1
+//         );
 
-  const denseHeight = table.dense ? 60 : 80;
+//         setSearch((prevState) => ({
+//           ...prevState,
+//           results,
+//         }));
+//       }
+//     },
+//     [search.query]
+//   );
 
-  const canReset = !isEqual(defaultFilters, filters);
+//   const handleResetFilters = useCallback(() => {
+//     setFilters(defaultFilters);
+//   }, []);
 
-  const notFound = (!dataFiltered.length && canReset) || productsEmpty;
+//   const renderFilters = (
+//     <Stack
+//       spacing={3}
+//       justifyContent="space-between"
+//       alignItems={{ xs: 'flex-end', sm: 'center' }}
+//       direction={{ xs: 'column', sm: 'row' }}
+//     >
+//       <TourSearch
+//         query={search.query}
+//         results={search.results}
+//         onSearch={handleSearch}
+//         hrefItem={(id: string) => paths.dashboard.tour.details(id)}
+//       />
 
-  const handleFilters = useCallback(
-    (name: string, value: IProductTableFilterValue) => {
-      table.onResetPage();
-      setFilters((prevState) => ({
-        ...prevState,
-        [name]: value,
-      }));
-    },
-    [table]
-  );
+//       <Stack direction="row" spacing={1} flexShrink={0}>
+//         <TourFilters
+//           open={openFilters.value}
+//           onOpen={openFilters.onTrue}
+//           onClose={openFilters.onFalse}
+//           //
+//           filters={filters}
+//           onFilters={handleFilters}
+//           //
+//           canReset={canReset}
+//           onResetFilters={handleResetFilters}
+//           //
+//           serviceOptions={TOUR_SERVICE_OPTIONS.map((option) => option.label)}
+//           tourGuideOptions={_tourGuides}
+//           destinationOptions={countries}
+//           //
+//           dateError={dateError}
+//         />
 
-  const handleDeleteRow = useCallback(
-    (id: string) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
-      setTableData(deleteRow);
+//         <TourSort sort={sortBy} onSort={handleSortBy} sortOptions={TOUR_SORT_OPTIONS} />
+//       </Stack>
+//     </Stack>
+//   );
 
-      table.onUpdatePageDeleteRow(dataInPage.length);
-    },
-    [dataInPage.length, table, tableData]
-  );
+//   const renderResults = (
+//     <TourFiltersResult
+//       filters={filters}
+//       onResetFilters={handleResetFilters}
+//       //
+//       canReset={canReset}
+//       onFilters={handleFilters}
+//       //
+//       results={dataFiltered.length}
+//     />
+//   );
 
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
-    setTableData(deleteRows);
+//   return (
+//     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
+//       <CustomBreadcrumbs
+//         heading="List"
+//         links={[
+//           { name: 'Dashboard', href: paths.dashboard.root },
+//           {
+//             name: 'Tour',
+//             href: paths.dashboard.tour.root,
+//           },
+//           { name: 'List' },
+//         ]}
+//         action={
+//           <Button
+//             component={RouterLink}
+//             href={paths.dashboard.tour.new}
+//             variant="contained"
+//             startIcon={<Iconify icon="mingcute:add-line" />}
+//           >
+//             New Tour
+//           </Button>
+//         }
+//         sx={{
+//           mb: { xs: 3, md: 5 },
+//         }}
+//       />
 
-    table.onUpdatePageDeleteRows({
-      totalRows: tableData.length,
-      totalRowsInPage: dataInPage.length,
-      totalRowsFiltered: dataFiltered.length,
-    });
-  }, [dataFiltered.length, dataInPage.length, table, tableData]);
+//       <Stack
+//         spacing={2.5}
+//         sx={{
+//           mb: { xs: 3, md: 5 },
+//         }}
+//       >
+//         {renderFilters}
 
-  const handleEditRow = useCallback(
-    (id: string) => {
-      router.push(paths.dashboard.product.edit(id));
-    },
-    [router]
-  );
+//         {canReset && renderResults}
+//       </Stack>
 
-  const handleViewRow = useCallback(
-    (id: string) => {
-      router.push(paths.dashboard.product.details(id));
-    },
-    [router]
-  );
+//       {notFound && <EmptyContent title="No Data" filled sx={{ py: 10 }} />}
 
-  const handleResetFilters = useCallback(() => {
-    setFilters(defaultFilters);
-  }, []);
+//       <TourList tours={dataFiltered} />
+//     </Container>
+//   );
+// }
 
+// // ----------------------------------------------------------------------
+
+// const applyFilter = ({
+//   inputData,
+//   filters,
+//   sortBy,
+//   dateError,
+// }: {
+//   inputData: IPropertyItem[];
+//   filters: IPropertyFilters;
+//   sortBy: string;
+//   dateError: boolean;
+// }) => {
+//   const { amenities, location, constructedDate, agent } = filters;
+
+//   const agentIds = tourGuides.map((tourGuide) => tourGuide.id);
+
+//   // SORT BY
+//   if (sortBy === 'latest') {
+//     inputData = orderBy(inputData, ['createdAt'], ['desc']);
+//   }
+
+//   if (sortBy === 'oldest') {
+//     inputData = orderBy(inputData, ['createdAt'], ['asc']);
+//   }
+
+//   if (sortBy === 'popular') {
+//     inputData = orderBy(inputData, ['totalViews'], ['desc']);
+//   }
+
+//   // FILTERS
+//   if (!dateError) {
+//     if (startDate && endDate) {
+//       inputData = inputData.filter(
+//         (tour) =>
+//           fTimestamp(tour.available.startDate) >= fTimestamp(startDate) &&
+//           fTimestamp(tour.available.endDate) <= fTimestamp(endDate)
+//       );
+//     }
+//   }
+
+//   if (destination.length) {
+//     inputData = inputData.filter((tour) => destination.includes(tour.destination));
+//   }
+
+//   if (tourGuideIds.length) {
+//     inputData = inputData.filter((tour) =>
+//       tour.tourGuides.some((filterItem) => tourGuideIds.includes(filterItem.id))
+//     );
+//   }
+
+//   if (services.length) {
+//     inputData = inputData.filter((tour) => tour.services.some((item) => services.includes(item)));
+//   }
+
+//   return inputData;
+// };
+
+
+import React from 'react'
+
+const PropertyListView = () => {
   return (
-    <>
-       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-        <CustomBreadcrumbs
-          heading="List"
-          links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            {
-              name: 'Property',
-              href: paths.dashboard.property.root,
-            },
-            { name: 'List' },
-          ]}
-          action={
-            <Button
-              component={RouterLink}
-              href={paths.dashboard.property.new}
-              variant="contained"
-              startIcon={<Iconify icon="mingcute:add-line" />}
-            >
-              New Property
-            </Button>
-          }
-          sx={{ mb: { xs: 3, md: 5 } }}
-        />
-
-       {/* <Card>
-          <ProductTableToolbar
-            filters={filters}
-            onFilters={handleFilters}
-            //
-            stockOptions={PRODUCT_STOCK_OPTIONS}
-            publishOptions={PUBLISH_OPTIONS}
-          />
-
-          {canReset && (
-            <ProductTableFiltersResult
-              filters={filters}
-              onFilters={handleFilters}
-              //
-              onResetFilters={handleResetFilters}
-              //
-              results={dataFiltered.length}
-              sx={{ p: 2.5, pt: 0 }}
-            />
-          )}
-
-          <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
-            <TableSelectedAction
-              dense={table.dense}
-              numSelected={table.selected.length}
-              rowCount={tableData.length}
-              onSelectAllRows={(checked) =>
-                table.onSelectAllRows(
-                  checked,
-                  tableData.map((row) => row.id)
-                )
-              }
-              action={
-                <Tooltip title="Delete">
-                  <IconButton color="primary" onClick={confirm.onTrue}>
-                    <Iconify icon="solar:trash-bin-trash-bold" />
-                  </IconButton>
-                </Tooltip>
-              }
-            />
-
-            <Scrollbar>
-              <Table size={table.dense ? 'small' : 'medium'} sx={{ minWidth: 960 }}>
-                <TableHeadCustom
-                  order={table.order}
-                  orderBy={table.orderBy}
-                  headLabel={TABLE_HEAD}
-                  rowCount={tableData.length}
-                  numSelected={table.selected.length}
-                  onSort={table.onSort}
-                  onSelectAllRows={(checked) =>
-                    table.onSelectAllRows(
-                      checked,
-                      tableData.map((row) => row.id)
-                    )
-                  }
-                />
-
-                <TableBody>
-                  {productsLoading ? (
-                    [...Array(table.rowsPerPage)].map((i, index) => (
-                      <TableSkeleton key={index} sx={{ height: denseHeight }} />
-                    ))
-                  ) : (
-                    <>
-                      {dataFiltered
-                        .slice(
-                          table.page * table.rowsPerPage,
-                          table.page * table.rowsPerPage + table.rowsPerPage
-                        )
-                        .map((row) => (
-                          <ProductTableRow
-                            key={row.id}
-                            row={row}
-                            selected={table.selected.includes(row.id)}
-                            onSelectRow={() => table.onSelectRow(row.id)}
-                            onDeleteRow={() => handleDeleteRow(row.id)}
-                            onEditRow={() => handleEditRow(row.id)}
-                            onViewRow={() => handleViewRow(row.id)}
-                          />
-                        ))}
-                    </>
-                  )}
-
-                  <TableEmptyRows
-                    height={denseHeight}
-                    emptyRows={emptyRows(table.page, table.rowsPerPage, tableData.length)}
-                  />
-
-                  <TableNoData notFound={notFound} />
-                </TableBody>
-              </Table>
-            </Scrollbar>
-          </TableContainer>
-
-          <TablePaginationCustom
-            count={dataFiltered.length}
-            page={table.page}
-            rowsPerPage={table.rowsPerPage}
-            onPageChange={table.onChangePage}
-            onRowsPerPageChange={table.onChangeRowsPerPage}
-            //
-            dense={table.dense}
-            onChangeDense={table.onChangeDense}
-          />
-        </Card>*/}
-      </Container> 
-
-      <ConfirmDialog
-        open={confirm.value}
-        onClose={confirm.onFalse}
-        title="Delete"
-        content={
-          <>
-            Are you sure want to delete <strong> {table.selected.length} </strong> items?
-          </>
-        }
-        action={
-          <Button
-            variant="contained"
-            color="error"
-            onClick={() => {
-              handleDeleteRows();
-              confirm.onFalse();
-            }}
-          >
-            Delete
-          </Button>
-        }
-      />
-    </>
-  );
+    <div>PropertyListView</div>
+  )
 }
 
-// ----------------------------------------------------------------------
-
-function applyFilter({
-  inputData,
-  comparator,
-  filters,
-}: {
-  inputData: IProductItem[];
-  comparator: (a: any, b: any) => number;
-  filters: IProductTableFilters;
-}) {
-  const { name, stock, publish } = filters;
-
-  const stabilizedThis = inputData.map((el, index) => [el, index] as const);
-
-  stabilizedThis.sort((a, b) => {
-    const order = comparator(a[0], b[0]);
-    if (order !== 0) return order;
-    return a[1] - b[1];
-  });
-
-  inputData = stabilizedThis.map((el) => el[0]);
-
-  if (name) {
-    inputData = inputData.filter(
-      (product) => product.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
-    );
-  }
-
-  if (stock.length) {
-    inputData = inputData.filter((product) => stock.includes(product.inventoryType));
-  }
-
-  if (publish.length) {
-    inputData = inputData.filter((product) => publish.includes(product.publish));
-  }
-
-  return inputData;
-}
+export default PropertyListView

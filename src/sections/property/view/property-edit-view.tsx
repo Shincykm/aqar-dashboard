@@ -20,6 +20,7 @@ export default function PropertyEditView({ id }: Props) {
   const settings = useSettingsContext();
 
   const { property: currentProperty } = useGetProperty(id);
+
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
@@ -30,7 +31,7 @@ export default function PropertyEditView({ id }: Props) {
             name: 'Property',
             href: paths.dashboard.property.root,
           },
-          { name: currentProperty?.nameEn },
+          { name: currentProperty?.name_en },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

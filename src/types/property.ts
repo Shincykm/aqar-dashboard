@@ -1,14 +1,31 @@
 // ----------------------------------------------------------------------
 
+export type IPropertyFilterValue = string | string[] | Date | IAgent | null;
+
+export type IPropertyFilters = {
+  agent: IAgent[];
+  location: string[];
+  amenities: string[];
+  constructedDate: Date | null;
+};
+
+// ----------------------------------------------------------------------
+
+export type IAgent = {
+  id: string;
+  name: string;
+  avatarUrl: string;
+  phoneNumber: string;
+};
 
 export type IPropertyItem = {
   name_ar?: string | null;
   name_en: string;
   description_ar?: string | null;
   description_en?: string | null;
-  active: boolean;
-  is_featured: boolean;
-  is_furnished: boolean;
+  active: boolean | string;
+  is_featured: boolean | string;
+  is_furnished: boolean | string;
   count_bathrooms?: number | null;
   count_bedrooms?: number | null;
   count_parking?: number | null;
@@ -30,92 +47,8 @@ export type IPropertyItem = {
   city_id?: number | null;
   state_province_id?: number | null;
   display_order?: number | null;
-  images: [],
-  created_at: Date;
-  updated_at: Date;
-  deleted_at?: Date | null;
-};
-
-// //////////////////// Original Product code ///////////////////////////
-
-// ----------------------------------------------------------------------
-
-export type IProductFilterValue = string | string[] | number | number[];
-
-export type IProductFilters = {
-  rating: string;
-  gender: string[];
-  category: string;
-  colors: string[];
-  priceRange: number[];
-};
-
-// ----------------------------------------------------------------------
-
-export type IProductReviewNewForm = {
-  rating: number | null;
-  review: string;
-  name: string;
-  email: string;
-};
-
-export type IProductReview = {
-  id: string;
-  name: string;
-  rating: number;
-  comment: string;
-  helpful: number;
-  avatarUrl: string;
-  isPurchased: boolean;
-  attachments?: string[];
-  postedAt: Date;
-};
-
-export type IProductItem = {
-  id: string;
-  sku: string;
-  name: string;
-  code: string;
-  price: number;
-  taxes: number;
-  tags: string[];
-  gender: string;
-  sizes: string[];
-  publish: string;
-  coverUrl: string;
-  images: string[];
-  colors: string[];
-  quantity: number;
-  category: string;
-  available: number;
-  totalSold: number;
-  description: string;
-  totalRatings: number;
-  totalReviews: number;
-  inventoryType: string;
-  subDescription: string;
-  priceSale: number | null;
-  reviews: IProductReview[];
-  createdAt: Date;
-  ratings: {
-    name: string;
-    starCount: number;
-    reviewCount: number;
-  }[];
-  saleLabel: {
-    enabled: boolean;
-    content: string;
-  };
-  newLabel: {
-    enabled: boolean;
-    content: string;
-  };
-};
-
-export type IProductTableFilterValue = string | string[];
-
-export type IProductTableFilters = {
-  name: string;
-  stock: string[];
-  publish: string[];
+  images: [];
+  // created_at: Date;
+  // updated_at: Date;
+  // deleted_at?: Date | null;
 };

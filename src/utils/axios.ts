@@ -140,9 +140,10 @@ export const endpoints = {
     search: '/api/product/search',
   },
   property: {
-    list: '/api/property/list',
-    details: '/api/property/details',
-    search: '/api/property/search',
+    list: '/api/admin/property/getPropertyList',
+    details: '/api/admin/property/getPropertyById',
+    // search: '/api/property/search',
+    delete: '/api/admin/property/deleteProperty',
     createUpdate: '/api/admin/property/createUpdateProperty',
   },
   propertyType: {

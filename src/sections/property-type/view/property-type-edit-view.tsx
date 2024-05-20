@@ -20,7 +20,6 @@ export default function PropertyTypeEditView({ id }: Props) {
   const settings = useSettingsContext();
   
   const { propertyType: currentPropertyType } = useGetPropertyType(id);
-  console.log(currentPropertyType, '== propertyType ID');
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>

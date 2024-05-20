@@ -31,12 +31,12 @@ import FormProvider, {
 } from 'src/components/hook-form';
 // types
 import { IPropertyItem } from 'src/types/property';
-import { IPropertyType, IPropertyTypeItem } from 'src/types/propertyType';
 // api
 import { useGetPropertyTypeList } from 'src/api/propertyType';
 import { useGetPropertyPurposeList } from 'src/api/propertyPurpose';
 import { useGetPropertyStyleList } from 'src/api/propertyStyle';
 import { useCreateUpdateProperty } from 'src/api/property';
+import { convertStringToBoolean } from 'src/utils/string-to-boolean';
 
 // ----------------------------------------------------------------------
 
@@ -166,6 +166,9 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
       reset(defaultValues);
     }
   }, [currentProperty, defaultValues, reset]);
+
+  console.log(currentProperty, "=== currentProperty");
+  
 
   const onSubmit = handleSubmit(async (data:any) => {
     try {

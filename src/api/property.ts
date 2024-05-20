@@ -1,11 +1,9 @@
 import useSWR from 'swr';
 import { useMemo } from 'react';
 // utils
-import { fetcher, endpoints, performRequest } from 'src/utils/axios';
+import { fetcher, endpoints, performRequest, fetcher1 } from 'src/utils/axios';
 // types
 import { IPropertyItem } from 'src/types/property';
-import axios from 'axios';
-
 // ----------------------------------------------------------------------
 
 export function useGetProperties() {
@@ -30,17 +28,17 @@ export function useGetProperties() {
 // ----------------------------------------------------------------------
 
 export function useGetProperty(propertyId: string) {
-  const URL = endpoints.property.list;
+  const URL = propertyId ? `${endpoints.property.details}/${propertyId}` : null;
 
-  const { data, isLoading, error, isValidating } = useSWR(URL, fetcher);
+  const { data, isLoading, error, isValidating } = useSWR(URL, fetcher1);
 
   const memoizedValue = useMemo(
     () => ({
-      property: (data?.property as IPropertyItem[]) || [],
+      property: (data?.data as IPropertyItem[]) || [],
       propertyLoading: isLoading,
       propertyError: error,
       propertyValidating: isValidating,
-      propertyEmpty: !isLoading && !data?.property.length,
+      propertyEmpty: !isLoading && !data?.data?.length,
     }),
     [data?.property, error, isLoading, isValidating]
   );
@@ -54,8 +52,6 @@ export async function useCreateUpdateProperty(propertyData: any) {
   const URL = endpoints.property.createUpdate;
 
   try {
-    // const response = await axios.post('https://aqar.api.mvp-apps.ae/api/admin/property/createUpdateProperty',formData);
-    
     const response = await performRequest<any>('post', URL, {
       headers: {
         'Content-Type': 'multipart/form-data',
