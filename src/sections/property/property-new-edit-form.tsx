@@ -70,7 +70,6 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
   const {propertyTypes, propertyTypeEmpty, propertyTypeLoading} = useGetPropertyTypeList(1,10);
   const {propertyPurposes, propertyPurposeEmpty, propertyPurposeLoading} = useGetPropertyPurposeList(1,10);
   const {propertyStyles, propertyStyleEmpty, propertyStyleLoading} = useGetPropertyStyleList(1,10);
-  const {amenities, amenitiesEmpty, amenitiesLoading} = useGetAmenitiesList();
   
   const NewPropertySchema = Yup.object().shape({
     name_ar: Yup.string().nullable(),
@@ -172,6 +171,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
   const onSubmit = handleSubmit(async (data:any) => {
     try {
       const formData = new FormData();
+      const formDataAmenity = new FormData();
       Object.keys(data)?.forEach((key) => {
         if(typeof data[key] === "boolean"){
           data[key] == true ? formData.append(key, '1') : formData.append(key, '0');
@@ -185,15 +185,27 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
           formData.append(key, data[key].toString());
         }
 
+        if(key === "amenity_items"){
+          formDataAmenity.append('amenity_picture' , data[key].amenity_picture);
+        }
+
       });
-      
 
       // api - create property 
-      const response = useCreateUpdateProperty(formData);
-      reset();
-      enqueueSnackbar(currentProperty ? 'Update success!' : 'Create success!');
-      router.push(paths.dashboard.property.root);
-      console.info('DATA', data);
+      const response = await useCreateUpdateProperty(formData);
+      console.log(response );
+      console.log(formDataAmenity.get('amenity_picture') );
+      
+      if(response.status === "success"){
+        // const amenitiesResponse = await useCreateUpdatePropertyPictureMapping(formDataAmenity);
+
+        // if(amenitiesResponse.status === "success"){
+        //   reset();
+        //   enqueueSnackbar(currentProperty ? 'Update success!' : 'Create success!');
+        //   router.push(paths.dashboard.property.root);
+        //   console.info('DATA', data);
+        // }
+      }
     } catch (error) {
       console.error(error);
     }

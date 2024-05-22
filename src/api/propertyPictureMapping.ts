@@ -47,15 +47,17 @@ import { fetcher, endpoints, performRequest, fetcher1 } from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
-export async function useCreateUpdatePropertyPictureMapping(file: any) {
+export async function useCreateUpdatePropertyPictureMapping(amenityData: any) {
   const URL = endpoints.propertyPictureMapping.createUpdate;
 
+  console.log(amenityData.get('amenity_picture'));
+  
   try {
     const response = await performRequest<any>('post', URL, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
-      data: file,
+      data: amenityData,
     });
     return response.data;
   } catch (error) {

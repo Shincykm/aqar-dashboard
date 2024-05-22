@@ -1,3 +1,4 @@
+"use client";
 import sum from 'lodash/sum';
 import { useCallback, useEffect, useState } from 'react';
 import { useFormContext, useFieldArray } from 'react-hook-form';
