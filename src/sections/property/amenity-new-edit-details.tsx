@@ -18,7 +18,7 @@ import { INVOICE_SERVICE_OPTIONS } from 'src/_mock';
 import { IInvoiceItem } from 'src/types/invoice';
 // components
 import Iconify from 'src/components/iconify';
-import { RHFSelect, RHFTextField } from 'src/components/hook-form';
+import { RHFSelect, RHFUpload, RHFUploadBox, RHFUploadCustom } from 'src/components/hook-form';
 import { useGetAmenitiesList } from 'src/api/amenities';
 import { LoadingButton } from '@mui/lab';
 
@@ -30,24 +30,14 @@ export default function AmenityNewEditDetails() {
 
   const {amenities, amenitiesEmpty, amenitiesLoading} = useGetAmenitiesList();
 
-  const [amenityItemsValue, setAmenityItemsValue] = useState<any>([]);
+  const [amenitiesList, setAmenitiesList] = useState<any>([...amenities]);
+  
   const { fields, append, remove } = useFieldArray({
     control,
     name: 'amenity_items',
   });
 
   const values = watch();
-
-  // const totalOnRow = values.items.map((item: any) => item.quantity * item.price);
-
-  // const subTotal = sum(totalOnRow);
-
-  // const totalAmount = subTotal - values.discount - values.shipping + values.taxes;
-
-  // useEffect(() => {
-  //   setValue('amenity_items', totalAmount);
-  // }, [setValue, totalAmount]);
-
 
   const handleAdd = () => {
     append({
@@ -62,116 +52,60 @@ export default function AmenityNewEditDetails() {
 
   const handleClearAmenity = useCallback(
     (index: number) => {
-      resetField(`items[${index}].amenity_id`);
-      resetField(`items[${index}].amenity_picture`);
+      resetField(`amenity_items[${index}].amenity_id`);
+      resetField(`amenity_items[${index}].amenity_picture`);
     },
     [resetField]
   );
 
   const handleSelectAmenity = useCallback(
-    (index: number, option: any) => {      
-      setValue(`items[${index}].amenity_id`, option);
+    (index: number, option: any, name: string) => {      
+      setValue(`amenity_items[${index}].amenity_id`, option);
+      setAmenitiesList((prev:any) => prev = amenities.filter(amenity => amenity.id !== option));
     },
-    [setValue, values.items]
+    [setValue, values.amenity_items]
   );
 
-  
-  // const handleChangeQuantity = useCallback(
-  //   (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => {
-  //     setValue(`items[${index}].quantity`, Number(event.target.value));
-  //     setValue(
-  //       `items[${index}].total`,
-  //       values.items.map((item: IInvoiceItem) => item.quantity * item.price)[index]
-  //     );
-  //   },
-  //   [setValue, values.items]
-  // );
+  const handleDrop = useCallback(
+    ( acceptedFiles: File[], index:any) => {
+      
+      const files = values.amenity_items[index]?.amenity_picture || [];
 
-  // const handleChangePrice = useCallback(
-  //   (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => {
-  //     setValue(`items[${index}].price`, Number(event.target.value));
-  //     setValue(
-  //       `items[${index}].total`,
-  //       values.items.map((item: IInvoiceItem) => item.quantity * item.price)[index]
-  //     );
-  //   },
-  //   [setValue, values.items]
-  // );
+      const newFiles = acceptedFiles.map((file) =>
+        Object.assign(file, {
+          preview: URL.createObjectURL(file),
+        })
+      );
 
-  // const renderTotal = (
-  //   <Stack
-  //     spacing={2}
-  //     alignItems="flex-end"
-  //     sx={{ mt: 3, textAlign: 'right', typography: 'body2' }}
-  //   >
-  //     <Stack direction="row">
-  //       <Box sx={{ color: 'text.secondary' }}>Subtotal</Box>
-  //       <Box sx={{ width: 160, typography: 'subtitle2' }}>{fCurrency(subTotal) || '-'}</Box>
-  //     </Stack>
+      setValue(`amenity_items[${index}].amenity_picture`, [...files, ...newFiles], { shouldValidate: true });
+    },
+    [setValue, values.amenity_items.amenity_picture]
+  );
 
-  //     {/* <Stack direction="row">
-  //       <Box sx={{ color: 'text.secondary' }}>Shipping</Box>
-  //       <Box
-  //         sx={{
-  //           width: 160,
-  //           ...(values.shipping && { color: 'error.main' }),
-  //         }}
-  //       >
-  //         {values.shipping ? `- ${fCurrency(values.shipping)}` : '-'}
-  //       </Box>
-  //     </Stack> */}
+  const handleRemoveFile = useCallback(
+    (inputFile: File | string, index:any) => {
+      const filtered = values.amenity_items[index]?.amenity_picture && values.amenity_items[index]?.amenity_picture?.filter((file:any) => file !== inputFile);
+      setValue(`amenity_items[${index}].amenity_picture`, filtered);
+    },
+    [setValue, values.amenity_items]
+  );
 
-  //     {/* <Stack direction="row">
-  //       <Box sx={{ color: 'text.secondary' }}>Discount</Box>
-  //       <Box
-  //         sx={{
-  //           width: 160,
-  //           ...(values.discount && { color: 'error.main' }),
-  //         }}
-  //       >
-  //         {values.discount ? `- ${fCurrency(values.discount)}` : '-'}
-  //       </Box>
-  //     </Stack>
-
-  //     <Stack direction="row">
-  //       <Box sx={{ color: 'text.secondary' }}>Taxes</Box>
-  //       <Box sx={{ width: 160 }}>{values.taxes ? fCurrency(values.taxes) : '-'}</Box>
-  //     </Stack> */}
-
-  //     {/* <Stack direction="row" sx={{ typography: 'subtitle1' }}>
-  //       <Box>Total</Box>
-  //       <Box sx={{ width: 160 }}>{fCurrency(totalAmount) || '-'}</Box>
-  //     </Stack> */}
-  //   </Stack>
-  // );
-  console.log(values)
+  const handleRemoveAllFiles = useCallback((index :number) => {
+    setValue(`amenity_items[${index}].amenity_picture`, []);
+  }, [setValue]);
 
   return (
     <Box sx={{ p: 3 }}>
-      <Typography variant="h6" sx={{ color: 'text.disabled', mb: 3 }}>
-        Details:
-      </Typography>
 
       <Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3}>
         {fields.map((item, index) => (
           <Stack key={item.id} alignItems="flex-end" spacing={1.5}>
-            <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ width: 1 }}>
-              {/* <RHFTextField
-                size="small"
-                name={`items[${index}].title`}
-                label="Title"
-                InputLabelProps={{ shrink: true }}
-              /> */}
+            <Stack spacing={2} sx={{ width: 1 }}>
 
-              {/* <RHFTextField
-                size="small"
-                name={`items[${index}].description`}
-                label="Description"
-                InputLabelProps={{ shrink: true }}
-              /> */}
+            <Stack direction="row" spacing={1.5}>
 
               <RHFSelect
-                name={`amenity_items[${index}].amenity_id`}
+                name={`amenity_items[${index}]?.amenity_id` || ''}
                 size="small"
                 label="Amenities"
                 InputLabelProps={{ shrink: true }}
@@ -189,70 +123,31 @@ export default function AmenityNewEditDetails() {
 
                 <Divider sx={{ borderStyle: 'dashed' }} />
 
-                {amenities.map((amenity) => (
+                {amenities?.map((amenity:any) => (
                   <MenuItem
                     key={amenity.id}
                     value={amenity.id}
-                    onClick={() => handleSelectAmenity(index, amenity.id)}
+                    onClick={() => handleSelectAmenity(index, amenity.id, amenity.name_en)}
                   >
                     {amenity.name_en}
                   </MenuItem>
                 ))}
               </RHFSelect>
 
+              {values.amenity_items[index]?.amenity_id !== 0 && <RHFUploadCustom
+                key={index}
+                multiple
+                thumbnail
+                name={`amenity_items[${index}].amenity_picture`}
+                maxSize={3145728}
+                onDrop={(files) => handleDrop(files, index)}
+                onRemove={(file) => handleRemoveFile(file, index)}
+                onRemoveAll={() => handleRemoveAllFiles(index)}
+                onUpload={() => console.info('ON UPLOAD')}
+              />}
+              
+            </Stack>
 
-
-              {/* <RHFTextField
-                size="small"
-                type="number"
-                name={`items[${index}].quantity`}
-                label="Quantity"
-                placeholder="0"
-                onChange={(event) => handleChangeQuantity(event, index)}
-                InputLabelProps={{ shrink: true }}
-                sx={{ maxWidth: { md: 96 } }}
-              /> */}
-
-              {/* <RHFTextField
-                size="small"
-                type="number"
-                name={`items[${index}].price`}
-                label="Price"
-                placeholder="0.00"
-                onChange={(event) => handleChangePrice(event, index)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>$</Box>
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{ maxWidth: { md: 96 } }}
-              /> */}
-
-              {/* <RHFTextField
-                disabled
-                size="small"
-                type="number"
-                name={`items[${index}].total`}
-                label="Total"
-                placeholder="0.00"
-                value={values.items[index].total === 0 ? '' : values.items[index].total.toFixed(2)}
-                onChange={(event) => handleChangePrice(event, index)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Box sx={{ typography: 'subtitle2', color: 'text.disabled' }}>$</Box>
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{
-                  maxWidth: { md: 104 },
-                  [`& .${inputBaseClasses.input}`]: {
-                    textAlign: { md: 'right' },
-                  },
-                }}
-              /> */}
             </Stack>
 
             <Button
@@ -284,36 +179,6 @@ export default function AmenityNewEditDetails() {
           Add Item
         </Button>
 
-        {/* <Stack
-          spacing={2}
-          justifyContent="flex-end"
-          direction={{ xs: 'column', md: 'row' }}
-          sx={{ width: 1 }}
-        >
-          <RHFTextField
-            size="small"
-            label="Shipping($)"
-            name="shipping"
-            type="number"
-            sx={{ maxWidth: { md: 120 } }}
-          />
-
-          <RHFTextField
-            size="small"
-            label="Discount($)"
-            name="discount"
-            type="number"
-            sx={{ maxWidth: { md: 120 } }}
-          />
-
-          <RHFTextField
-            size="small"
-            label="Taxes(%)"
-            name="taxes"
-            type="number"
-            sx={{ maxWidth: { md: 120 } }}
-          />
-        </Stack> */}
       </Stack>
 
       

@@ -2,7 +2,7 @@ import { useFormContext, Controller } from 'react-hook-form';
 // @mui
 import FormHelperText from '@mui/material/FormHelperText';
 //
-import { UploadAvatar, Upload, UploadBox, UploadProps } from '../upload';
+import { UploadAvatar, Upload, UploadBox, UploadProps, UploadBoxCustom } from '../upload';
 
 // ----------------------------------------------------------------------
 
@@ -78,6 +78,51 @@ export function RHFUpload({ name, multiple, helperText, ...other }: Props) {
           />
         ) : (
           <Upload
+            accept={{ 'image/*': [] }}
+            file={field.value}
+            error={!!error}
+            helperText={
+              (!!error || helperText) && (
+                <FormHelperText error={!!error} sx={{ px: 2 }}>
+                  {error ? error?.message : helperText}
+                </FormHelperText>
+              )
+            }
+            {...other}
+          />
+        )
+      }
+    />
+  );
+}
+
+// ----------------------------------------------------------------------
+
+export function RHFUploadCustom({ name, multiple, helperText, ...other }: Props) {
+  const { control } = useFormContext();
+
+  return (
+    <Controller
+      name={name}
+      control={control}
+      render={({ field, fieldState: { error } }) =>
+        multiple ? (
+          <UploadBoxCustom
+            multiple
+            accept={{ 'image/*': [] }}
+            files={field.value}
+            error={!!error}
+            helperText={
+              (!!error || helperText) && (
+                <FormHelperText error={!!error} sx={{ px: 2 }}>
+                  {error ? error?.message : helperText}
+                </FormHelperText>
+              )
+            }
+            {...other}
+          />
+        ) : (
+          <UploadBoxCustom
             accept={{ 'image/*': [] }}
             file={field.value}
             error={!!error}

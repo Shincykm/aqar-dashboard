@@ -102,7 +102,6 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
     city_id: Yup.number().nullable(),
     display_order: Yup.number().nullable(),
     images: Yup.array().min(1, 'Images is required'),
-  
     //auto populate to db
     // createdAt: Yup.date().required(),
     // updatedAt: Yup.date().required(),
@@ -140,12 +139,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
       state_province_id: currentProperty?.state_province_id || 0,
       city_id: currentProperty?.city_id || 0,
       display_order: currentProperty?.display_order || 0,
-      amenity_items : currentProperty?.amenity_items || [
-        {
-          amenity_id : '',
-          amenity_picture : []
-        }
-      ]
+      amenity_items : currentProperty?.amenity_items || []
       //   createdAt: currentProperty?.createdAt || null,
       //   updatedAt: currentProperty?.updatedAt || null,
       //   deletedAt: currentProperty?.deletedAt || null,
@@ -174,8 +168,6 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
       reset(defaultValues);
     }
   }, [currentProperty, defaultValues, reset]);
-
-  // console.log(currentProperty, "=== currentProperty");
 
   const onSubmit = handleSubmit(async (data:any) => {
     try {
@@ -519,7 +511,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                     InputLabelProps={{ shrink: true }}
                     onChange = {handleSelectPropertyType}
                   >
-                    <option value="">Select Property Type</option>
+                    <option value=""></option>
                     {propertyTypes?.map((type) =>
                       <option key={type?.id} value={type?.id} >
                         {type?.name_en}
@@ -534,7 +526,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                     InputLabelProps={{ shrink: true }}
                     disabled={subTypeList?.length > 0 ? false : true}
                   >
-                    <option value="">Select Property Sub-Type</option>
+                    <option value=""></option>
                     {subTypeList?.map((type:any) => 
                           <option key={type?.id} value={type?.id} >
                             {type?.name_en}
@@ -554,7 +546,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                   label="Property Purpose"
                   InputLabelProps={{ shrink: true }}
                 >
-                  <option value="">Select Property Purpose</option>
+                  <option value=""></option>
                   {propertyPurposes?.map((item) => (
                     <option key={item?.id} value={item?.id}>
                       {item?.name_en}
@@ -573,7 +565,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                   label="Property Style"
                   InputLabelProps={{ shrink: true }}
                 >
-                  <option value="">Select Property Style</option>
+                  <option value=""></option>
                   {propertyStyles?.map((item) => (
                     <option key={item?.id} value={item?.id}>
                       {item?.name_en}
@@ -623,7 +615,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                   InputLabelProps={{ shrink: true }}
                   onChange={handleSelectPropertyType}
                 >
-                  <option value="">Select Address</option>
+                  <option value=""></option>
                   {ADDRESS?.map((type) => (
                     <option key={type?.id} value={type?.id}>
                       {type?.name}
@@ -655,7 +647,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                   label="Building"
                   InputLabelProps={{ shrink: true }}
                 >
-                  <option value="">Select Building</option>
+                  <option value=""></option>
                   {ADDRESS?.map((type) => (
                     <option key={type?.id} value={type?.id}>
                       {type?.name}
@@ -666,7 +658,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
 
               {ADDRESS && (
                 <RHFSelect native name="city_id" label="City" InputLabelProps={{ shrink: true }}>
-                  <option value="">Select City</option>
+                  <option value=""></option>
                   {ADDRESS?.map((type) => (
                     <option key={type?.id} value={type?.id}>
                       {type?.name}
@@ -682,7 +674,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                   label="State / Province"
                   InputLabelProps={{ shrink: true }}
                 >
-                  <option value="">Select State / Province</option>
+                  <option value=""></option>
                   {ADDRESS?.map((type) => (
                     <option key={type?.id} value={type?.id}>
                       {type?.name}
@@ -721,7 +713,9 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
       )}
 
       <Grid xs={12} md={8}>
-        <AmenityNewEditDetails />
+        <Card>
+          <AmenityNewEditDetails />
+        </Card>
       </Grid>
     </>
   );
