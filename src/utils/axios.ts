@@ -139,12 +139,20 @@ export const endpoints = {
     details: '/api/product/details',
     search: '/api/product/search',
   },
+
+
   property: {
     list: '/api/admin/property/getPropertyList',
     details: '/api/admin/property/getPropertyById',
     // search: '/api/property/search',
     delete: '/api/admin/property/deleteProperty',
     createUpdate: '/api/admin/property/createUpdateProperty',
+  },
+  propertyPictureMapping: {
+    list: '/api/admin/propertyPictureMapping/getPropertyPictureMappingList',
+    details: '/api/admin/propertyPictureMapping/getPropertyPictureMappingById',
+    delete: '/api/admin/propertyPictureMapping/deletePropertyPictureMapping',
+    createUpdate: '/api/admin/propertyPictureMapping/createUpdatePropertyPictureMapping',
   },
   propertyType: {
     list: '/api/admin/propertyType/getPropertyTypeList',

@@ -1,7 +1,5 @@
-export const convertStringToBoolean = (value: string): boolean => {
-    if (value === "1") {
-        return true;
-    }else{
-        return false;
-    }
+export const convertStringToBoolean = (value: any): boolean => {
+    if (value === "1") return true;
+
+    return false;
   };

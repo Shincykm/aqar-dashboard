@@ -7,11 +7,9 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Stack from '@mui/material/Stack';
-import Switch from '@mui/material/Switch';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import { Divider } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 // routes
@@ -27,7 +25,6 @@ import FormProvider, {
   RHFUpload,
   RHFTextField,
   RHFSwitch,
-  // RHFDatePicker,
 } from 'src/components/hook-form';
 // types
 import { IPropertyItem } from 'src/types/property';
@@ -36,7 +33,11 @@ import { useGetPropertyTypeList } from 'src/api/propertyType';
 import { useGetPropertyPurposeList } from 'src/api/propertyPurpose';
 import { useGetPropertyStyleList } from 'src/api/propertyStyle';
 import { useCreateUpdateProperty } from 'src/api/property';
+import { useGetAmenitiesList } from 'src/api/amenities';
+import { useCreateUpdatePropertyPictureMapping } from 'src/api/propertyPictureMapping';
+//
 import { convertStringToBoolean } from 'src/utils/string-to-boolean';
+import AmenityNewEditDetails from './amenity-new-edit-details';
 
 // ----------------------------------------------------------------------
 
@@ -69,6 +70,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
   const {propertyTypes, propertyTypeEmpty, propertyTypeLoading} = useGetPropertyTypeList(1,10);
   const {propertyPurposes, propertyPurposeEmpty, propertyPurposeLoading} = useGetPropertyPurposeList(1,10);
   const {propertyStyles, propertyStyleEmpty, propertyStyleLoading} = useGetPropertyStyleList(1,10);
+  const {amenities, amenitiesEmpty, amenitiesLoading} = useGetAmenitiesList();
   
   const NewPropertySchema = Yup.object().shape({
     name_ar: Yup.string().nullable(),
@@ -88,8 +90,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
     amount: Yup.number().nullable(),
     ownership: Yup.string().nullable(),
     reference_number: Yup.string().nullable(),
-    // constructed_date: Yup.date().nullable(),
-    constructed_date: Yup.mixed<any>().nullable().required('Constructed date is required'),
+    constructed_date: Yup.mixed<any>().nullable(),
     property_type_id: Yup.number().nullable(),
     sub_type: Yup.string().nullable(),
     property_purpose_id: Yup.number().nullable(),
@@ -101,6 +102,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
     city_id: Yup.number().nullable(),
     display_order: Yup.number().nullable(),
     images: Yup.array().min(1, 'Images is required'),
+  
     //auto populate to db
     // createdAt: Yup.date().required(),
     // updatedAt: Yup.date().required(),
@@ -113,9 +115,9 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
       name_en: currentProperty?.name_en || '',
       description_ar: currentProperty?.description_ar || '',
       description_en: currentProperty?.description_en || '',
-      active: currentProperty?.active || true,
-      is_featured: currentProperty?.is_featured || false,
-      is_furnished: currentProperty?.is_furnished || false,
+      active: convertStringToBoolean(currentProperty?.active) || true,
+      is_featured: convertStringToBoolean(currentProperty?.is_featured) || false,
+      is_furnished: convertStringToBoolean(currentProperty?.is_furnished) || false,
       images: currentProperty?.images || [],
       count_bathrooms: currentProperty?.count_bathrooms || 0,
       count_bedrooms: currentProperty?.count_bedrooms || 0,
@@ -138,6 +140,12 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
       state_province_id: currentProperty?.state_province_id || 0,
       city_id: currentProperty?.city_id || 0,
       display_order: currentProperty?.display_order || 0,
+      amenity_items : currentProperty?.amenity_items || [
+        {
+          amenity_id : '',
+          amenity_picture : []
+        }
+      ]
       //   createdAt: currentProperty?.createdAt || null,
       //   updatedAt: currentProperty?.updatedAt || null,
       //   deletedAt: currentProperty?.deletedAt || null,
@@ -167,8 +175,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
     }
   }, [currentProperty, defaultValues, reset]);
 
-  console.log(currentProperty, "=== currentProperty");
-  
+  // console.log(currentProperty, "=== currentProperty");
 
   const onSubmit = handleSubmit(async (data:any) => {
     try {
@@ -185,9 +192,11 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
         if(typeof data[key] === "number" && data[key] !== 0){
           formData.append(key, data[key].toString());
         }
-    });
-      console.log(formData.get('is_active'),"==key");
 
+      });
+      
+
+      // api - create property 
       const response = useCreateUpdateProperty(formData);
       reset();
       enqueueSnackbar(currentProperty ? 'Update success!' : 'Create success!');
@@ -698,6 +707,25 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
     </>
   );
 
+  const renderAmenityDetails = (
+    <>
+      {mdUp && (
+        <Grid md={4}>
+          <Typography variant="h6" sx={{ mb: 0.5 }}>
+            Amenities
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            Amenities, Images,...
+          </Typography>
+        </Grid>
+      )}
+
+      <Grid xs={12} md={8}>
+        <AmenityNewEditDetails />
+      </Grid>
+    </>
+  );
+
   const renderActions = (
     <>
       {mdUp && <Grid md={4} />}
@@ -721,6 +749,8 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
         {renderTypeDetails}
 
         {renderAddress}
+
+        {renderAmenityDetails}
 
         {renderActions}
       </Grid>

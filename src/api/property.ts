@@ -58,7 +58,6 @@ export async function useCreateUpdateProperty(propertyData: any) {
       },
       data: propertyData,
     });
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.log(error);

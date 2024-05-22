@@ -47,7 +47,8 @@ export type IPropertyItem = {
   city_id?: number | null;
   state_province_id?: number | null;
   display_order?: number | null;
-  images: [];
+  images?: [];
+  amenity_items : [];
   // created_at: Date;
   // updated_at: Date;
   // deleted_at?: Date | null;

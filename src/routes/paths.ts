@@ -191,12 +191,7 @@ export const paths = {
     propertyType: {
       root: `${ROOTS.DASHBOARD}/property-type`,
       new: `${ROOTS.DASHBOARD}/property-type/new`,
-      // details: (id: string) => `${ROOTS.DASHBOARD}/property-type/${id}`,
       edit: (id: string) => `${ROOTS.DASHBOARD}/property-type/${id}/edit`,
-      // demo: {
-      //   details: `${ROOTS.DASHBOARD}/property-type/${MOCK_ID}`,
-      //   edit: `${ROOTS.DASHBOARD}/property-type/${MOCK_ID}/edit`,
-      // },
     },
     propertyStyle: {
       root: `${ROOTS.DASHBOARD}/property-style`,
