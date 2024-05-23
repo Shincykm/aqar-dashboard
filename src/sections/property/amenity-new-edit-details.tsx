@@ -60,9 +60,9 @@ export default function AmenityNewEditDetails() {
   );
 
   const handleSelectAmenity = useCallback(
-    (index: number, option: any, name: string) => {      
-      setValue(`amenity_items[${index}].amenity_id`, option);
-      setAmenitiesList((prev:any) => prev = amenities.filter(amenity => amenity.id !== option));
+    (amenityId:any, index: number) => {      
+      setValue(`amenity_items[${index}].amenity_id`, amenityId);
+      setAmenitiesList((prev:any) => prev = amenities.filter(amenity => amenity.id !== amenityId));
     },
     [setValue, values.amenity_items]
   );
@@ -128,7 +128,7 @@ export default function AmenityNewEditDetails() {
                   <MenuItem
                     key={amenity.id}
                     value={amenity.id}
-                    onClick={() => handleSelectAmenity(index, amenity.id, amenity.name_en)}
+                    onClick={() => handleSelectAmenity(amenity.id, index)}
                   >
                     {amenity.name_en}
                   </MenuItem>
