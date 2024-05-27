@@ -30,7 +30,6 @@ export default function JwtLoginView() {
   const { login } = useAuthContext();
 
   const router = useRouter();
-
   const [errorMsg, setErrorMsg] = useState('');
 
   const searchParams = useSearchParams();
@@ -44,15 +43,15 @@ export default function JwtLoginView() {
     password: Yup.string().required('Password is required'),
   });
 
-  const defaultValues = {
-    email: 'demo@minimals.cc',
-    password: 'demo1234',
-  };
-
   // const defaultValues = {
-  //   email: 'john@gmail.aeaaa',
-  //   password: '123456',
+  //   email: 'demo@minimals.cc',
+  //   password: 'demo1234',
   // };
+
+  const defaultValues = {
+    email: 'john@gmail.aeaaa',
+    password: '123456',
+  };
 
   const methods = useForm({
     resolver: yupResolver(LoginSchema),

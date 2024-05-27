@@ -5,6 +5,7 @@ import axios, { endpoints } from 'src/utils/axios';
 import { AuthContext } from './auth-context';
 import { isValidToken, setSession } from './utils';
 import { ActionMapType, AuthStateType, AuthUserType } from '../../types';
+// import { accessToken } from 'mapbox-gl';
 
 // ----------------------------------------------------------------------
 
@@ -73,7 +74,8 @@ const reducer = (state: AuthStateType, action: ActionsType) => {
 
 // ----------------------------------------------------------------------
 
-const STORAGE_KEY = 'accessToken';
+// const STORAGE_KEY = 'accessToken';
+const STORAGE_KEY = 'token';
 
 type Props = {
   children: React.ReactNode;
@@ -89,19 +91,19 @@ export function AuthProvider({ children }: Props) {
       if (accessToken && isValidToken(accessToken)) {
         setSession(accessToken);
 
-        const res = await axios.get(endpoints.auth.me);
+        // const res = await axios.get(endpoints.auth.me);
 
-        const { user } = res.data;
+        // const { user } = res.data;
 
-        dispatch({
-          type: Types.INITIAL,
-          payload: {
-            user: {
-              ...user,
-              accessToken,
-            },
-          },
-        });
+        // dispatch({
+        //   type: Types.INITIAL,
+        //   payload: {
+        //     user: {
+        //       ...user,
+        //       accessToken,
+        //     },
+        //   },
+        // });
       } else {
         dispatch({
           type: Types.INITIAL,
@@ -132,9 +134,11 @@ export function AuthProvider({ children }: Props) {
       password,
     };
 
-    const res = await axios.post(endpoints.auth.login, data);
+    // const res = await axios.post(endpoints.auth.login, data);
+    const res = await axios.post(endpoints.adminAuth.login, data);
 
-    const { accessToken, user } = res.data;
+    // const { accessToken, user } = res.data;
+    const { token :accessToken, user } = res.data;
 
     setSession(accessToken);
 

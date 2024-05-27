@@ -1,4 +1,6 @@
 import axios, { AxiosRequestConfig, Method } from 'axios';
+import { accessToken } from 'mapbox-gl';
+import { setSession } from 'src/auth/context/jwt/utils';
 // config
 import { HOST_API } from 'src/config-global';
 import { HOST_AQAR_API } from 'src/config-global';
@@ -43,9 +45,7 @@ axiosInstance.interceptors.response.use(
   (error) => Promise.reject((error.response && error.response.data) || 'Something went wrong')
 );
 
-export default axiosInstance;
-
-// ----------------------------------------------------------------------
+// export default axiosInstance;
 
 export const fetcher = async (args: string | [string, AxiosRequestConfig]) => {
   const [url, config] = Array.isArray(args) ? args : [args];
@@ -55,8 +55,6 @@ export const fetcher = async (args: string | [string, AxiosRequestConfig]) => {
   return res.data;
 };
 
-
-// ----------------------------------------------------------------------
 // ----------------------------------------------------------------------
 export const axiosInstance1 = axios.create({ baseURL: HOST_AQAR_API });
 
@@ -64,7 +62,7 @@ export const axiosInstance1 = axios.create({ baseURL: HOST_AQAR_API });
 axiosInstance1.interceptors.request.use(
   (config) => {
     // Fetch the token from wherever it's stored (localStorage, sessionStorage, etc.)
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('accessToken');
 
     // If a token exists, attach it to the Authorization header
     if (token) {
@@ -83,6 +81,9 @@ axiosInstance1.interceptors.response.use(
   (res) => res,
   (error) => Promise.reject((error.response && error.response.data) || 'Something went wrong')
 );
+
+export default axiosInstance1;
+
 // ----------------------------------------------------------------------
 
 export const fetcher1 = async (args: string | [string, AxiosRequestConfig]) => {
@@ -112,6 +113,7 @@ export const performRequest = async <T>(
   }
 };
 
+
 // ----------------------------------------------------------------------
 
 export const endpoints = {
@@ -140,7 +142,11 @@ export const endpoints = {
     search: '/api/product/search',
   },
 
-
+  adminAuth: {
+    me: '/api/auth/me',
+    login: '/api/admin/auth/login',
+    register: '/api/admin/auth/register',
+  },
   property: {
     list: '/api/admin/property/getPropertyList',
     details: '/api/admin/property/getPropertyById',
