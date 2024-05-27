@@ -185,4 +185,9 @@ export const endpoints = {
     delete: '/api/admin/amenities/deleteAmenity',
     details: '/api/admin/amenities/getAmenityById',
   },
+  address:{
+    state : '/api/admin/address/stateProvince/getAllStateProvinces',
+    country : '/api/admin/address/country/getAllCountries',
+    city : '/api/admin/address/city/getAllCities'
+  }
 };

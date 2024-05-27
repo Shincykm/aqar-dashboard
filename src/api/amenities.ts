@@ -29,7 +29,7 @@ export function useGetAmenitiesList(page = 1, limit = 10, search = '') {
 
 // ----------------------------------------------------------------------
 
-export function useGetAmenities(amenityId: string | number) {
+export function useGetAmenity(amenityId: string | number) {
   const URL = amenityId ? `${endpoints.amenities.details}/${amenityId}` : null;
 
   const { data, isLoading, error, isValidating } = useSWR(URL, fetcher1);
@@ -99,3 +99,10 @@ export async function useDeleteAmenities(amenityId: number) {
   const response = await performRequest<any>('DELETE', `${URL}/${amenityId}`);
   return response;
 }
+
+// ----------------------------------------------------------------------
+// Amenity-Picture mapping 
+
+
+// ----------------------------------------------------------------------
+// Amenity-Property mapping 

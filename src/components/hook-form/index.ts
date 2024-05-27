@@ -13,3 +13,4 @@ export { default as RHFAutocomplete } from './rhf-autocomplete';
 export { default as RHFDatePicker } from './rhf-date-picker';
 
 export { default } from './form-provider';
+export { default as RHFAsyncAutoComplete } from './rhf-async-autocomplete';

@@ -3,7 +3,7 @@ import Container from '@mui/material/Container';
 // routes
 import { paths } from 'src/routes/paths';
 // api
-import { useGetAmenities } from 'src/api/amenities';
+import { useGetAmenity } from 'src/api/amenities';
 // components
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
@@ -19,7 +19,7 @@ type Props = {
 export default function AmenityEditView({ id }: Props) {
   const settings = useSettingsContext();
   
-  const { amenities: currentAmenity } = useGetAmenities(id);
+  const { amenities: currentAmenity } = useGetAmenity(id);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>

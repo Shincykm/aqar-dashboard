@@ -50,13 +50,30 @@ export function useGetProperty(propertyId: string) {
 
 export async function useCreateUpdateProperty(propertyData: any) {
   const URL = endpoints.property.createUpdate;
+  const formData = new FormData();
+
+  Object.keys(propertyData).forEach((key) => {
+    const value = propertyData[key];
+  
+    if (typeof value === 'boolean') {
+      formData.append(key, value ? '1' : '0');
+    } else if (typeof value === 'string' && value !== '') {
+      formData.append(key, value);
+    } else if (typeof value === 'number' && value !== 0) {
+      formData.append(key, value.toString());
+    } else if (key === 'amenity_items' || key === 'pictures') {
+      // const formDataKey = key === 'amenity_items' ? 'amenity_picture' : 'pictures';
+      formData.append(key, value);
+    }
+
+  });
 
   try {
     const response = await performRequest<any>('post', URL, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
-      data: propertyData,
+      data: formData,
     });
     return response.data;
   } catch (error) {

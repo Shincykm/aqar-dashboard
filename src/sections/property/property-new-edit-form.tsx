@@ -25,6 +25,8 @@ import FormProvider, {
   RHFUpload,
   RHFTextField,
   RHFSwitch,
+  RHFAsyncAutoComplete,
+  RHFMultiSelect,
 } from 'src/components/hook-form';
 // types
 import { IPropertyItem } from 'src/types/property';
@@ -38,6 +40,8 @@ import { useCreateUpdatePropertyPictureMapping } from 'src/api/propertyPictureMa
 //
 import { convertStringToBoolean } from 'src/utils/string-to-boolean';
 import AmenityNewEditDetails from './amenity-new-edit-details';
+import axiosInstance1, { endpoints } from 'src/utils/axios';
+import { label } from 'yet-another-react-lightbox';
 
 // ----------------------------------------------------------------------
 
@@ -65,8 +69,6 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const [subTypeList, setSubTypeList] = useState<any>(null);
-
   const { propertyTypes, propertyTypeEmpty, propertyTypeLoading } = useGetPropertyTypeList(1, 10);
   const { propertyPurposes, propertyPurposeEmpty, propertyPurposeLoading } =
     useGetPropertyPurposeList(1, 10);
@@ -74,6 +76,10 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
     1,
     10
   );
+  const { amenities, amenitiesEmpty, amenitiesLoading } = useGetAmenitiesList();
+
+  const [amenitiesList, setAmenitiesList] = useState<{ value: any; label: any }[]>([]);
+  const [subTypeList, setSubTypeList] = useState<any>(null);
 
   const NewPropertySchema = Yup.object().shape({
     name_ar: Yup.string().nullable(),
@@ -105,10 +111,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
     city_id: Yup.number().nullable(),
     display_order: Yup.number().nullable(),
     pictures: Yup.array().min(1, 'Images is required'),
-    //auto populate to db
-    // createdAt: Yup.date().required(),
-    // updatedAt: Yup.date().required(),
-    // deletedAt: Yup.date().nullable(),
+    amenity_items: Yup.array().nullable(),
   });
 
   const defaultValues = useMemo(
@@ -125,7 +128,6 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
       count_bedrooms: currentProperty?.count_bedrooms || 0,
       count_parking: currentProperty?.count_parking || 0,
       size_sqm: currentProperty?.size_sqm || 0,
-      // sizeSqft: currentProperty?.sizeSqft || 0,
       ownership: currentProperty?.ownership || '',
       reference_number: currentProperty?.reference_number || '',
       constructed_date: currentProperty?.constructed_date || null,
@@ -142,10 +144,8 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
       state_province_id: currentProperty?.state_province_id || 0,
       city_id: currentProperty?.city_id || 0,
       display_order: currentProperty?.display_order || 0,
+      // amenity_items: currentProperty?.amenity_items || [],
       amenity_items: currentProperty?.amenity_items || [],
-      //   createdAt: currentProperty?.createdAt || null,
-      //   updatedAt: currentProperty?.updatedAt || null,
-      //   deletedAt: currentProperty?.deletedAt || null,
     }),
     [currentProperty]
   );
@@ -167,50 +167,41 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
   const values = watch();
 
   useEffect(() => {
+    const transformedAmenities = amenities?.map(amenity => ({
+      value: amenity?.id,
+      label: amenity?.name_en
+    }));
+    setAmenitiesList(transformedAmenities);
     if (currentProperty) {
       reset(defaultValues);
     }
   }, [currentProperty, defaultValues, reset]);
 
+
   const onSubmit = handleSubmit(async (data: any) => {
     try {
-      const formData = new FormData();
-      const formDataAmenity = new FormData();
-      Object.keys(data)?.forEach((key) => {
-        if (typeof data[key] === 'boolean') {
-          data[key] == true ? formData.append(key, '1') : formData.append(key, '0');
-        }
-
-        if (typeof data[key] === 'string' && data[key] != '') {
-          formData.append(key, data[key]);
-        }
-
-        if (typeof data[key] === 'number' && data[key] !== 0) {
-          formData.append(key, data[key].toString());
-        }
-
-        if (key === 'amenity_items') {
-          formDataAmenity.append('amenity_picture', data[key].amenity_picture);
-        }
-      });
-
+      console.log(data);
+      
       // api - create property
-      const response = await useCreateUpdateProperty(formData);
-      console.log(response);
-      console.log(formDataAmenity.get('amenity_picture'));
+      const response = await useCreateUpdateProperty(data);
 
       if (response.status === 'success') {
-        // const amenitiesResponse = await useCreateUpdatePropertyPictureMapping(formDataAmenity);
-        // if(amenitiesResponse.status === "success"){
-        //   reset();
-        //   enqueueSnackbar(currentProperty ? 'Update success!' : 'Create success!');
-        //   router.push(paths.dashboard.property.root);
-        //   console.info('DATA', data);
-        // }
+        console.log('success');
+
+        // /////////////////////////////////////////////////
+        // Handling amenity-picture mapping and amenity-property mapping
+        // -------------------------------------------------
+        /* 
+        const amenitiesResponse = await useCreateUpdatePropertyPictureMapping(formDataAmenity);
+        if(amenitiesResponse.status === "success"){
+          reset();
+          enqueueSnackbar(currentProperty ? 'Update success!' : 'Create success!');
+          router.push(paths.dashboard.property.root);
+          console.info('DATA', data);
+        } 
+        */
       }
-    } catch (error) {
-      console.error(error);
-    }
+    } catch (error) {}
   });
 
   const handleDrop = useCallback(
@@ -340,13 +331,6 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                   type="number"
                   InputLabelProps={{ shrink: true }}
                 />
-                {/* <RHFTextField
-                name="size_sqft"
-                label="Area in Sqm"
-                placeholder="0"
-                type="number"
-                InputLabelProps={{ shrink: true }}
-              /> */}
                 {}
               </Box>
             </Stack>
@@ -361,7 +345,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                 onDrop={handleDrop}
                 onRemove={handleRemoveFile}
                 onRemoveAll={handleRemoveAllFiles}
-                onUpload={() => console.info('ON UPLOAD')}
+                // onUpload={() => console.info('ON UPLOAD')}
               />
             </Stack>
           </Stack>
@@ -643,65 +627,26 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                 md: 'repeat(2, 1fr)',
               }}
             >
-              {ADDRESS && (
-                <RHFSelect
-                  native
-                  name="address_id"
-                  label="Address"
-                  InputLabelProps={{ shrink: true }}
-                  onChange={handleSelectPropertyType}
-                >
-                  <option value=""></option>
-                  {ADDRESS?.map((type) => (
-                    <option key={type?.id} value={type?.id}>
-                      {type?.name}
-                    </option>
-                  ))}
-                </RHFSelect>
-              )}
+              <RHFAsyncAutoComplete
+                name="country"
+                label="Country"
+                fetchUrl={`${endpoints.address.country}?page=1&limit=10`}
+                getOptionLabel={(option) => option.name} // Example: If your option has a 'name' property
+              />
 
-              {ADDRESS && (
-                <RHFSelect
-                  native
-                  name="building_id"
-                  label="Building"
-                  InputLabelProps={{ shrink: true }}
-                >
-                  <option value=""></option>
-                  {ADDRESS?.map((type) => (
-                    <option key={type?.id} value={type?.id}>
-                      {type?.name}
-                    </option>
-                  ))}
-                </RHFSelect>
-              )}
+              <RHFAsyncAutoComplete
+                name="state_province"
+                label="State / Province"
+                fetchUrl={`${endpoints.address.state}?page=1&limit=10`}
+                getOptionLabel={(option) => option.name} // Example: If your option has a 'name' property
+              />
 
-              {ADDRESS && (
-                <RHFSelect native name="city_id" label="City" InputLabelProps={{ shrink: true }}>
-                  <option value=""></option>
-                  {ADDRESS?.map((type) => (
-                    <option key={type?.id} value={type?.id}>
-                      {type?.name}
-                    </option>
-                  ))}
-                </RHFSelect>
-              )}
-
-              {ADDRESS && (
-                <RHFSelect
-                  native
-                  name="state_province_id"
-                  label="State / Province"
-                  InputLabelProps={{ shrink: true }}
-                >
-                  <option value=""></option>
-                  {ADDRESS?.map((type) => (
-                    <option key={type?.id} value={type?.id}>
-                      {type?.name}
-                    </option>
-                  ))}
-                </RHFSelect>
-              )}
+              <RHFAsyncAutoComplete
+                name="city"
+                label="City"
+                fetchUrl={`${endpoints.address.city}?page=1&limit=10`}
+                getOptionLabel={(option) => option.name_en} // Example: If your option has a 'name' property
+              />
             </Box>
           </Stack>
 
@@ -734,7 +679,38 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
 
       <Grid xs={12} md={8}>
         <Card>
-          <AmenityNewEditDetails />
+          {/* <AmenityNewEditDetails /> */}
+
+          <Stack spacing={3} sx={{ p: 3 }}>
+            {!amenitiesEmpty && !amenitiesLoading && (
+              <RHFMultiSelect
+                checkbox
+                name="amenity_items"
+                label="Amenities"
+                options={amenitiesList}
+              />
+              //   <RHFSelect
+              //     native
+              //     name="amenity_id"
+              //     label="Amenities"
+              //     InputLabelProps={{ shrink: true }}
+              //     onChange={handleSelectPropertyType}
+              //   >
+              //     {amenitiesLoading ? (
+              //       <LoadingButton />
+              //     ) : (
+              //       <>
+              //         <option value=""></option>
+              //         {amenities?.map((item) => (
+              //           <option key={item?.id} value={item?.id}>
+              //             {item?.name_en.charAt(0).toUpperCase() + item?.name_en.slice(1)}
+              //           </option>
+              //         ))}
+              //       </>
+              //     )}
+              //   </RHFSelect>
+            )}
+          </Stack>
         </Card>
       </Grid>
     </>
