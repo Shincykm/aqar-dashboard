@@ -29,7 +29,7 @@ export default function UploadBoxCustom({
   //
   files,
   thumbnail,
-  onUpload,
+  // onUpload,
   onRemove,
   onRemoveAll,
   sx,
@@ -93,7 +93,7 @@ export default function UploadBoxCustom({
           </Button>
         )}
 
-        {onUpload && (
+        {/* {onUpload && (
           <Button
             size="small"
             variant="contained"
@@ -102,7 +102,7 @@ export default function UploadBoxCustom({
           >
             Upload
           </Button>
-        )}
+        )} */}
       </Stack>
     </>
   );

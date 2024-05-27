@@ -5,6 +5,7 @@ import axios, { endpoints } from 'src/utils/axios';
 import { AuthContext } from './auth-context';
 import { isValidToken, setSession } from './utils';
 import { ActionMapType, AuthStateType, AuthUserType } from '../../types';
+import { accessToken } from 'mapbox-gl';
 // import { accessToken } from 'mapbox-gl';
 
 // ----------------------------------------------------------------------
@@ -74,8 +75,7 @@ const reducer = (state: AuthStateType, action: ActionsType) => {
 
 // ----------------------------------------------------------------------
 
-// const STORAGE_KEY = 'accessToken';
-const STORAGE_KEY = 'token';
+const STORAGE_KEY = 'accessToken';
 
 type Props = {
   children: React.ReactNode;
@@ -91,19 +91,20 @@ export function AuthProvider({ children }: Props) {
       if (accessToken && isValidToken(accessToken)) {
         setSession(accessToken);
 
-        // const res = await axios.get(endpoints.auth.me);
+        // const res = await axios.get(endpoints.adminAuth.me);
+        const user : any = JSON.parse(sessionStorage.getItem('user') || '');
 
         // const { user } = res.data;
 
-        // dispatch({
-        //   type: Types.INITIAL,
-        //   payload: {
-        //     user: {
-        //       ...user,
-        //       accessToken,
-        //     },
-        //   },
-        // });
+        dispatch({
+          type: Types.INITIAL,
+          payload: {
+            user: {
+              ...user,
+              accessToken,
+            },
+          },
+        });
       } else {
         dispatch({
           type: Types.INITIAL,
@@ -141,6 +142,7 @@ export function AuthProvider({ children }: Props) {
     const { token :accessToken, user } = res.data;
 
     setSession(accessToken);
+    sessionStorage.setItem('user', JSON.stringify(user));
 
     dispatch({
       type: Types.LOGIN,
@@ -155,19 +157,22 @@ export function AuthProvider({ children }: Props) {
 
   // REGISTER
   const register = useCallback(
-    async (email: string, password: string, firstName: string, lastName: string) => {
+    async (email: string, password: string, first_name: string , last_name: string, user_type:string) => {
       const data = {
         email,
         password,
-        firstName,
-        lastName,
+        first_name,
+        last_name,
+        user_type
       };
 
-      const res = await axios.post(endpoints.auth.register, data);
+      const res = await axios.post(endpoints.adminAuth.register, data);
 
-      const { accessToken, user } = res.data;
+      const { token : accessToken, user } = res.data?.data;
 
       sessionStorage.setItem(STORAGE_KEY, accessToken);
+      // No needed when auto load
+      sessionStorage.setItem('user', user);
 
       dispatch({
         type: Types.REGISTER,
@@ -185,6 +190,7 @@ export function AuthProvider({ children }: Props) {
   // LOGOUT
   const logout = useCallback(async () => {
     setSession(null);
+    sessionStorage.removeItem('user');
     dispatch({
       type: Types.LOGOUT,
     });

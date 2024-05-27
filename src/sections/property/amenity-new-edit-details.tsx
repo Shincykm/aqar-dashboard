@@ -8,20 +8,10 @@ import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import MenuItem from '@mui/material/MenuItem';
-import Typography from '@mui/material/Typography';
-import { inputBaseClasses } from '@mui/material/InputBase';
-import InputAdornment from '@mui/material/InputAdornment';
-// utils
-import { fCurrency } from 'src/utils/format-number';
-// _mock
-import { INVOICE_SERVICE_OPTIONS } from 'src/_mock';
-// types
-import { IInvoiceItem } from 'src/types/invoice';
 // components
 import Iconify from 'src/components/iconify';
 import { RHFSelect, RHFUpload, RHFUploadBox, RHFUploadCustom } from 'src/components/hook-form';
 import { useGetAmenitiesList } from 'src/api/amenities';
-import { LoadingButton } from '@mui/lab';
 
 
 // ----------------------------------------------------------------------
@@ -62,8 +52,9 @@ export default function AmenityNewEditDetails() {
   const handleSelectAmenity = useCallback(
     (amenityId:any, index: number) => {      
       setValue(`amenity_items[${index}].amenity_id`, amenityId);
-      setAmenitiesList((prev:any) => prev = amenities.filter(amenity => amenity.id !== amenityId));
-    },
+      setAmenitiesList((prev: any) => prev.filter((amenity: any) => amenity.id !== amenityId));
+      
+    },    
     [setValue, values.amenity_items]
   );
 
@@ -95,6 +86,14 @@ export default function AmenityNewEditDetails() {
     setValue(`amenity_items[${index}].amenity_picture`, []);
   }, [setValue]);
 
+  const getAvailableAmenities = (index: number) => {
+    const selectedAmenityIds = values.amenity_items
+      .filter((_ :any, i:any) => i !== index)
+      .map((item:any) => item.amenity_id);
+    return amenities.filter((amenity: any) => !selectedAmenityIds.includes(amenity.id));
+  };
+
+
   return (
     <Box sx={{ p: 3 }}>
 
@@ -113,6 +112,7 @@ export default function AmenityNewEditDetails() {
                 sx={{
                   maxWidth: { md: 160 },
                 }}
+                value={values.amenity_items[index].amenity_id || '' }
               >
                 <MenuItem
                   value=""
@@ -124,7 +124,8 @@ export default function AmenityNewEditDetails() {
 
                 <Divider sx={{ borderStyle: 'dashed' }} />
 
-                {amenities?.map((amenity:any) => (
+                {/* {amenitiesList?.map((amenity:any) => ( */}
+                {getAvailableAmenities(index).map((amenity: any) => (
                   <MenuItem
                     key={amenity.id}
                     value={amenity.id}

@@ -1,6 +1,6 @@
 import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
@@ -22,7 +22,7 @@ import { PATH_AFTER_LOGIN } from 'src/config-global';
 import { useAuthContext } from 'src/auth/hooks';
 // components
 import Iconify from 'src/components/iconify';
-import FormProvider, { RHFTextField } from 'src/components/hook-form';
+import FormProvider, { RHFSelect, RHFTextField } from 'src/components/hook-form';
 
 // ----------------------------------------------------------------------
 
@@ -32,6 +32,7 @@ export default function JwtRegisterView() {
   const router = useRouter();
 
   const [errorMsg, setErrorMsg] = useState('');
+  const [userType, setUserType] = useState('ADMIN');
 
   const searchParams = useSearchParams();
 
@@ -40,16 +41,18 @@ export default function JwtRegisterView() {
   const password = useBoolean();
 
   const RegisterSchema = Yup.object().shape({
-    firstName: Yup.string().required('First name required'),
-    lastName: Yup.string().required('Last name required'),
+    first_name: Yup.string().nullable(),
+    last_name: Yup.string().required('Last name required'),
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
+    user_type: Yup.string().required('User Type is required'),
     password: Yup.string().required('Password is required'),
   });
 
   const defaultValues = {
-    firstName: '',
-    lastName: '',
+    first_name: '',
+    last_name: '',
     email: '',
+    user_type: 'ADMIN',
     password: '',
   };
 
@@ -64,15 +67,23 @@ export default function JwtRegisterView() {
     formState: { isSubmitting },
   } = methods;
 
-  const onSubmit = handleSubmit(async (data) => {
-    try {
-      await register?.(data.email, data.password, data.firstName, data.lastName);
+  const handleSelectUserType = (e:any)=>{
+    const {value} = e.target;
+    setUserType(prev => value);
+  };
 
-      router.push(returnTo || PATH_AFTER_LOGIN);
+  const onSubmit = handleSubmit(async (data) => {
+    data.user_type = userType;
+    
+    try {
+      await register?.(data.email, data.password, data.first_name , data.last_name, data.user_type);
+
+      // router.push(returnTo || PATH_AFTER_LOGIN);
+      router.push(returnTo || paths.auth.jwt.login);
     } catch (error) {
       console.error(error);
       reset();
-      setErrorMsg(typeof error === 'string' ? error : error.message);
+      setErrorMsg(typeof error === 'string' ? error : `${error.message} ${error.errors?.email && `: ${error.errors.email}`}`);
     }
   });
 
@@ -118,11 +129,23 @@ export default function JwtRegisterView() {
         {!!errorMsg && <Alert severity="error">{errorMsg}</Alert>}
 
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-          <RHFTextField name="firstName" label="First name" />
-          <RHFTextField name="lastName" label="Last name" />
+          <RHFTextField name="first_name" label="First name" />
+          <RHFTextField name="last_name" label="Last name" />
         </Stack>
 
         <RHFTextField name="email" label="Email address" />
+        <RHFSelect
+          native
+          name="user_type"
+          label="User Type"
+          InputLabelProps={{ shrink: true }}
+          onChange={handleSelectUserType}
+          value={userType}
+        >
+          <option value="ADMIN">ADMIN</option>
+          <option value="USER">USER</option>
+          <option value="AGENT">AGENT</option>
+        </RHFSelect>
 
         <RHFTextField
           name="password"
