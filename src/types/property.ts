@@ -3,6 +3,7 @@
 export type IPropertyFilterValue = string | string[] | Date | IAgent | null;
 
 export type IPropertyFilters = {
+  name_ar : string,
   agent: IAgent[];
   location: string[];
   amenities: string[];
@@ -19,6 +20,7 @@ export type IAgent = {
 };
 
 export type IPropertyItem = {
+  id?: any;
   name_ar?: string | null;
   name_en: string;
   description_ar?: string | null;
@@ -49,7 +51,13 @@ export type IPropertyItem = {
   display_order?: number | null;
   pictures?: [];
   amenity_items : [];
-  // created_at: Date;
-  // updated_at: Date;
-  // deleted_at?: Date | null;
+};
+
+
+
+export type IPropertyTableFilterValue = string | string[];
+
+export type IPropertyTableFilters = {
+  name_en: string;
+  name_ar: string;
 };

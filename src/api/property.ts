@@ -9,15 +9,15 @@ import { IPropertyItem } from 'src/types/property';
 export function useGetProperties() {
   const URL = endpoints.property.list;
 
-  const { data, isLoading, error, isValidating } = useSWR(URL, fetcher);
+  const { data, isLoading, error, isValidating } = useSWR(URL, fetcher1);
 
   const memoizedValue = useMemo(
     () => ({
-      property: (data?.property as IPropertyItem[]) || [],
+      property: (data?.data as IPropertyItem[]) || [],
       propertyLoading: isLoading,
       propertyError: error,
       propertyValidating: isValidating,
-      propertyEmpty: !isLoading && !data?.property.length,
+      propertyEmpty: !isLoading && !data?.data?.length,
     }),
     [data?.property, error, isLoading, isValidating]
   );

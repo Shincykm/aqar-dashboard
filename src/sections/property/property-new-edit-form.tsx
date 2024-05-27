@@ -175,7 +175,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
     if (currentProperty) {
       reset(defaultValues);
     }
-  }, [currentProperty, defaultValues, reset]);
+  }, [currentProperty, defaultValues, reset, amenitiesList]);
 
 
   const onSubmit = handleSubmit(async (data: any) => {
@@ -207,10 +207,10 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
   const handleDrop = useCallback(
     (acceptedFiles: File[]) => {
       const files = values.pictures || [];
-
+      
       const newFiles = acceptedFiles.map((file) =>
         Object.assign(file, {
-          preview: URL.createObjectURL(file),
+          preview: URL.createObjectURL(file) ,
         })
       );
 
