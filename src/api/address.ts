@@ -27,3 +27,25 @@ export function useGetCountriesList(page = 1, limit=10 ) {
 
   return memoizedValue;
 }
+
+// ----------------------------------------------------------------------
+
+export function useStateProvincesList(page = 1, limit=10 ) {
+  const URL = `${endpoints.address.state}?page=${page}&limit=${limit}`;
+
+  const { data, isLoading, error, isValidating } = useSWR(URL, fetcher1);
+
+  const memoizedValue = useMemo(
+    () => ({
+      stateProvinces: (data?.data as any[]) || [],
+      stateProvincesLoading: isLoading,
+      stateProvincesError: error,
+      stateProvincesValidating: isValidating,
+      stateProvincesEmpty: !isLoading && !data?.data.length,
+    }),
+    [data?.data, error, isLoading, isValidating]
+  );
+
+  return memoizedValue;
+}
+

@@ -56,12 +56,11 @@ export async function useCreateUpdateProperty(data: any) {
 
   // Hnadling formData
   Object.entries(data).forEach(([key, value]) => {
+    console.log(key,typeof key, value, "==formData");
+    
     if (value === true || value === false) {
       formData.append(key, value ? '1' : '0');
     } else if (typeof value === 'string' && value !== '') {
-      if (key === 'country' || key === 'state_province' || key === "city") {
-        formData.append(`${key}_id`, JSON.parse(value).id);
-      }
       formData.append(key, value);
     } else if (typeof value === 'number' && value !== 0) {
       formData.append(key, value.toString());
@@ -69,6 +68,8 @@ export async function useCreateUpdateProperty(data: any) {
       value.forEach((file, index) => {
         formData.append(`pictures[${index}]`, file);
       });
+    }else if (key === 'country' || key === 'state_province' || key === "city") {
+      formData.append(`${key}_id`, JSON.stringify(value?.id));
     } else {
       formData.append(key, '');
     }

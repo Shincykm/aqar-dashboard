@@ -10,7 +10,7 @@ import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
-import { Alert, AlertTitle, Divider } from '@mui/material';
+import { Alert, AlertTitle, Divider, TextField } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 // routes
 import { paths } from 'src/routes/paths';
@@ -27,6 +27,7 @@ import FormProvider, {
   RHFAsyncAutoComplete,
   RHFMultiSelect,
   RHFUpload,
+  RHFAutocomplete,
 } from 'src/components/hook-form';
 // types
 import { IPropertyItem } from 'src/types/property';
@@ -41,7 +42,8 @@ import { convertStringToBoolean } from 'src/utils/string-to-boolean';
 import AmenityNewEditDetails from './amenity-new-edit-details';
 import axiosInstance1, { endpoints } from 'src/utils/axios';
 import { label } from 'yet-another-react-lightbox';
-import { useGetCountriesList } from 'src/api/address';
+import { useGetCountriesList, useStateProvincesList } from 'src/api/address';
+import RHFAutocompleteOne from 'src/components/hook-form/rhf-autocomplete1';
 
 // ----------------------------------------------------------------------
 
@@ -59,7 +61,7 @@ const ADDRESS = [
 // ----------------------------------------------------------------------
 
 type Props = {
-  currentProperty?: IPropertyItem;
+  currentProperty?: any;
 };
 
 export default function PropertyNewEditForm({ currentProperty }: Props) {
@@ -78,7 +80,10 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
   );
   const { amenities, amenitiesEmpty, amenitiesLoading } = useGetAmenitiesList();
   const [amenitiesList, setAmenitiesList] = useState<{ value: any; label: any }[]>([]);
+  const { countries, countriesEmpty, countriesLoading } = useGetCountriesList(1,10);
+  const { stateProvinces, stateProvincesEmpty, stateProvincesLoading } = useStateProvincesList(1,10);
   const [subTypeList, setSubTypeList] = useState<any>(null);
+
 
   const NewPropertySchema = Yup.object().shape({
     name_ar: Yup.string().nullable(),
@@ -103,14 +108,16 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
     sub_type: Yup.string().nullable(),
     property_purpose_id: Yup.number().nullable(),
     property_style_id: Yup.number().nullable(),
-    address_id: Yup.number().nullable(),
+    // address_id: Yup.number().nullable(),
     building_id: Yup.number().nullable(),
-    country_id: Yup.number().nullable(),
-    state_province_id: Yup.number().nullable(),
-    city_id: Yup.number().nullable(),
+    // country_id: Yup.number().nullable(),
+    // country: Yup.object().nullable(),
+    // state_province_id: Yup.number().nullable(),
+    // state_province: Yup.object().nullable(),
+    // city_id: Yup.number().nullable(),
     display_order: Yup.number().nullable(),
     pictures: Yup.array().min(1, 'Images is required'),
-    amenity_items: Yup.array().nullable(),
+    // amenity_items: Yup.array().nullable(),
   });
 
   const defaultValues = useMemo(
@@ -140,11 +147,13 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
       address_id: currentProperty?.address_id || 0,
       building_id: currentProperty?.building_id || 0,
       country_id: currentProperty?.country_id || 0 ,
-      state_province_id: currentProperty?.state_province_id || 0,
       city_id: currentProperty?.city_id || 0,
+      state_province_id: currentProperty?.state_province_id || 0,
+      city : currentProperty?.address?.city ,
+      state_province : currentProperty?.address?.state_province ,
+      country : currentProperty?.address?.country ,
       display_order: currentProperty?.display_order || 0,
-      // amenity_items: currentProperty?.amenity_items || [],
-      amenity_items: currentProperty?.amenity_items || [],
+      amenity_items: currentProperty?.amenities?.map((amenity:any) => amenity?.id) || [],
     }),
     [currentProperty]
   );
@@ -172,12 +181,17 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
     }));
     setAmenitiesList(transformedAmenities);
     if (currentProperty) {
+      if(currentProperty?.pictures?.length >= 1){
+        currentProperty.pictures = currentProperty?.pictures.map((item:any) => ({...item, 'preview' : item.virtual_path}));
+      }
       reset(defaultValues);
     }
   }, [currentProperty, defaultValues, reset, amenitiesList]);
 
   const onSubmit = handleSubmit(async (data: any) => {
     try {
+      // console.log(data)
+
       const response = await useCreateUpdateProperty(data);
       if (response) {
         const { id:propertyId } = response;
@@ -228,7 +242,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
 
   const handleRemoveFile = useCallback(
     (inputFile: File | string) => {
-      const filtered = values.pictures && values.pictures?.filter((file) => file !== inputFile);
+      const filtered = values.pictures && values.pictures?.filter((file:any) => file !== inputFile);
       setValue('pictures', filtered);
     },
     [setValue, values.pictures]
@@ -635,21 +649,64 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
               }}
             >
 
-              <RHFAsyncAutoComplete
+{/* {!countriesEmpty && <RHFAutocomplete
+  name="country"
+  label="Country"
+  options={countries}
+  getOptionLabel={(option) => option ? option.name : '' }
+  isOptionEqualToValue={(option, value) => option?.id === value?.id}
+  renderOption={(props, option) => (
+    <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
+      {option.name}
+    </Box>
+  )}
+  
+/>} */}
+
+
+              {/* {!countriesEmpty && <RHFAsyncAutoComplete
                 name="country"
                 label="Country"
                 fetchUrl={`${endpoints.address.country}?page=1&limit=10`}
-                getOptionLabel={(option) => option.name}
+                getOptionLabel={(option) => option && option.name ? option.name : ''}
                 getOptionSelected={(option, value) => option && value ? option.id === value.id : false}
-              />
+              />} */}
 
-              <RHFAsyncAutoComplete
+              {!countriesEmpty && (
+                <RHFAutocompleteOne
+                name="country"
+                label="Country"
+                options={countries} 
+                getOptionLabel={(option) => option && (option.name ? option.name : '')}
+                isOptionEqualToValue={(option, value) => option?.id === value?.id }
+              />
+              )}
+
+              {/* <RHFAsyncAutoComplete
+                name="country"
+                label="Country"
+                fetchUrl={`${endpoints.address.country}?page=1&limit=10`}
+                getOptionLabel={(option) => option && option.name ? option.name : ''}
+                getOptionSelected={(option, value) => option && value ? option.id === value.id : false}
+              /> */}
+
+{!stateProvincesEmpty && (
+                <RHFAutocompleteOne
+                name="state_province"
+                label="State / Province"
+                options={stateProvinces} 
+                getOptionLabel={(option) => option && option.name ? option.name : ''}
+                isOptionEqualToValue={(option, value) => option?.id === value?.id}
+              />
+              )}
+
+              {/* <RHFAsyncAutoComplete
                 name="state_province"
                 label="State / Province"
                 fetchUrl={`${endpoints.address.state}?page=1&limit=10`}
                 getOptionLabel={(option) => option && option.name ? option.name : ''}
                 getOptionSelected={(option, value) => option && value ? option.id === value.id : false}
-              />
+              /> */}
 
               {/* <RHFAsyncAutoComplete
                 name="city"
@@ -700,26 +757,6 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                 label="Amenities"
                 options={amenitiesList}
               />
-              //   <RHFSelect
-              //     native
-              //     name="amenity_id"
-              //     label="Amenities"
-              //     InputLabelProps={{ shrink: true }}
-              //     onChange={handleSelectPropertyType}
-              //   >
-              //     {amenitiesLoading ? (
-              //       <LoadingButton />
-              //     ) : (
-              //       <>
-              //         <option value=""></option>
-              //         {amenities?.map((item) => (
-              //           <option key={item?.id} value={item?.id}>
-              //             {item?.name_en.charAt(0).toUpperCase() + item?.name_en.slice(1)}
-              //           </option>
-              //         ))}
-              //       </>
-              //     )}
-              //   </RHFSelect>
             )}
           </Stack>
         </Card>

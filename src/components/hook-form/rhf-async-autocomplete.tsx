@@ -153,13 +153,18 @@ const RHFAsyncAutoComplete: React.FC<RHFAsyncAutoCompleteProps> = ({
         params: { search: searchTerm, page: nextPage },
       });
       const newOptions = response.data?.data;
+      let optionsLabels=newOptions.map((e:any)=>({
+        name:e.name,
+        label:e.name,
+        id:e.id
+      }))
       setOptions((prevOptions: any[]) => {
-        const filteredOptions = newOptions.filter(
+        const filteredOptions = optionsLabels.filter(
           (newOption: any) => !prevOptions.some((prevOption) => prevOption.id === newOption.id)
         );
         return [...prevOptions, ...filteredOptions];
       });
-      setHasMore(newOptions.length > 0);
+      setHasMore(optionsLabels.length > 0);
     } catch (error) {
       console.error('Error fetching options:', error);
       setOptions([]);
@@ -200,13 +205,14 @@ const RHFAsyncAutoComplete: React.FC<RHFAsyncAutoCompleteProps> = ({
           onClose={() => setOpen(false)}
           options={options}
           loading={loading}
+
           loadingText="Loading..."
           getOptionLabel={getOptionLabel} 
-          getOptionSelected={getOptionSelected} 
+          // getOptionSelected={getOptionSelected} 
           renderInput={(params) => (
             <TextField
               {...params}
-              label={label}
+              label={label }
               variant="outlined"
               onChange={handleInputChange}
               InputProps={{
@@ -220,11 +226,12 @@ const RHFAsyncAutoComplete: React.FC<RHFAsyncAutoCompleteProps> = ({
               }}
             />
           )}
-          onChange={(event, value) => {
-            if (value) {
-              field.onChange(JSON.stringify(value)); // Return selected value as JSON string
-            }
-          }}
+          // onChange={(event, value) => {
+          //   console.log(value.id)
+          //   if (value) {
+          //     field.onChange(JSON.stringify(value)); // Return selected value as JSON string
+          //   }
+          // }}
         />
       )}
     />
