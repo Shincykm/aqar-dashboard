@@ -10,7 +10,7 @@ import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
-import { Divider } from '@mui/material';
+import { Alert, AlertTitle, Divider } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 // routes
 import { paths } from 'src/routes/paths';
@@ -22,11 +22,11 @@ import { useRouter } from 'src/routes/hooks';
 import FormProvider, {
   RHFSelect,
   RHFEditor,
-  RHFUpload,
   RHFTextField,
   RHFSwitch,
   RHFAsyncAutoComplete,
   RHFMultiSelect,
+  RHFUpload,
 } from 'src/components/hook-form';
 // types
 import { IPropertyItem } from 'src/types/property';
@@ -35,13 +35,13 @@ import { useGetPropertyTypeList } from 'src/api/propertyType';
 import { useGetPropertyPurposeList } from 'src/api/propertyPurpose';
 import { useGetPropertyStyleList } from 'src/api/propertyStyle';
 import { useCreateUpdateProperty } from 'src/api/property';
-import { useGetAmenitiesList } from 'src/api/amenities';
-import { useCreateUpdatePropertyPictureMapping } from 'src/api/propertyPictureMapping';
+import { useCreateUpdateAmenityPropertyMapping, useGetAmenitiesList } from 'src/api/amenities';
 //
 import { convertStringToBoolean } from 'src/utils/string-to-boolean';
 import AmenityNewEditDetails from './amenity-new-edit-details';
 import axiosInstance1, { endpoints } from 'src/utils/axios';
 import { label } from 'yet-another-react-lightbox';
+import { useGetCountriesList } from 'src/api/address';
 
 // ----------------------------------------------------------------------
 
@@ -77,7 +77,6 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
     10
   );
   const { amenities, amenitiesEmpty, amenitiesLoading } = useGetAmenitiesList();
-
   const [amenitiesList, setAmenitiesList] = useState<{ value: any; label: any }[]>([]);
   const [subTypeList, setSubTypeList] = useState<any>(null);
 
@@ -140,7 +139,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
       property_style_id: currentProperty?.property_style_id || 0,
       address_id: currentProperty?.address_id || 0,
       building_id: currentProperty?.building_id || 0,
-      country_id: currentProperty?.country_id || 0,
+      country_id: currentProperty?.country_id || 0 ,
       state_province_id: currentProperty?.state_province_id || 0,
       city_id: currentProperty?.city_id || 0,
       display_order: currentProperty?.display_order || 0,
@@ -167,9 +166,9 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
   const values = watch();
 
   useEffect(() => {
-    const transformedAmenities = amenities?.map(amenity => ({
+    const transformedAmenities = amenities?.map((amenity) => ({
       value: amenity?.id,
-      label: amenity?.name_en
+      label: amenity?.name_en,
     }));
     setAmenitiesList(transformedAmenities);
     if (currentProperty) {
@@ -177,20 +176,12 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
     }
   }, [currentProperty, defaultValues, reset, amenitiesList]);
 
-
   const onSubmit = handleSubmit(async (data: any) => {
     try {
-      console.log(data);
-      
-      // api - create property
       const response = await useCreateUpdateProperty(data);
-
-      if (response.status === 'success') {
-        console.log('success');
-
-        // /////////////////////////////////////////////////
-        // Handling amenity-picture mapping and amenity-property mapping
-        // -------------------------------------------------
+      if (response) {
+        const { id:propertyId } = response;
+        // Handling amenity-picture mapping
         /* 
         const amenitiesResponse = await useCreateUpdatePropertyPictureMapping(formDataAmenity);
         if(amenitiesResponse.status === "success"){
@@ -200,17 +191,33 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
           console.info('DATA', data);
         } 
         */
+
+        // Handling amenity-property mapping
+        const amenitiesResponse = await useCreateUpdateAmenityPropertyMapping(
+          data.amenity_items[0],
+          propertyId,
+        );
+        
+        if (amenitiesResponse) {
+          reset();
+          enqueueSnackbar(currentProperty ? 'Update success!' : 'Create success!');
+          router.push(paths.dashboard.property.root);
+          console.info('DATA', data);
+        }
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   });
 
   const handleDrop = useCallback(
     (acceptedFiles: File[]) => {
-      const files = values.pictures || [];
       
+      const files = values.pictures || [];
+
       const newFiles = acceptedFiles.map((file) =>
         Object.assign(file, {
-          preview: URL.createObjectURL(file) ,
+          preview: URL.createObjectURL(file),
         })
       );
 
@@ -627,26 +634,30 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                 md: 'repeat(2, 1fr)',
               }}
             >
+
               <RHFAsyncAutoComplete
                 name="country"
                 label="Country"
                 fetchUrl={`${endpoints.address.country}?page=1&limit=10`}
-                getOptionLabel={(option) => option.name} // Example: If your option has a 'name' property
+                getOptionLabel={(option) => option.name}
+                getOptionSelected={(option, value) => option && value ? option.id === value.id : false}
               />
 
               <RHFAsyncAutoComplete
                 name="state_province"
                 label="State / Province"
                 fetchUrl={`${endpoints.address.state}?page=1&limit=10`}
-                getOptionLabel={(option) => option.name} // Example: If your option has a 'name' property
+                getOptionLabel={(option) => option && option.name ? option.name : ''}
+                getOptionSelected={(option, value) => option && value ? option.id === value.id : false}
               />
 
-              <RHFAsyncAutoComplete
+              {/* <RHFAsyncAutoComplete
                 name="city"
                 label="City"
                 fetchUrl={`${endpoints.address.city}?page=1&limit=10`}
-                getOptionLabel={(option) => option.name_en} // Example: If your option has a 'name' property
-              />
+                getOptionLabel={(option) => option.name_en}
+                getOptionSelected={(option, value) => option && value ? option.id === value.id : false}
+              /> */}
             </Box>
           </Stack>
 

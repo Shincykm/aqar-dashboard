@@ -357,12 +357,12 @@ export function useNavData() {
             icon: ICONS.properties,
             children: [
               { title: t('list'), path: paths.dashboard.property.root },
-              {
-                title: t('details'),
-                path: paths.dashboard.property.demo.details,
-              },
+              // {
+              //   title: t('details'),
+              //   path: paths.dashboard.property.demo.details,
+              // },
               { title: t('create'), path: paths.dashboard.property.new },
-              { title: t('edit'), path: paths.dashboard.property.demo.edit },
+              // { title: t('edit'), path: paths.dashboard.property.demo.edit },
             ],
           },
 

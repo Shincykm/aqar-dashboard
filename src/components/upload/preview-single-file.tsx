@@ -10,6 +10,7 @@ type Props = {
 };
 
 export default function SingleFilePreview({ imgUrl = '' }: Props) {
+  
   return (
     <Box
       sx={{

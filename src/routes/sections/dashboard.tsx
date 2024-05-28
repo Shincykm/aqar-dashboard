@@ -196,7 +196,7 @@ export const dashboardRoutes = [
         children: [
           { element: <PropertyListPage />, index: true },
           { path: 'list', element: <PropertyListPage /> },
-          { path: ':id', element: <PropertyDetailsPage /> },
+          // { path: ':id', element: <PropertyDetailsPage /> },
           { path: 'new', element: <PropertyCreatePage /> },
           { path: ':id/edit', element: <PropertyEditPage /> },
         ],

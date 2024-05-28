@@ -185,6 +185,12 @@ export const endpoints = {
     delete: '/api/admin/amenities/deleteAmenity',
     details: '/api/admin/amenities/getAmenityById',
   },
+  amenityProperty: {
+    list: 'admin/propertyAmenityMapping/getPropertyAmenityMappingList',
+    createUpdate: '/api/admin/propertyAmenityMapping/createUpdatePropertyAmenityMapping',
+    delete: '/api/admin/propertyAmenityMapping/deletePropertyAmenityMapping',
+    details: '/api/admin/propertyAmenityMapping/getAmenitiesByPropertyId',
+  },
   address:{
     state : '/api/admin/address/stateProvince/getAllStateProvinces',
     country : '/api/admin/address/country/getAllCountries',

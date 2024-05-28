@@ -104,5 +104,26 @@ export async function useDeleteAmenities(amenityId: number) {
 // Amenity-Picture mapping 
 
 
+
 // ----------------------------------------------------------------------
 // Amenity-Property mapping 
+
+
+export async function useCreateUpdateAmenityPropertyMapping(amenityId: any, propertyId:any) {
+  const URL = endpoints.amenityProperty.createUpdate;
+
+  try {
+    const formData = new FormData();
+    formData.append('amenity_id', amenityId);
+    formData.append('property_id', propertyId);
+    const response = await performRequest<any>('post', URL, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      data: formData,
+    });
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+}

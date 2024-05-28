@@ -48,25 +48,39 @@ export function useGetProperty(propertyId: string) {
 
 // ----------------------------------------------------------------------
 
-export async function useCreateUpdateProperty(propertyData: any) {
+export async function useCreateUpdateProperty(data: any) {
   const URL = endpoints.property.createUpdate;
   const formData = new FormData();
 
-  Object.keys(propertyData).forEach((key) => {
-    const value = propertyData[key];
-  
-    if (typeof value === 'boolean') {
+  const { amenity_items, ...propertyData } = data;
+
+  // Hnadling formData
+  Object.entries(data).forEach(([key, value]) => {
+    if (value === true || value === false) {
       formData.append(key, value ? '1' : '0');
     } else if (typeof value === 'string' && value !== '') {
+      if (key === 'country' || key === 'state_province' || key === "city") {
+        formData.append(`${key}_id`, JSON.parse(value).id);
+      }
       formData.append(key, value);
     } else if (typeof value === 'number' && value !== 0) {
       formData.append(key, value.toString());
-    } else if (key === 'amenity_items' || key === 'pictures') {
-      // const formDataKey = key === 'amenity_items' ? 'amenity_picture' : 'pictures';
-      formData.append(key, value);
+    } else if (key === 'pictures' && Array.isArray(value)) {
+      value.forEach((file, index) => {
+        formData.append(`pictures[${index}]`, file);
+      });
+    } else {
+      formData.append(key, '');
     }
-
   });
+
+  // Remove unnecessary fields
+  ['city', 'country', 'state_province'].forEach(field => {
+    formData.delete(field);
+  });
+  //temporary
+  formData.append('city_id', '1');
+
 
   try {
     const response = await performRequest<any>('post', URL, {
