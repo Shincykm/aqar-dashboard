@@ -21,8 +21,8 @@ export type IAgent = {
 
 export type IPropertyItem = {
   id?: any;
+  name_en: string | any;
   name_ar?: string | null;
-  name_en: string;
   description_ar?: string | null;
   description_en?: string | null;
   active: boolean | string;
@@ -35,7 +35,6 @@ export type IPropertyItem = {
   old_amount?: number | null;
   amount?: number | null;
   size_sqm?: number | null;
-  // sizeSqft?: number | null;
   ownership?: string | null;
   sub_type?: string | null;
   reference_number?: string | null;
@@ -49,8 +48,8 @@ export type IPropertyItem = {
   city_id?: number | null;
   state_province_id?: number | null;
   display_order?: number | null;
-  pictures?: [];
-  amenity_items : [];
+  pictures: [];
+  amenity_items?: [];
 };
 
 

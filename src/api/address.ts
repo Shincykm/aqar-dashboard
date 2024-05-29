@@ -51,7 +51,7 @@ export function useStateProvincesList(page = 1, limit=10, countryId="" ) {
 
 
 export function useCityList(page = 1, limit=10, stateId="" ) {
-  const URL = stateId ? `${endpoints.address.city}?page=${page}&limit=${limit}&country_id=${stateId}` : null;
+  const URL = stateId ? `${endpoints.address.city}?page=${page}&limit=${limit}&state_province_id=${stateId}` : null;
 
   const { data, isLoading, error, isValidating } = useSWR(URL, fetcher1);
 

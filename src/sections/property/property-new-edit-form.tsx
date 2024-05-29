@@ -10,7 +10,7 @@ import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
-import { Alert, AlertTitle, Chip, Divider, TextField } from '@mui/material';
+import { Divider } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 // routes
 import { paths } from 'src/routes/paths';
@@ -21,10 +21,8 @@ import { useSnackbar } from 'src/components/snackbar';
 import { useRouter } from 'src/routes/hooks';
 import FormProvider, {
   RHFSelect,
-  RHFEditor,
   RHFTextField,
   RHFSwitch,
-  RHFAsyncAutoComplete,
   RHFMultiSelect,
   RHFUpload,
   RHFAutocomplete,
@@ -39,27 +37,8 @@ import { useCreateUpdateProperty } from 'src/api/property';
 import { useCreateUpdateAmenityPropertyMapping, useGetAmenitiesList } from 'src/api/amenities';
 //
 import { convertStringToBoolean } from 'src/utils/string-to-boolean';
-import AmenityNewEditDetails from './amenity-new-edit-details';
-import axiosInstance1, { endpoints } from 'src/utils/axios';
-import { label } from 'yet-another-react-lightbox';
+// import AmenityNewEditDetails from './amenity-new-edit-details';
 import { useCityList, useGetCountriesList, useStateProvincesList } from 'src/api/address';
-import RHFAutocompleteOne from 'src/components/hook-form/rhf-autocomplete1';
-import Iconify from 'src/components/iconify';
-
-// ----------------------------------------------------------------------
-
-const ADDRESS = [
-  {
-    id: 1,
-    name: 'place 1',
-  },
-  {
-    id: 2,
-    name: 'place 2',
-  },
-];
-
-// ----------------------------------------------------------------------
 
 type Props = {
   currentProperty?: any;
@@ -73,42 +52,35 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
   const { enqueueSnackbar } = useSnackbar();
 
   const { propertyTypes, propertyTypeEmpty, propertyTypeLoading } = useGetPropertyTypeList(1, 10);
-  const { propertyPurposes, propertyPurposeEmpty, propertyPurposeLoading } =
-    useGetPropertyPurposeList(1, 10);
-  const { propertyStyles, propertyStyleEmpty, propertyStyleLoading } = useGetPropertyStyleList(
-    1,
-    10
-  );
-  const { amenities, amenitiesEmpty, amenitiesLoading } = useGetAmenitiesList();
-  const [amenitiesList, setAmenitiesList] = useState<{ value: any; label: any }[]>([]);
-  const { countries, countriesEmpty, countriesLoading } = useGetCountriesList(1, 10);
+  const { propertyPurposes, propertyPurposeEmpty, propertyPurposeLoading } = useGetPropertyPurposeList(1, 10);
+  const { propertyStyles, propertyStyleEmpty, propertyStyleLoading } = useGetPropertyStyleList(1,10);
   
   const [subTypeList, setSubTypeList] = useState<any>(null);
 
   const NewPropertySchema = Yup.object().shape({
-    name_ar: Yup.string().nullable(),
+    name_ar: Yup.string(),
     name_en: Yup.string().required('Title is required'),
-    description_ar: Yup.string().nullable(),
-    description_en: Yup.string().nullable(),
+    description_ar: Yup.string(),
+    description_en: Yup.string(),
     active: Yup.boolean().required(),
-    is_featured: Yup.boolean().required(),
-    is_furnished: Yup.boolean().required(),
-    count_bathrooms: Yup.number().nullable(),
-    count_bedrooms: Yup.number().nullable(),
-    count_parking: Yup.number().nullable(),
-    size_sqm: Yup.number().nullable(),
-    maintenance_fee: Yup.number().nullable(),
-    old_amount: Yup.number().nullable(),
-    amount: Yup.number().nullable(),
-    ownership: Yup.string().nullable(),
-    reference_number: Yup.string().nullable(),
-    constructed_date: Yup.mixed<any>().nullable(),
-    property_type_id: Yup.number().nullable(),
-    sub_type: Yup.string().nullable(),
-    property_purpose_id: Yup.number().nullable(),
-    property_style_id: Yup.number().nullable(),
-    building_id: Yup.number().nullable(),
-    display_order: Yup.number().nullable(),
+    is_featured: Yup.boolean(),
+    is_furnished: Yup.boolean(),
+    count_bathrooms: Yup.number(),
+    count_bedrooms: Yup.number(),
+    count_parking: Yup.number(),
+    size_sqm: Yup.number(),
+    maintenance_fee: Yup.number(),
+    old_amount: Yup.number(),
+    amount: Yup.number(),
+    ownership: Yup.string(),
+    reference_number: Yup.string(),
+    constructed_date: Yup.mixed<any>(),
+    property_type_id: Yup.number(),
+    sub_type: Yup.string(),
+    property_purpose_id: Yup.number(),
+    property_style_id: Yup.number(),
+    building_id: Yup.number(),
+    display_order: Yup.number(),
     pictures: Yup.array().min(1, 'Images is required'),
   });
 
@@ -121,14 +93,13 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
       active: convertStringToBoolean(currentProperty?.active) || true,
       is_featured: convertStringToBoolean(currentProperty?.is_featured) || false,
       is_furnished: convertStringToBoolean(currentProperty?.is_furnished) || false,
-      pictures: currentProperty?.pictures || [],
       count_bathrooms: currentProperty?.count_bathrooms || 0,
       count_bedrooms: currentProperty?.count_bedrooms || 0,
       count_parking: currentProperty?.count_parking || 0,
       size_sqm: currentProperty?.size_sqm || 0,
       ownership: currentProperty?.ownership || '',
       reference_number: currentProperty?.reference_number || '',
-      constructed_date: currentProperty?.constructed_date || null,
+      constructed_date: currentProperty?.constructed_date || {},
       maintenance_fee: currentProperty?.maintenance_fee || 0,
       old_amount: currentProperty?.old_amount || 0,
       amount: currentProperty?.amount || 0,
@@ -136,17 +107,25 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
       property_purpose_id: currentProperty?.property_purpose_id || 0,
       property_style_id: currentProperty?.property_style_id || 0,
       building_id: currentProperty?.building_id || 0,
-      country_id: currentProperty?.country_id != null ? String(currentProperty?.country_id) : '',
-      city_id: currentProperty?.city_id != null ? String(currentProperty?.city) : '',
-      state_province_id:currentProperty?.state_province_id != null ? String(currentProperty?.state_province_id) : '',
+      country_id: currentProperty?.country_id || '',
+      city_id: currentProperty?.city_id || '' ,
+      state_province_id: currentProperty?.state_province_id || '',
       display_order: currentProperty?.display_order || 0,
-      amenity_items: currentProperty?.amenities?.map((amenity: any) => amenity?.id) || [],
+      // amenity_items: currentProperty?.amenities?.map((amenity: any) =>({
+      //   value: amenity?.id,
+      //   label: amenity?.name_en,
+      // })) || [],
+      pictures:
+        currentProperty?.pictures?.map((item: any) => ({
+          ...item,
+          preview: item.virtual_path,
+        })) || [],
     }),
     [currentProperty]
   );
 
   const methods = useForm({
-    resolver: yupResolver(NewPropertySchema),
+    resolver: yupResolver(NewPropertySchema) as any,
     defaultValues,
   });
 
@@ -160,33 +139,37 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
   } = methods;
 
   const values = watch();
-  const { stateProvinces, stateProvincesEmpty, stateProvincesLoading } = useStateProvincesList(1, 10,values.country_id);
-  const { cities, citiesEmpty, citiesLoading } = useCityList(1, 10,values.state_province_id);
 
-  // Define a useCallback hook to memoize the function
+  const { countries, countriesEmpty, countriesLoading } = useGetCountriesList(1, 10);
+  const { stateProvinces, stateProvincesEmpty, stateProvincesLoading } = useStateProvincesList(1,10,values.country_id ? values.country_id : "" );
+  const { cities, citiesEmpty, citiesLoading } = useCityList(1, 10, values.state_province_id ? values.state_province_id:"");
+  const { amenities : amenitiesFullList, amenitiesEmpty, amenitiesLoading } = useGetAmenitiesList();
+
+  const [amenitiesList, setAmenitiesList] = useState<{ value: any; label: any }[]>([]); 
+
   useEffect(() => {
-    const transformedAmenities = amenities?.map((amenity) => ({
+    if (currentProperty) {
+      reset(defaultValues);
+    }
+  }, [currentProperty]);
+  
+
+  useEffect(() => {
+    
+    const transformedAmenities = amenitiesFullList?.map((amenity) => ({
       value: amenity?.id,
       label: amenity?.name_en,
     }));
     setAmenitiesList(transformedAmenities);
-
-    if (currentProperty) {
-      if (currentProperty?.pictures?.length >= 1) {
-        currentProperty.pictures = currentProperty?.pictures.map((item: any) => ({
-          ...item,
-          preview: item.virtual_path,
-        }));
-      }
-      reset(defaultValues);
-    }
-  }, [currentProperty, defaultValues, reset, amenitiesList]);
-
+  }, [amenitiesList]);
 
   const onSubmit = handleSubmit(async (data: any) => {
     try {
       const { amenity_items, ...propertyData } = data;
-
+      if(currentProperty.id){
+        propertyData.id = currentProperty.id;
+      }
+      
       const response = await useCreateUpdateProperty(propertyData);
       if (response) {
         const { id: propertyId } = response;
@@ -203,19 +186,17 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
 
         // Handling amenity-property mapping
         if (amenity_items.length > 0) {
-          const amenitiesResponse = await useCreateUpdateAmenityPropertyMapping(
-            data.amenity_items[0],
-            propertyId
-          );
+          const res = await useCreateUpdateAmenityPropertyMapping(data.amenity_items, propertyId);
+          if(res?.status === "error") throw new Error("Issue adding amenities")
         }
+
+        reset();
+        enqueueSnackbar(currentProperty ? 'Update success!' : 'Create success!');
+        router.push(paths.dashboard.property.root);
+        console.info('DATA', data);
       }
     } catch (error) {
       console.log(error);
-    } finally {
-      reset();
-      enqueueSnackbar(currentProperty ? 'Update success!' : 'Create success!');
-      router.push(paths.dashboard.property.root);
-      console.info('DATA', data);
     }
   });
 
@@ -235,10 +216,12 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
   );
 
   const handleRemoveFile = useCallback(
-    (inputFile: File | string) => {
+    (inputFile: File | string ) => {
       const filtered =
         values.pictures && values.pictures?.filter((file: any) => file !== inputFile);
-      setValue('pictures', filtered);
+        console.log(filtered,inputFile);
+      
+        setValue('pictures', filtered);      
     },
     [setValue, values.pictures]
   );
@@ -256,6 +239,20 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
     },
     [propertyTypes]
   );
+
+  const handleCountryChange = useCallback((newValue:any) => {
+    setValue('country_id', newValue, { shouldValidate: true });
+    setValue('state_province_id', '', { shouldValidate: true }); // Reset state when country changes
+  }, [setValue]);
+
+  const handleStateChange = useCallback((newValue:any) => {
+    setValue('state_province_id', newValue, { shouldValidate: true });
+    setValue('city_id', '', { shouldValidate: true }); // Reset state when city changes
+  }, [setValue]);
+
+  const handleCityChange = useCallback((newValue:any) => {
+    setValue('city_id', newValue, { shouldValidate: true });
+  }, [setValue]);
 
   const renderDetails = (
     <>
@@ -552,7 +549,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                   onChange={handleSelectPropertyType}
                 >
                   {propertyTypeLoading ? (
-                    <LoadingButton />
+                    <option value="">Loading...</option>
                   ) : (
                     <>
                       <option value=""></option>
@@ -574,7 +571,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                   InputLabelProps={{ shrink: true }}
                 >
                   {propertyPurposeLoading ? (
-                    <LoadingButton />
+                    <option value="">Loading...</option>
                   ) : (
                     <>
                       <option value=""></option>
@@ -596,7 +593,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                   InputLabelProps={{ shrink: true }}
                 >
                   {propertyStyleLoading ? (
-                    <LoadingButton />
+                    <option value="">Loading...</option>
                   ) : (
                     <>
                       <option value=""></option>
@@ -643,20 +640,20 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                 md: 'repeat(2, 1fr)',
               }}
             >
-              
               {!countriesEmpty && (
                 <RHFAutocomplete
                   name="country_id"
                   label="Country"
-                  value={currentProperty?.country_id}
-                  options={countries.map((country) => String(country.id))} // Explicitly define the type as string[]
+                  options={countries.map((country) => String(country?.id))}
                   getOptionLabel={(option) => {
                     const selectedCountry = countries.find(
                       (country) => country.id === Number(option)
                     );
-                    return selectedCountry ? selectedCountry.name : ''; // Return the label of the selected country
+                    return selectedCountry ? selectedCountry.name : '';
                   }}
-                  isOptionEqualToValue={(option, value) => option === value} // Adjusted isOptionEqualToValue function
+                  isOptionEqualToValue={(option, value) => option === value}
+                  onChange={(event, newValue) => handleCountryChange(newValue)}
+                  loading={countriesLoading}
                   renderOption={(props, option) => {
                     const selectedCountry = countries.find(
                       (country) => String(country.id) === option
@@ -675,11 +672,11 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                 />
               )}
 
-              {!stateProvincesEmpty && !stateProvincesLoading && (
+              {!stateProvincesEmpty && (
                 <RHFAutocomplete
                   name="state_province_id"
                   label="State / Province"
-                  value={currentProperty?.state_province_id}
+                  // value={currentProperty?.state_province_id}
                   options={stateProvinces.map((state) => String(state.id))}
                   getOptionLabel={(option) => {
                     const selectedSate = stateProvinces.find(
@@ -688,6 +685,8 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                     return selectedSate ? selectedSate.name : '';
                   }}
                   isOptionEqualToValue={(option, value) => option === value}
+                  onChange={(event, newValue) => handleStateChange(newValue)}
+                  loading={stateProvincesLoading}
                   renderOption={(props, option) => {
                     const selectedSate = stateProvinces.find(
                       (state) => String(state.id) === option
@@ -706,23 +705,21 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                 />
               )}
 
-{!citiesEmpty && !citiesLoading && (
+              {!citiesEmpty && !citiesLoading && (
                 <RHFAutocomplete
                   name="city_id"
                   label="City"
-                  value={currentProperty?.city_id}
+                  // value={currentProperty?.city_id}
                   options={cities.map((city) => String(city.id))}
                   getOptionLabel={(option) => {
-                    const selectedCity = cities.find(
-                      (city) => city.id === Number(option)
-                    );
+                    const selectedCity = cities.find((city) => city.id === Number(option));
                     return selectedCity ? selectedCity.name_en : '';
                   }}
                   isOptionEqualToValue={(option, value) => option === value}
+                  onChange={(event, newValue) => handleCityChange(newValue)}
+                  loading={citiesLoading}
                   renderOption={(props, option) => {
-                    const selectedCity = cities.find(
-                      (city) => String(city.id) === option
-                    );
+                    const selectedCity = cities.find((city) => String(city.id) === option);
 
                     if (!selectedCity) {
                       return null;

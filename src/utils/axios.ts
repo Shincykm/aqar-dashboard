@@ -187,7 +187,7 @@ export const endpoints = {
   },
   amenityProperty: {
     list: 'admin/propertyAmenityMapping/getPropertyAmenityMappingList',
-    createUpdate: '/api/admin/propertyAmenityMapping/createUpdatePropertyAmenityMapping',
+    createUpdate: '/api/admin/propertyAmenityMapping/createPropertyAmenityListMapping',
     delete: '/api/admin/propertyAmenityMapping/deletePropertyAmenityMapping',
     details: '/api/admin/propertyAmenityMapping/getAmenitiesByPropertyId',
   },

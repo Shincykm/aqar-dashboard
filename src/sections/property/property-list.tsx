@@ -2,9 +2,9 @@
 import Box, { BoxProps } from '@mui/material/Box';
 import Pagination, { paginationClasses } from '@mui/material/Pagination';
 // types
-import { IProductItem } from 'src/types/product';
+import { IPropertyItem } from 'src/types/property';
 //
-import propertyItem from './property-item';
+import PropertyItem from './property-item';
 import { PropertyItemSkeleton } from './property-skeleton';
 
 // ----------------------------------------------------------------------
@@ -14,7 +14,7 @@ type Props = BoxProps & {
   loading?: boolean;
 };
 
-export default function PropertyList({ property, loading, ...other }: Props) {
+export default function ProductList({ property, loading, ...other }: Props) {
   const renderSkeleton = (
     <>
       {[...Array(16)].map((_, index) => (
@@ -25,8 +25,8 @@ export default function PropertyList({ property, loading, ...other }: Props) {
 
   const renderList = (
     <>
-      {property.map((prop) => (
-        <PropertyItem key={property.id} product={property} />
+      {property.map((property) => (
+        <PropertyItem key={property.id} property={property} />
       ))}
     </>
   );

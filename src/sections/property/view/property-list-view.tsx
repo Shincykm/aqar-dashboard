@@ -44,7 +44,6 @@ import PropertyTableRow from '../../property/property-table-row';
 import PropertyTableToolbar from '../../property/property-table-toolbar';
 import PropertyTableFiltersResult from '../../property/property-table-filters-result';
 import { useGetProperties } from 'src/api/property';
-import { property } from 'lodash';
 
 // ----------------------------------------------------------------------
 
@@ -161,7 +160,7 @@ export default function PropertyListView() {
 
   const handleViewRow = useCallback(
     (id: string) => {
-      router.push(paths.dashboard.property.details(id));
+      router.push(paths.dashboard.property.edit(id));
     },
     [router]
   );

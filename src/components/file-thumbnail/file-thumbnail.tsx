@@ -33,7 +33,7 @@ export default function FileThumbnail({
     format === 'image' && imageView ? (
       <Box
         component="img"
-        src={preview }
+        src={preview}
         sx={{
           width: 1,
           height: 1,

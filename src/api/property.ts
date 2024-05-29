@@ -4,6 +4,7 @@ import { useMemo } from 'react';
 import { fetcher, endpoints, performRequest, fetcher1 } from 'src/utils/axios';
 // types
 import { IPropertyItem } from 'src/types/property';
+import { createFormData } from 'src/utils/create-formData';
 // ----------------------------------------------------------------------
 
 export function useGetProperties() {
@@ -48,34 +49,11 @@ export function useGetProperty(propertyId: string) {
 
 // ----------------------------------------------------------------------
 
-export async function useCreateUpdateProperty(data: any) {
+export async function useCreateUpdateProperty(propertyData: any) {
   const URL = endpoints.property.createUpdate;
-  console.log(data);
-  
-  const formData = new FormData();
-
-  const { amenity_items, ...propertyData } = data;
 
   // Hnadling formData
-  Object.entries(data).forEach(([key, value]) => {
-    if (value === true || value === false) {
-      formData.append(key, value ? '1' : '0');
-    } else if (typeof value === 'string' && value !== '') {
-      formData.append(key, value);
-    } else if (typeof value === 'number' && value !== 0) {
-      formData.append(key, value.toString());
-    } else if (key === 'pictures' && Array.isArray(value)) {
-      value.forEach((file, index) => {
-        formData.append(`pictures[${index}]`, file);
-      });
-    } else {
-      formData.append(key, '');
-    }
-  });
-
-  formData.forEach((value, key) => {
-    console.log(`${key}: ${value}`);
-  });
+  const formData = createFormData(propertyData);
 
   try {
     const response = await performRequest<any>('post', URL, {

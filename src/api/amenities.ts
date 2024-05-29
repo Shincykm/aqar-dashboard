@@ -109,12 +109,14 @@ export async function useDeleteAmenities(amenityId: number) {
 // Amenity-Property mapping 
 
 
-export async function useCreateUpdateAmenityPropertyMapping(amenityId: any, propertyId:any) {
+export async function useCreateUpdateAmenityPropertyMapping(amenityIds, propertyId:any) {
   const URL = endpoints.amenityProperty.createUpdate;
 
+  console.log(amenityIds, typeof amenityIds);
+  
   try {
     const formData = new FormData();
-    formData.append('amenity_id', amenityId);
+    formData.append('amenities', amenityIds);
     formData.append('property_id', propertyId);
     const response = await performRequest<any>('post', URL, {
       headers: {
@@ -122,7 +124,7 @@ export async function useCreateUpdateAmenityPropertyMapping(amenityId: any, prop
       },
       data: formData,
     });
-    return response.data;
+    return response;
   } catch (error) {
     console.log(error);
   }
