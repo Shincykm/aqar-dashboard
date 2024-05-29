@@ -62,8 +62,8 @@ export async function useCreateUpdateAmenities(amenityData: any) {
       'Content-Type': 'multipart/form-data',
     };
   }
-  const response = await axios(`${import.meta.env.VITE_HOST_AQAR_API}${URL}`,{
-    method : "POST",
+  const response = await axios(`${import.meta.env.VITE_HOST_AQAR_API}${URL}`, {
+    method: "POST",
     ...config
   });
 
@@ -109,14 +109,20 @@ export async function useDeleteAmenities(amenityId: number) {
 // Amenity-Property mapping 
 
 
-export async function useCreateUpdateAmenityPropertyMapping(amenityIds, propertyId:any) {
+export async function useCreateUpdateAmenityPropertyMapping(amenityIds: any[], propertyId: any) {
   const URL = endpoints.amenityProperty.createUpdate;
 
   console.log(amenityIds, typeof amenityIds);
-  
+  console.log(Object.values(amenityIds), typeof Object.values(amenityIds));
+
+
   try {
     const formData = new FormData();
-    formData.append('amenities', amenityIds);
+    if (Array.isArray(amenityIds)) {
+      amenityIds.forEach((amenity, index) => {
+        formData.append(`amenities[${index}]`, amenity);
+      })
+    }
     formData.append('property_id', propertyId);
     const response = await performRequest<any>('post', URL, {
       headers: {
