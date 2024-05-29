@@ -50,14 +50,14 @@ export function useGetProperty(propertyId: string) {
 
 export async function useCreateUpdateProperty(data: any) {
   const URL = endpoints.property.createUpdate;
+  console.log(data);
+  
   const formData = new FormData();
 
   const { amenity_items, ...propertyData } = data;
 
   // Hnadling formData
   Object.entries(data).forEach(([key, value]) => {
-    console.log(key,typeof key, value, "==formData");
-    
     if (value === true || value === false) {
       formData.append(key, value ? '1' : '0');
     } else if (typeof value === 'string' && value !== '') {
@@ -68,20 +68,14 @@ export async function useCreateUpdateProperty(data: any) {
       value.forEach((file, index) => {
         formData.append(`pictures[${index}]`, file);
       });
-    }else if (key === 'country' || key === 'state_province' || key === "city") {
-      formData.append(`${key}_id`, JSON.stringify(value?.id));
     } else {
       formData.append(key, '');
     }
   });
 
-  // Remove unnecessary fields
-  ['city', 'country', 'state_province'].forEach(field => {
-    formData.delete(field);
+  formData.forEach((value, key) => {
+    console.log(`${key}: ${value}`);
   });
-  //temporary
-  formData.append('city_id', '1');
-
 
   try {
     const response = await performRequest<any>('post', URL, {
