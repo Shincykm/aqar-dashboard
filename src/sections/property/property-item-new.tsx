@@ -41,7 +41,6 @@ export default function PropertyItemNew({ property, onView, onEdit, onDelete }: 
     amount,
     size_sqm,
     pictures,
-    reference_number,
   } = property;
   
 
@@ -153,7 +152,7 @@ export default function PropertyItemNew({ property, onView, onEdit, onDelete }: 
 
       {[
         {
-          label: address?.city?.name_en ? `${address.city.name_en}, ${address?.state_province?.name}` : `${address?.state_province?.name || ""}`,
+          label: address?.city?.name_en || "Location not available",
           icon: <Iconify icon="mingcute:location-fill" sx={{ color: 'error.main' }} />,
         },
         {

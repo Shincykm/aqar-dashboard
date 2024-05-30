@@ -162,11 +162,10 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
   const onSubmit = handleSubmit(async (data: any) => {
     try {
       const { amenity_items, ...propertyData } = data;
-      if(currentProperty.id){
+      if(currentProperty?.id){
         propertyData.id = currentProperty.id;
       }
       
-      console.log(amenity_items, currentProperty.amenities);
       const response = await useCreateUpdateProperty(propertyData);
       
       if (response) {
@@ -184,7 +183,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
 
         // Handling amenity-property mapping
         
-        if(currentProperty.id && amenity_items.length === 0){
+        if(currentProperty?.id && amenity_items.length === 0){
           await useDeleteAmenityPropertyMapping(propertyId);
         }
 
@@ -199,7 +198,8 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
       }
     } catch (error) {
       console.log(error);
-      setErrorMsg(error.response.message || error);
+      enqueueSnackbar(error, {variant : 'error'});
+
     }
   });
 

@@ -35,11 +35,12 @@ import PropertyListNew from '../property-list-new';
 import PropertySearch from '../property-search';
 
 // api
-import { useGetProperties } from 'src/api/property';
+import { useDeleteProperty, useGetProperties } from 'src/api/property';
 import { TableHeadCustom, TablePaginationCustom, TableSelectedAction, TableSkeleton, useTable } from 'src/components/table';
 import { Table, TableBody, TableContainer, Tooltip } from '@mui/material';
 import { IconButton } from 'yet-another-react-lightbox';
 import Scrollbar from 'src/components/scrollbar';
+import { enqueueSnackbar } from 'notistack';
 
 // ----------------------------------------------------------------------
 
@@ -59,6 +60,7 @@ export default function PropertyListViewNew() {
   const openFilters = useBoolean();
 
   const [sortBy, setSortBy] = useState('latest');
+  const [deletedId, setdeletedId] = useState<any>(null);
 
   const [search, setSearch] = useState<{ query: string; results: IPropertyItem[] }>({
     query: '',
@@ -67,12 +69,12 @@ export default function PropertyListViewNew() {
 
   const [filters, setFilters] = useState(defaultFilters);
 
-  const [page, setPage] = useState();
-  const [pageLimit, setPageLimit] = useState();
+  const [page, setPage] = useState(1);
+  const [pageLimit, setPageLimit] = useState(12);
 
 // ----------------------------------------------------------------------
 // Fetch Porperty Data 
-const {property : properties, total, countPerPage, propertyEmpty, propertyLoading } = useGetProperties(1, 10);
+const {property : properties, total, countPerPage, propertyEmpty, propertyLoading } = useGetProperties(page, pageLimit);
 
   const dateError =
     filters.startDate && filters.endDate
@@ -83,6 +85,7 @@ const {property : properties, total, countPerPage, propertyEmpty, propertyLoadin
     inputData: properties as any,
     filters,
     sortBy,
+    deletedId,
     dateError,
   });
 
@@ -130,16 +133,27 @@ const {property : properties, total, countPerPage, propertyEmpty, propertyLoadin
     setFilters(defaultFilters);
   }, []);
 
-  const handlePagination = (e:any, value:any)=>{
-    console.log(value);
-    // fetch properties based on page
-    
-  }
+  const handlePagination = useCallback((e:any, value:any) => {
+    setPage(value);
+  }, []);
+
   const handlePageItemLimit = (e:any, value:any)=>{
     console.log(value);
     // fetch properties based on page
     
   }
+
+  const handleDelete = useCallback(async (id: string) => {
+    try {
+      const response = await useDeleteProperty(id);
+      if(response){
+        enqueueSnackbar("Property Deleted.");
+        setdeletedId(id);
+      }
+    } catch (error) {
+      enqueueSnackbar('Unable to Delete!', { variant: 'error' });
+    }
+  }, []);
 
   const renderFilters = (
     <Stack
@@ -237,8 +251,10 @@ const {property : properties, total, countPerPage, propertyEmpty, propertyLoadin
         totalProperties={total}
         countPerPage={countPerPage}
         handlePagination={handlePagination} 
-        handlePageItemLimit = {handlePageItemLimit}
-        pageLimit={pageLimit}
+        page={page}
+        handleDelete={handleDelete}
+        // handlePageItemLimit = {handlePageItemLimit}
+        // pageLimit={pageLimit}
       />
 
     </Container>
@@ -251,12 +267,14 @@ const applyFilter = ({
   inputData,
   filters,
   sortBy,
+  deletedId,
   dateError,
 }: {
 //   inputData: any | ITourItem[];
   inputData: any;
   filters: ITourFilters;
   sortBy: string;
+  deletedId:any,
   dateError: boolean;
 }) => {
   const { services, destination, startDate, endDate, tourGuides } = filters;
@@ -274,6 +292,10 @@ const applyFilter = ({
 
   if (sortBy === 'popular') {
     inputData = orderBy(inputData, ['totalViews'], ['desc']);
+  }
+
+  if (deletedId !== null) {
+    inputData = inputData.filter((item:any) => item.id !== deletedId);
   }
 
   // FILTERS
@@ -300,6 +322,10 @@ const applyFilter = ({
 //   if (services.length) {
 //     inputData = inputData.filter((tour) => tour.services.some((item) => services.includes(item)));
 //   }
+
+  // if (delete) {
+  //     inputData = inputData.filter((tour) => tour.services.some((item) => services.includes(item)));
+  //   }
 
   return inputData;
 };

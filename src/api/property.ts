@@ -71,6 +71,17 @@ export async function useCreateUpdateProperty(propertyData: any) {
 }
 
 // ----------------------------------------------------------------------
+export async function useDeleteProperty(id: any) {
+  const URL = endpoints.property.delete;
+
+  try {
+    const response = await performRequest<any>('DELETE', `${URL}/${id}`);
+    return response?.data;
+  } catch (error) {
+    throw error;
+  }
+}
+// ----------------------------------------------------------------------
 // Delete property-picture mapping when removing file during edit
 
 export async function useDeletePropertyPictureMapping(id: any) {

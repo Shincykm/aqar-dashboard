@@ -16,6 +16,8 @@ import { RHFSelect } from 'src/components/hook-form';
 import { FormControl } from '@mui/base';
 import { InputLabel, Select } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
+import { useDeleteProperty } from 'src/api/property';
+import { enqueueSnackbar } from 'notistack';
 
 // ----------------------------------------------------------------------
 
@@ -25,7 +27,7 @@ type Props = {
   countPerPage : any;
 };
 
-export default function PropertyListNew({ properties, totalProperties , countPerPage, handlePagination, handlePageItemLimit }: any) {
+export default function PropertyListNew({ properties, totalProperties , countPerPage, page, handleDelete, handlePagination, handlePageItemLimit, pageLimit }: any) {
   const router = useRouter();
 
   // const handleView = useCallback(
@@ -42,10 +44,6 @@ export default function PropertyListNew({ properties, totalProperties , countPer
     [router]
   );
 
-  const handleDelete = useCallback((id: string) => {
-    console.info('DELETE', id);
-  }, []);
-
   return (
     <>
       <Box
@@ -57,9 +55,9 @@ export default function PropertyListNew({ properties, totalProperties , countPer
           md: 'repeat(3, 1fr)',
         }}
       >
-        {properties.map((property:any) => (
+        {properties.map((property:any,index:any) => (
           <PropertyItemNew
-            key={property.id}
+            key={index}
             property={property}
             // onView={() => handleView(property.id)}
             onEdit={() => handleEdit(property.id)}
@@ -68,46 +66,35 @@ export default function PropertyListNew({ properties, totalProperties , countPer
         ))}
       </Box>
 
-      <select
-        name="pageLimit"
-        onChange = {handlePageItemLimit}
-        >
-        <option value="">Items Per Page</option>
-        <option value="5">5</option>
-        <option value="10">10</option>
-        <option value="15">15</option>
-        <option value="20">20</option>
-      </select>
+          {/* <FormControl>
+            <InputLabel id="demo-simple-select-label">Items Per Page</InputLabel>
+            <Select
+              labelId="demo-simple-select-label"
+              id="demo-simple-select"
+              value={pageLimit}
+              label="Age"
+              onChange={handlePageItemLimit}
+            >
+              <MenuItem value={10}>10</MenuItem>
+              <MenuItem value={20}>20</MenuItem>
+              <MenuItem value={30}>30</MenuItem>
+            </Select>
+          </FormControl> */}
 
-      <FormControl>
-      <InputLabel id="demo-simple-select-label">Items Per Page</InputLabel>
-      <Select
-        labelId="demo-simple-select-label"
-        id="demo-simple-select"
-        value={pageLimit}
-        label="Age"
-        onChange={handlePageItemLimit}
-      >
-        <MenuItem value={10}>10</MenuItem>
-        <MenuItem value={20}>20</MenuItem>
-        <MenuItem value={30}>30</MenuItem>
-      </Select>
-    </FormControl>
-
-      {properties.length > 8 && (
-        
-        <Pagination
-          count={totalProperties/countPerPage}
-          onChange={handlePagination}
-          sx={{
-            mt: 8,
-            [`& .${paginationClasses.ul}`]: {
-              justifyContent: 'center',
-            },
-          }}
-        />
-
-      )}
+          {properties.length > 4 && (
+              <Pagination
+                count={Math.ceil(totalProperties/countPerPage)}
+                onChange={handlePagination}
+                value = {page}
+                sx={{
+                  mt: 8,
+                  [`& .${paginationClasses.ul}`]: {
+                    justifyContent: 'center',
+                  },
+                }}
+              />
+            )}
+      
     </>
   );
 }
