@@ -230,16 +230,12 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
 
   const handleRemoveFile = useCallback(
     async (inputFile: any) => {
-      const filtered = values.pictures && values.pictures?.filter((file:any) => (file?.id !== inputFile?.id));
+      const filtered = values.pictures && values.pictures?.filter((file:any) => (file?.id !== inputFile?.id)) || [inputFile];
       const response = await deleteSingleImage(inputFile);
-      if(response.status) setValue('pictures', filtered);
+      if(response) setValue('pictures', filtered);
     },
     [setValue, values.pictures]
   );
-
-  const handleRemoveAllFiles = useCallback(() => {
-    setValue('pictures', []);
-  }, [setValue]);
 
   const handleSelectPropertyType = useCallback(
     (e: any) => {

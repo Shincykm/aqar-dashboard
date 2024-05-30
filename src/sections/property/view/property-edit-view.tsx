@@ -12,11 +12,8 @@ import PropertyNewEditForm from '../property-new-edit-form';
 
 // ----------------------------------------------------------------------
 
-type Props = {
-  id: string;
-};
 
-export default function PropertyEditView({ id }: Props) {
+export default function PropertyEditView({ id }: any) {
   const settings = useSettingsContext();
 
   const { property: currentProperty } = useGetProperty(id);
@@ -31,7 +28,7 @@ export default function PropertyEditView({ id }: Props) {
             name: 'Property',
             href: paths.dashboard.property.root,
           },
-          { name: currentProperty?.name_en },
+          { name: currentProperty.name_en },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

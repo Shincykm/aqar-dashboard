@@ -7,14 +7,16 @@ import { IPropertyItem } from 'src/types/property';
 import { createFormData } from 'src/utils/create-formData';
 // ----------------------------------------------------------------------
 
-export function useGetProperties() {
-  const URL = endpoints.property.list;
+export function useGetProperties(page=1, limit=10) {
+  const URL = `${endpoints.property.list}?page=${page}&limit=${limit}`;
 
   const { data, isLoading, error, isValidating } = useSWR(URL, fetcher1);
 
   const memoizedValue = useMemo(
     () => ({
       property: (data?.data as IPropertyItem[]) || [],
+      total: data?.total,
+      countPerPage:data?.count_per_page,
       propertyLoading: isLoading,
       propertyError: error,
       propertyValidating: isValidating,

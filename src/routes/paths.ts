@@ -181,7 +181,7 @@ export const paths = {
     property: {
       root: `${ROOTS.DASHBOARD}/property`,
       new: `${ROOTS.DASHBOARD}/property/new`,
-      // details: (id: string) => `${ROOTS.DASHBOARD}/property/${id}`,
+      details: (id: string) => `${ROOTS.DASHBOARD}/property/${id}`,
       edit: (id: string) => `${ROOTS.DASHBOARD}/property/${id}/edit`,
       demo: {
         details: `${ROOTS.DASHBOARD}/property/${MOCK_ID}`,

@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 // sections
-import PropertyListView from 'src/sections/property/view/property-list-view';
+import PropertyListViewNew from 'src/sections/property/view/property-list-view-new';
 
 // ----------------------------------------------------------------------
 
@@ -11,8 +11,7 @@ export default function PropertyListPage() {
         <title> Dashboard: Property List</title>
       </Helmet>
 
-      {/* <ProductListView /> */}
-      <PropertyListView />
+      <PropertyListViewNew />
     </>
   );
 }
