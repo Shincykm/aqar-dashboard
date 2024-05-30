@@ -106,7 +106,7 @@ export async function useDeleteAmenities(amenityId: number) {
 
 
 // ----------------------------------------------------------------------
-// Amenity-Property mapping 
+// Amenity-Property mapping - create / update
 
 
 export async function useCreateUpdateAmenityPropertyMapping(amenityIds: any[], propertyId: any) {
@@ -130,6 +130,21 @@ export async function useCreateUpdateAmenityPropertyMapping(amenityIds: any[], p
       },
       data: formData,
     });
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+// ----------------------------------------------------------------------
+// Amenity-Property mapping - delete
+
+
+export async function useDeleteAmenityPropertyMapping(propertyId: any) {
+  const URL = endpoints.amenityProperty.delete;
+
+  try {
+    const response = await performRequest<any>('DELETE', `${URL}/${propertyId}`);
     return response;
   } catch (error) {
     console.log(error);

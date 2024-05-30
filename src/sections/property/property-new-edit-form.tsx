@@ -10,7 +10,7 @@ import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
-import { Divider } from '@mui/material';
+import { Alert, Divider } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 // routes
 import { paths } from 'src/routes/paths';
@@ -33,8 +33,8 @@ import { IPropertyItem } from 'src/types/property';
 import { useGetPropertyTypeList } from 'src/api/propertyType';
 import { useGetPropertyPurposeList } from 'src/api/propertyPurpose';
 import { useGetPropertyStyleList } from 'src/api/propertyStyle';
-import { useCreateUpdateProperty } from 'src/api/property';
-import { useCreateUpdateAmenityPropertyMapping, useGetAmenitiesList } from 'src/api/amenities';
+import { useCreateUpdateProperty, useDeletePropertyPictureMapping } from 'src/api/property';
+import { useCreateUpdateAmenityPropertyMapping, useDeleteAmenityPropertyMapping, useGetAmenitiesList } from 'src/api/amenities';
 //
 import { convertStringToBoolean } from 'src/utils/string-to-boolean';
 // import AmenityNewEditDetails from './amenity-new-edit-details';
@@ -56,6 +56,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
   const { propertyStyles, propertyStyleEmpty, propertyStyleLoading } = useGetPropertyStyleList(1,10);
   
   const [subTypeList, setSubTypeList] = useState<any>(null);
+  const [errorMsg, setErrorMsg] = useState<any>(null);
 
   const NewPropertySchema = Yup.object().shape({
     name_ar: Yup.string(),
@@ -164,9 +165,10 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
       if(currentProperty.id){
         propertyData.id = currentProperty.id;
       }
-      console.log(amenity_items,"====")
       
+      console.log(amenity_items, currentProperty.amenities);
       const response = await useCreateUpdateProperty(propertyData);
+      
       if (response) {
         const { id: propertyId } = response;
         // Handling amenity-picture mapping
@@ -181,9 +183,13 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
           */
 
         // Handling amenity-property mapping
+        
+        if(currentProperty.id && amenity_items.length === 0){
+          await useDeleteAmenityPropertyMapping(propertyId);
+        }
+
         if (amenity_items.length > 0) {
-          const res = await useCreateUpdateAmenityPropertyMapping(data.amenity_items, propertyId);
-          if(res?.status === "error") throw new Error("Issue adding amenities")
+          await useCreateUpdateAmenityPropertyMapping(data.amenity_items, propertyId);
         }
 
         reset();
@@ -193,8 +199,19 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
       }
     } catch (error) {
       console.log(error);
+      setErrorMsg(error.response.message || error);
     }
   });
+
+  const deleteSingleImage = async(image:any) => {
+    try {
+      const res = await useDeletePropertyPictureMapping(image?.pivot?.id);
+      enqueueSnackbar(`Image Deleted`);
+      return res;
+    } catch (error) {
+      enqueueSnackbar('Unable to Delete!', { variant: 'error' });
+    }
+  }
 
   const handleDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -212,12 +229,10 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
   );
 
   const handleRemoveFile = useCallback(
-    (inputFile: File | string ) => {
-      const filtered =
-        values.pictures && values.pictures?.filter((file: any) => file !== inputFile);
-        console.log(filtered,inputFile);
-      
-        setValue('pictures', filtered);      
+    async (inputFile: any) => {
+      const filtered = values.pictures && values.pictures?.filter((file:any) => (file?.id !== inputFile?.id));
+      const response = await deleteSingleImage(inputFile);
+      if(response.status) setValue('pictures', filtered);
     },
     [setValue, values.pictures]
   );
@@ -353,7 +368,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                 maxSize={3145728}
                 onDrop={handleDrop}
                 onRemove={handleRemoveFile}
-                onRemoveAll={handleRemoveAllFiles}
+                // onRemoveAll={handleRemoveAllFiles}
                 // onUpload={() => console.info('ON UPLOAD')}
               />
             </Stack>
@@ -730,16 +745,6 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                 />
               )}
             </Box>
-          </Stack>
-
-          <Stack spacing={3} sx={{ p: 3 }}>
-            <RHFTextField
-              name="display_order"
-              label="Display Order"
-              placeholder="0"
-              type="number"
-              InputLabelProps={{ shrink: true }}
-            />
           </Stack>
         </Card>
       </Grid>

@@ -152,6 +152,7 @@ export const endpoints = {
     details: '/api/admin/property/getPropertyById',
     // search: '/api/property/search',
     delete: '/api/admin/property/deleteProperty',
+    deletePicture : '/api/admin/propertyPictureMapping/deletePropertyPictureMapping',
     createUpdate: '/api/admin/property/createUpdateProperty',
   },
   propertyPictureMapping: {
