@@ -19,6 +19,9 @@ import Image from 'src/components/image';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { shortDateLabel } from 'src/components/custom-date-range-picker';
+import { useBoolean } from 'src/hooks/use-boolean';
+import AddAgent from './add-agent';
+import { Tooltip } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
@@ -32,6 +35,8 @@ import { shortDateLabel } from 'src/components/custom-date-range-picker';
 
 export default function PropertyItemNew({ property, onView, onEdit, onDelete }: any) {
   const popover = usePopover();
+
+  const quickEdit = useBoolean();
 
   const {
     id,
@@ -176,7 +181,26 @@ export default function PropertyItemNew({ property, onView, onEdit, onDelete }: 
           {item.label}
         </Stack>
       ))}
+
+        {/* <Stack
+        spacing={1}
+        direction="row"
+        alignItems="center"
+        sx={{ typography: 'body2' }}
+        >
+          Add Agent
+        <Tooltip title="Add Agent" placement="top" arrow>
+          <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>
+          <Iconify icon="mingcute:add-line" />
+          </IconButton>
+        </Tooltip>
+        
+        </Stack>
+
+        <AddAgent currentProperty={property} open={quickEdit.value} onClose={quickEdit.onFalse} /> */}
+    
     </Stack>
+
   );
 
   return (

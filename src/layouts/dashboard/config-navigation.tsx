@@ -417,6 +417,23 @@ export function useNavData() {
 
         ],
       },
+
+      {
+        subheader: t('agents'),
+        items: [
+          // Agents
+          {
+            title: t('agents'),
+            path: paths.dashboard.agents.root,
+            icon: ICONS.user,
+            children: [
+              { title: t('list'), path: paths.dashboard.agents.list },
+              { title: t('create'), path: paths.dashboard.agents.new },
+            ],
+          },
+
+        ],
+      },
     ],
     [t]
   );

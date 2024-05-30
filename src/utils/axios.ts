@@ -196,5 +196,11 @@ export const endpoints = {
     state : '/api/admin/address/stateProvince/getAllStateProvinces',
     country : '/api/admin/address/country/getAllCountries',
     city : '/api/admin/address/city/getAllCities'
-  }
+  },
+  agents: {
+    list: '/api/admin/agent/get',
+    createUpdate: '/api/admin/agent/createUpdate',
+    delete: '/api/admin/agent/delete',
+    details: '/api/admin/agent',
+  },
 };

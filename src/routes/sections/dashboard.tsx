@@ -90,6 +90,11 @@ const AmenitiesListPage = lazy(() => import('src/pages/dashboard/amenities/list'
 const AmenitiesCreatePage = lazy(() => import('src/pages/dashboard/amenities/new'));
 const AmenitiesEditPage = lazy(() => import('src/pages/dashboard/amenities/edit'));
 
+// Amenities
+const AgentListPage = lazy(() => import('src/pages/dashboard/agents/list'));
+const AgentCreatePage = lazy(() => import('src/pages/dashboard/agents/new'));
+const AgentEditPage = lazy(() => import('src/pages/dashboard/agents/edit'));
+
 // ----------------------------------------------------------------------
 
 export const dashboardRoutes = [
@@ -111,18 +116,18 @@ export const dashboardRoutes = [
       { path: 'banking', element: <OverviewBankingPage /> },
       { path: 'booking', element: <OverviewBookingPage /> },
       { path: 'file', element: <OverviewFilePage /> },
-      {
-        path: 'user',
-        children: [
-          { element: <UserProfilePage />, index: true },
-          { path: 'profile', element: <UserProfilePage /> },
-          { path: 'cards', element: <UserCardsPage /> },
-          { path: 'list', element: <UserListPage /> },
-          { path: 'new', element: <UserCreatePage /> },
-          { path: ':id/edit', element: <UserEditPage /> },
-          { path: 'account', element: <UserAccountPage /> },
-        ],
-      },
+      // {
+      //   path: 'user',
+      //   children: [
+      //     { element: <UserProfilePage />, index: true },
+      //     { path: 'profile', element: <UserProfilePage /> },
+      //     { path: 'cards', element: <UserCardsPage /> },
+      //     { path: 'list', element: <UserListPage /> },
+      //     { path: 'new', element: <UserCreatePage /> },
+      //     { path: ':id/edit', element: <UserEditPage /> },
+      //     { path: 'account', element: <UserAccountPage /> },
+      //   ],
+      // },
       {
         path: 'product',
         children: [
@@ -236,6 +241,28 @@ export const dashboardRoutes = [
           { path: 'list', element: <AmenitiesListPage /> },
           { path: 'new', element: <AmenitiesCreatePage /> },
           { path: ':id/edit', element: <AmenitiesEditPage /> },
+        ],
+      },
+
+      {
+        path: 'user',
+        children: [
+          { element: <UserProfilePage />, index: true },
+          { path: 'profile', element: <UserProfilePage /> },
+          { path: 'cards', element: <UserCardsPage /> },
+          { path: 'list', element: <UserListPage /> },
+          { path: 'new', element: <UserCreatePage /> },
+          { path: ':id/edit', element: <UserEditPage /> },
+          { path: 'account', element: <UserAccountPage /> },
+        ],
+      },
+      {
+        path: 'agents',
+        children: [
+          { element: <AgentCreatePage />, index: true },
+          { path: 'list', element: <AgentListPage /> },
+          { path: 'new', element: <AgentCreatePage /> },
+          { path: ':id/edit', element: <AgentEditPage /> },
         ],
       },
     ],
