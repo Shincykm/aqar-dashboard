@@ -716,7 +716,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                 <RHFAutocomplete
                   name="city_id"
                   label="City"
-                  value={currentProperty.city_id ? String(currentProperty.city_id) : ''}
+                  value={currentProperty?.city_id ? String(currentProperty?.city_id) : ''}
                   options={cities.map((city) => String(city.id))}
                   getOptionLabel={(option) => {
                     const selectedCity = cities.find((city) => city.id === Number(option));
