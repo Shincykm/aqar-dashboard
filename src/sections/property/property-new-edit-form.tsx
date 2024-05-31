@@ -161,19 +161,22 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
     setAmenitiesList(transformedAmenities);
   }, [amenitiesList]);
 
-  const onSubmit = handleSubmit(async (data: any) => {
+  const onSubmit = handleSubmit(async (propertyData: any) => {
     try {
-      const { amenity_items, ...propertyData } = data;
       if(currentProperty?.id){
-        propertyData.id = currentProperty.id;
+        console.log("edit");
+        
+        propertyData["id"] = currentProperty.id;
       }
-      
+       console.log(propertyData, "create");
+       
       const response = await useCreateUpdateProperty(propertyData);
 
       if(!response) throw new Error("Something went wrong!");
       
       if (response) {
-        const { id: propertyId } = response;
+        // const { id: propertyId } = response;
+        // -----------------------------------------
         // Handling amenity-picture mapping
         /* 
           const amenitiesResponse = await useCreateUpdatePropertyPictureMapping(formDataAmenity);
@@ -184,21 +187,22 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
           console.info('DATA', data);
           } 
           */
+        // -----------------------------------------
 
         // Handling amenity-property mapping
         
-        if(currentProperty?.id && amenity_items.length === 0){
-          await useDeleteAmenityPropertyMapping(propertyId);
-        }
+        // if(currentProperty?.id && amenity_items.length === 0){
+        //   await useDeleteAmenityPropertyMapping(propertyId);
+        // }
 
-        if (amenity_items.length > 0) {
-          await useCreateUpdateAmenityPropertyMapping(data.amenity_items, propertyId);
-        }
+        // if (amenity_items.length > 0) {
+        //   await useCreateUpdateAmenityPropertyMapping(data.amenity_items, propertyId);
+        // }
 
         reset();
         enqueueSnackbar(currentProperty ? 'Update success!' : 'Create success!');
         router.push(paths.dashboard.property.root);
-        console.info('DATA', data);
+        console.info('DATA', propertyData);
       }
     } catch (error) {
       console.log(error);
@@ -404,7 +408,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
               <RHFTextField name="reference_number" label="Reference Number" />
             </Stack>
             {/* <RHFDatePicker name="constructed_date" label="Constructed Date" /> */}
-            <Stack spacing={1.5}>
+            {/* <Stack spacing={1.5}>
               <Typography variant="subtitle2">Constructed Date</Typography>
               <Controller
                 name="constructed_date"
@@ -423,7 +427,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                   />
                 )}
               />
-            </Stack>
+            </Stack> */}
           </Stack>
         </Card>
       </Grid>
