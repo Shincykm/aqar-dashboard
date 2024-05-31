@@ -164,7 +164,7 @@ export default function PropertyItemNew({ property, onView, onEdit, onDelete }: 
             label: name_ar || "",
         },
         {
-            label: size_sqm || "",
+            label: size_sqm ?  `${size_sqm} sqm` : '',
         },
         {
           label: amount ? `${amount} AED` : 'Price not available',

@@ -92,8 +92,8 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
       description_ar: currentProperty?.description_ar || '',
       description_en: currentProperty?.description_en || '',
       active: convertStringToBoolean(currentProperty?.active) || true,
-      is_featured: convertStringToBoolean(currentProperty?.is_featured) || false,
-      is_furnished: convertStringToBoolean(currentProperty?.is_furnished) || false,
+      is_featured: currentProperty?.is_featured || false,
+      is_furnished: currentProperty?.is_furnished || false,
       count_bathrooms: currentProperty?.count_bathrooms || 0,
       count_bedrooms: currentProperty?.count_bedrooms || 0,
       count_parking: currentProperty?.count_parking || 0,
@@ -147,6 +147,8 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
 
   useEffect(() => {
     if (currentProperty) {
+      console.log(currentProperty?.is_featured);
+      
       reset(defaultValues);
     }
   }, [currentProperty]);
@@ -167,6 +169,8 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
       }
       
       const response = await useCreateUpdateProperty(propertyData);
+
+      if(!response) throw new Error("Something went wrong!");
       
       if (response) {
         const { id: propertyId } = response;
@@ -198,8 +202,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
       }
     } catch (error) {
       console.log(error);
-      enqueueSnackbar(error, {variant : 'error'});
-
+      enqueueSnackbar(error?.message || "api error", {variant : 'error'});
     }
   });
 
@@ -683,7 +686,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                 <RHFAutocomplete
                   name="state_province_id"
                   label="State / Province"
-                  value={currentProperty ? String(currentProperty.state_province_id) : ''}
+                  // value={currentProperty ? String(currentProperty.state_province_id) : ''}
                   options={stateProvinces.map((state) => String(state.id))}
                   getOptionLabel={(option) => {
                     const selectedSate = stateProvinces.find(
@@ -716,7 +719,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                 <RHFAutocomplete
                   name="city_id"
                   label="City"
-                  value={currentProperty?.city_id ? String(currentProperty?.city_id) : ''}
+                  // value={currentProperty?.city_id ? String(currentProperty?.city_id) : ''}
                   options={cities.map((city) => String(city.id))}
                   getOptionLabel={(option) => {
                     const selectedCity = cities.find((city) => city.id === Number(option));
