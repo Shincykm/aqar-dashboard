@@ -21,17 +21,16 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { shortDateLabel } from 'src/components/custom-date-range-picker';
 import { useBoolean } from 'src/hooks/use-boolean';
 import AddAgent from './add-agent';
-import { Tooltip } from '@mui/material';
+import { Button, Tooltip } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
-// type Props = {
-// //   tour: ITourItem;
-//   properties: any;
-//   onView: VoidFunction;
-//   onEdit: VoidFunction;
-//   onDelete: VoidFunction;
-// };
+type Props = {
+  properties: any;
+  // onView: VoidFunction;
+  onEdit: VoidFunction;
+  onDelete: VoidFunction;
+};
 
 export default function PropertyItemNew({ property, onView, onEdit, onDelete }: any) {
   const popover = usePopover();
@@ -41,59 +40,60 @@ export default function PropertyItemNew({ property, onView, onEdit, onDelete }: 
   const {
     id,
     name_en,
-    name_ar,
     address,
     amount,
     size_sqm,
     pictures,
+    count_bedrooms,
+    count_bathrooms,
   } = property;
-  
 
-//   const shortLabel = shortDateLabel(available.startDate, available.endDate);
 
-//   const renderRating = (
-//     <Stack
-//       direction="row"
-//       alignItems="center"
-//       sx={{
-//         top: 8,
-//         right: 8,
-//         zIndex: 9,
-//         borderRadius: 1,
-//         position: 'absolute',
-//         p: '2px 6px 2px 4px',
-//         typography: 'subtitle2',
-//         bgcolor: 'warning.lighter',
-//       }}
-//     >
-//       <Iconify icon="eva:star-fill" sx={{ color: 'warning.main', mr: 0.25 }} /> {ratingNumber}
-//     </Stack>
-//   );
+  //   const shortLabel = shortDateLabel(available.startDate, available.endDate);
 
-//   const renderPrice = (
-//     <Stack
-//       direction="row"
-//       alignItems="center"
-//       sx={{
-//         top: 8,
-//         left: 8,
-//         zIndex: 9,
-//         borderRadius: 1,
-//         bgcolor: 'grey.800',
-//         position: 'absolute',
-//         p: '2px 6px 2px 4px',
-//         color: 'common.white',
-//         typography: 'subtitle2',
-//       }}
-//     >
-//       {!!priceSale && (
-//         <Box component="span" sx={{ color: 'grey.500', mr: 0.25, textDecoration: 'line-through' }}>
-//           {fCurrency(priceSale)}
-//         </Box>
-//       )}
-//       {fCurrency(price)}
-//     </Stack>
-//   );
+  //   const renderRating = (
+  //     <Stack
+  //       direction="row"
+  //       alignItems="center"
+  //       sx={{
+  //         top: 8,
+  //         right: 8,
+  //         zIndex: 9,
+  //         borderRadius: 1,
+  //         position: 'absolute',
+  //         p: '2px 6px 2px 4px',
+  //         typography: 'subtitle2',
+  //         bgcolor: 'warning.lighter',
+  //       }}
+  //     >
+  //       <Iconify icon="eva:star-fill" sx={{ color: 'warning.main', mr: 0.25 }} /> {ratingNumber}
+  //     </Stack>
+  //   );
+
+  //   const renderPrice = (
+  //     <Stack
+  //       direction="row"
+  //       alignItems="center"
+  //       sx={{
+  //         top: 8,
+  //         left: 8,
+  //         zIndex: 9,
+  //         borderRadius: 1,
+  //         bgcolor: 'grey.800',
+  //         position: 'absolute',
+  //         p: '2px 6px 2px 4px',
+  //         color: 'common.white',
+  //         typography: 'subtitle2',
+  //       }}
+  //     >
+  //       {!!priceSale && (
+  //         <Box component="span" sx={{ color: 'grey.500', mr: 0.25, textDecoration: 'line-through' }}>
+  //           {fCurrency(priceSale)}
+  //         </Box>
+  //       )}
+  //       {fCurrency(price)}
+  //     </Stack>
+  //   );
 
   const renderImages = (
     <Stack
@@ -106,13 +106,13 @@ export default function PropertyItemNew({ property, onView, onEdit, onDelete }: 
       <Stack flexGrow={1} sx={{ position: 'relative' }}>
         {/* {renderPrice}
         {renderRating} */}
-        <Image alt={pictures[0].alt_attribute || "" } src={pictures[0].virtual_path} sx={{ borderRadius: 1, height: 164, width: 1 }} />
+        <Image alt={pictures[0].alt_attribute || ""} src={pictures[0].virtual_path} sx={{ borderRadius: 1, height: 164, width: 1 }} />
       </Stack>
       <Stack spacing={0.5}>
-        {pictures.length > 0 && 
-            pictures.map((pic:any, index:any)=>(
-               (index !== 0) && <Image key={pic.id} alt={pic.alt_attribute || "" } src={pic.virtual_path} ratio="1/1" sx={{ borderRadius: 1, width: 40 }} />
-            ))
+        {pictures.length > 0 &&
+          pictures.map((pic: any, index: any) => (
+            (index !== 0) && <Image key={pic.id} alt={pic.alt_attribute || ""} src={pic.virtual_path} ratio="1/1" sx={{ borderRadius: 1, width: 40 }} />
+          ))
         }
       </Stack>
     </Stack>
@@ -123,7 +123,7 @@ export default function PropertyItemNew({ property, onView, onEdit, onDelete }: 
       sx={{
         p: (theme) => theme.spacing(2.5, 2.5, 2, 2.5),
       }}
-    //   primary={`Posted date: ${fDateTime(createdAt)}`}
+      //   primary={`Posted date: ${fDateTime(createdAt)}`}
       secondary={
         <Link component={RouterLink} href={paths.dashboard.property.edit(id)} color="inherit">
           {name_en}
@@ -144,63 +144,78 @@ export default function PropertyItemNew({ property, onView, onEdit, onDelete }: 
   );
 
   const renderInfo = (
-    <Stack
-      spacing={1.5}
-      sx={{
-        position: 'relative',
-        p: (theme) => theme.spacing(0, 2.5, 2.5, 2.5),
-      }}
-    >
-      <IconButton onClick={popover.onOpen} sx={{ position: 'absolute', bottom: 20, right: 8 }}>
-        <Iconify icon="eva:more-vertical-fill" />
-      </IconButton>
+    <>
+      <Stack
+        spacing={1.5}
+        sx={{
+          position: 'relative',
+          p: (theme) => theme.spacing(0, 2.5, 2.5, 2.5),
+        }}
+      >
+        <IconButton onClick={popover.onOpen} sx={{ position: 'absolute', bottom: 20, right: 8 }}>
+          <Iconify icon="eva:more-vertical-fill" />
+        </IconButton>
 
-      {[
-        {
-          label: address?.city?.name_en || "Location not available",
-          icon: <Iconify icon="mingcute:location-fill" sx={{ color: 'error.main' }} />,
-        },
-        {
-            label: name_ar || "",
-        },
-        {
-            label: size_sqm ?  `${size_sqm} sqm` : '',
-        },
-        {
-          label: amount ? `${amount} AED` : 'Price not available',
-        },
-      ].map((item) => (
-        <Stack
-          key={item.label}
-          spacing={1}
-          direction="row"
-          alignItems="center"
-          sx={{ typography: 'body2' }}
-        >
-          {item.icon}
-          {item.label}
-        </Stack>
-      ))}
+        {[
+          {
+            label: address?.city?.name_en || "Location not available",
+            icon: <Iconify icon="mingcute:location-fill" sx={{ color: 'error.main' }} />,
+          },
+          {
+            label: count_bedrooms ? `${count_bedrooms} Beds` : "Bed info not available",
+            icon: <Iconify icon="tabler:bed-filled" sx={{ color: 'gray' }} />,
+          },
+          {
+            label: count_bathrooms ? `${count_bathrooms} Baths` : "Bath info not availble",
+            icon: <Iconify icon="solar:bath-line-duotone" sx={{ color: 'gray' }} />,
+          },
+          {
+            label: size_sqm ? `${size_sqm} sqm` : 'Area not available',
+            icon: <Iconify icon="bx:area" sx={{ color: 'orange' }} />,
 
-        {/* <Stack
+          },
+          {
+            label: amount ? `${amount} AED` : 'Price not available',
+            icon: <Iconify icon="solar:tag-price-bold" sx={{ color: 'green' }} />,
+
+          },
+        ].map((item) => (
+          <Stack
+            key={item.label}
+            spacing={1}
+            direction="row"
+            alignItems="center"
+            sx={{ typography: 'body2' }}
+          >
+            {item.label !== "" && item.icon}
+            {item.label}
+          </Stack>
+        ))}
+      </Stack>
+
+      <Stack
         spacing={1}
         direction="row"
         alignItems="center"
-        sx={{ typography: 'body2' }}
-        >
-          Add Agent
+        sx={{
+          position: 'relative',
+          p: (theme) => theme.spacing(0, 2.5, 2.5, 2.5),
+        }}
+      >
         <Tooltip title="Add Agent" placement="top" arrow>
-          <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>
-          <Iconify icon="mingcute:add-line" />
-          </IconButton>
+          <Button
+            variant="outlined" onClick={quickEdit.onTrue}
+            sx={{
+              width: "100%"
+            }}
+          >Add Agent</Button>
         </Tooltip>
-        
-        </Stack>
 
-        <AddAgent currentProperty={property} open={quickEdit.value} onClose={quickEdit.onFalse} /> */}
-    
-    </Stack>
+      </Stack>
 
+      <AddAgent currentProperty={property} open={quickEdit.value} onClose={quickEdit.onFalse} />
+
+    </>
   );
 
   return (
@@ -211,7 +226,7 @@ export default function PropertyItemNew({ property, onView, onEdit, onDelete }: 
         {renderTexts}
 
         {renderInfo}
-        
+
       </Card>
 
       <CustomPopover

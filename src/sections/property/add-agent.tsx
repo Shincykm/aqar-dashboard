@@ -72,6 +72,9 @@ export default function AddAgent({ currentProperty, open, onClose }: Props) {
     }
   });
 
+  console.log(agents);
+  
+
   return (
     <Dialog
       fullWidth

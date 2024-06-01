@@ -1,34 +1,46 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 // @mui
 import Box from '@mui/material/Box';
 import Pagination, { paginationClasses } from '@mui/material/Pagination';
 // routes
 import { paths } from 'src/routes/paths';
 // types
-import { ITourItem } from 'src/types/tour';
-// components
-import { useRouter } from 'src/routes/hooks';
-//
-import TourItem from '../tour/tour-item';
 import PropertyItemNew from './property-item-new';
-import { count } from 'console';
-import { RHFSelect } from 'src/components/hook-form';
-import { FormControl } from '@mui/base';
-import { InputLabel, Select } from '@mui/material';
-import MenuItem from '@mui/material/MenuItem';
-import { useDeleteProperty } from 'src/api/property';
-import { enqueueSnackbar } from 'notistack';
+// components
+import { usePathname, useRouter, useSearchParams } from 'src/routes/hooks';
+//
+
 
 // ----------------------------------------------------------------------
 
 type Props = {
   properties : any;
-  totalProperties : any;
-  countPerPage : any;
+  totalProperties : number;
+  countPerPage : number;
 };
 
-export default function PropertyListNew({ properties, totalProperties , countPerPage, page, handleDelete, handlePagination, handlePageItemLimit, pageLimit }: any) {
+export default function PropertyListNew({ properties, totalProperties , countPerPage, setPage, page, handleDelete }: any) {
   const router = useRouter();
+
+  // pagination
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const createPageURL = (pageNumber: number | string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('page', pageNumber.toString());
+    router.push(`?${params.toString()}`);
+    return `${pathname}?${params.toString()}`;
+  };
+
+  const handlePagination = useCallback((e:any, value:any) => {
+    setPage(value);
+    e.target.value = page;
+  }, []);
+
+  useEffect(()=>{
+    const url = createPageURL(page);
+  }, [page]);
 
   // const handleView = useCallback(
   //   (id: string) => {
@@ -66,34 +78,19 @@ export default function PropertyListNew({ properties, totalProperties , countPer
         ))}
       </Box>
 
-          {/* <FormControl>
-            <InputLabel id="demo-simple-select-label">Items Per Page</InputLabel>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={pageLimit}
-              label="Age"
-              onChange={handlePageItemLimit}
-            >
-              <MenuItem value={10}>10</MenuItem>
-              <MenuItem value={20}>20</MenuItem>
-              <MenuItem value={30}>30</MenuItem>
-            </Select>
-          </FormControl> */}
-
-          {properties.length > 4 && (
-              <Pagination
-                count={Math.ceil(totalProperties/countPerPage)}
-                onChange={handlePagination}
-                value = {page}
-                sx={{
-                  mt: 8,
-                  [`& .${paginationClasses.ul}`]: {
-                    justifyContent: 'center',
-                  },
-                }}
-              />
-            )}
+      {properties.length > 4 && (
+          <Pagination
+            count={Math.ceil(totalProperties/countPerPage)}
+            onChange={handlePagination}
+            page={page}
+            sx={{
+              mt: 8,
+              [`& .${paginationClasses.ul}`]: {
+                justifyContent: 'center',
+              },
+            }}
+          />
+        )}
       
     </>
   );

@@ -1,5 +1,5 @@
 import orderBy from 'lodash/orderBy';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 // @mui
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
@@ -41,6 +41,7 @@ import { Table, TableBody, TableContainer, Tooltip } from '@mui/material';
 import { IconButton } from 'yet-another-react-lightbox';
 import Scrollbar from 'src/components/scrollbar';
 import { enqueueSnackbar } from 'notistack';
+import { useSearchParams } from 'src/routes/hooks';
 
 // ----------------------------------------------------------------------
 
@@ -69,12 +70,12 @@ export default function PropertyListViewNew() {
 
   const [filters, setFilters] = useState(defaultFilters);
 
-  const [page, setPage] = useState(1);
-  const [pageLimit, setPageLimit] = useState(12);
+  const searchParams = useSearchParams();
+  const [page, setPage] = useState(Number(searchParams.get('page') || 1));
 
-// ----------------------------------------------------------------------
-// Fetch Porperty Data 
-const {property : properties, total, countPerPage, propertyEmpty, propertyLoading } = useGetProperties(page, pageLimit);
+  // ----------------------------------------------------------------------
+  // Fetch Porperty Data 
+  const { property: properties, total, countPerPage, propertyEmpty, propertyLoading } = useGetProperties(page);
 
   const dateError =
     filters.startDate && filters.endDate
@@ -82,10 +83,9 @@ const {property : properties, total, countPerPage, propertyEmpty, propertyLoadin
       : false;
 
   const dataFiltered = applyFilter({
-    inputData: properties as any,
+    inputData: deletedId ? properties.filter((item: any) => item.id !== deletedId) : properties as any,
     filters,
     sortBy,
-    deletedId,
     dateError,
   });
 
@@ -110,6 +110,7 @@ const {property : properties, total, countPerPage, propertyEmpty, propertyLoadin
 
   const handleSearch = useCallback(
     (inputValue: string) => {
+
       setSearch((prevState) => ({
         ...prevState,
         query: inputValue,
@@ -133,20 +134,10 @@ const {property : properties, total, countPerPage, propertyEmpty, propertyLoadin
     setFilters(defaultFilters);
   }, []);
 
-  const handlePagination = useCallback((e:any, value:any) => {
-    setPage(value);
-  }, []);
-
-  const handlePageItemLimit = (e:any, value:any)=>{
-    console.log(value);
-    // fetch properties based on page
-    
-  }
-
   const handleDelete = useCallback(async (id: string) => {
     try {
       const response = await useDeleteProperty(id);
-      if(response){
+      if (response) {
         enqueueSnackbar("Property Deleted.");
         setdeletedId(id);
       }
@@ -162,8 +153,8 @@ const {property : properties, total, countPerPage, propertyEmpty, propertyLoadin
       alignItems={{ xs: 'flex-end', sm: 'center' }}
       direction={{ xs: 'column', sm: 'row' }}
     >
-      
-      <PropertySearch 
+
+      <PropertySearch
         query={search.query}
         results={search.results}
         onSearch={handleSearch}
@@ -246,15 +237,13 @@ const {property : properties, total, countPerPage, propertyEmpty, propertyLoadin
 
       {notFound && <EmptyContent title="No Data" filled sx={{ py: 10 }} />}
 
-      <PropertyListNew 
+      <PropertyListNew
         properties={dataFiltered}
         totalProperties={total}
         countPerPage={countPerPage}
-        handlePagination={handlePagination} 
+        setPage={setPage}
         page={page}
         handleDelete={handleDelete}
-        // handlePageItemLimit = {handlePageItemLimit}
-        // pageLimit={pageLimit}
       />
 
     </Container>
@@ -267,65 +256,55 @@ const applyFilter = ({
   inputData,
   filters,
   sortBy,
-  deletedId,
   dateError,
 }: {
-//   inputData: any | ITourItem[];
+  //   inputData: any | ITourItem[];
   inputData: any;
   filters: ITourFilters;
   sortBy: string;
-  deletedId:any,
   dateError: boolean;
 }) => {
-  const { services, destination, startDate, endDate, tourGuides } = filters;
+  // const { services, destination, startDate, endDate, tourGuides } = filters;
 
-  const tourGuideIds = tourGuides.map((tourGuide) => tourGuide.id);
+  // const tourGuideIds = tourGuides.map((tourGuide) => tourGuide.id);
 
   // SORT BY
-  if (sortBy === 'latest') {
-    inputData = orderBy(inputData, ['createdAt'], ['desc']);
-  }
+  // if (sortBy === 'latest') {
+  //   inputData = orderBy(inputData, ['createdAt'], ['desc']);
+  // }
 
-  if (sortBy === 'oldest') {
-    inputData = orderBy(inputData, ['createdAt'], ['asc']);
-  }
+  // if (sortBy === 'oldest') {
+  //   inputData = orderBy(inputData, ['createdAt'], ['asc']);
+  // }
 
-  if (sortBy === 'popular') {
-    inputData = orderBy(inputData, ['totalViews'], ['desc']);
-  }
+  // if (sortBy === 'popular') {
+  //   inputData = orderBy(inputData, ['totalViews'], ['desc']);
+  // }
 
-  if (deletedId !== null) {
-    inputData = inputData.filter((item:any) => item.id !== deletedId);
-  }
+  // // FILTERS
 
-  // FILTERS
-//   if (!dateError) {
-//     if (startDate && endDate) {
-//       inputData = inputData.filter(
-//         (tour) =>
-//           fTimestamp(tour.available.startDate) >= fTimestamp(startDate) &&
-//           fTimestamp(tour.available.endDate) <= fTimestamp(endDate)
-//       );
-//     }
-//   }
-
-//   if (destination.length) {
-//     inputData = inputData.filter((tour) => destination.includes(tour.destination));
-//   }
-
-//   if (tourGuideIds.length) {
-//     inputData = inputData.filter((tour) =>
-//       tour.tourGuides.some((filterItem) => tourGuideIds.includes(filterItem.id))
-//     );
-//   }
-
-//   if (services.length) {
-//     inputData = inputData.filter((tour) => tour.services.some((item) => services.includes(item)));
-//   }
-
-  // if (delete) {
-  //     inputData = inputData.filter((tour) => tour.services.some((item) => services.includes(item)));
+  //   if (!dateError) {
+  //     if (startDate && endDate) {
+  //       inputData = inputData.filter(
+  //         (tour) =>
+  //           fTimestamp(tour.available.startDate) >= fTimestamp(startDate) &&
+  //           fTimestamp(tour.available.endDate) <= fTimestamp(endDate)
+  //       );
+  //     }
   //   }
 
+  //   if (destination.length) {
+  //     inputData = inputData.filter((tour) => destination.includes(tour.destination));
+  //   }
+
+  //   if (tourGuideIds.length) {
+  //     inputData = inputData.filter((tour) =>
+  //       tour.tourGuides.some((filterItem) => tourGuideIds.includes(filterItem.id))
+  //     );
+  //   }
+
+  //   if (services.length) {
+  //     inputData = inputData.filter((tour) => tour.services.some((item) => services.includes(item)));
+  //   }
   return inputData;
 };
