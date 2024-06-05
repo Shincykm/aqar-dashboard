@@ -154,6 +154,7 @@ export const endpoints = {
     delete: '/api/admin/property/deleteProperty',
     deletePicture : '/api/admin/propertyPictureMapping/deletePropertyPictureMapping',
     createUpdate: '/api/admin/property/createUpdateProperty',
+    agentPropertyMapping: '/api/admin/agent/createUpdate',
   },
   propertyPictureMapping: {
     list: '/api/admin/propertyPictureMapping/getPropertyPictureMappingList',

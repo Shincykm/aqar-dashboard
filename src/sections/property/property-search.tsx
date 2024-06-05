@@ -84,8 +84,6 @@ export default function PropertySearch({ query, results, onSearch, hrefItem }: P
       renderOption={(props, property, { inputValue }) => {
         const matches = match(property.name_en, inputValue);
         const parts = parse(property.name_en, matches);
-        console.log(property?.pictures[0].virtual_path);
-        
 
         return (
           <Box component="li" {...props} onClick={() => handleClick(property.id)} key={property.id}>

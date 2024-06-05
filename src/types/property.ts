@@ -50,6 +50,7 @@ export type IPropertyItem = {
   display_order?: number | null;
   pictures: [] | any;
   amenity_items?: [];
+  agents?: [] ;
 };
 
 

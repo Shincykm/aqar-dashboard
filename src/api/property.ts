@@ -97,25 +97,26 @@ export async function useDeletePropertyPictureMapping(id: any) {
 
 // ----------------------------------------------------------------------
 
-// export function useSearchProducts(query: string) {
-//   const URL = query ? [endpoints.product.search, { params: { query } }] : null;
+// Agent-Property mapping
+export async function useAgentPropertyMapping(propertyID:any, agentId :any) {
+  const URL = endpoints.property.agentPropertyMapping;
 
-//   const { data, isLoading, error, isValidating } = useSWR(URL, fetcher, {
-//     keepPreviousData: true,
-//   });
+  // Hnadling formData
+  const formData = new FormData();
+  formData.append('id', agentId);
+  formData.append('property_ids[]', propertyID);
 
-//   const memoizedValue = useMemo(
-//     () => ({
-//       searchResults: (data?.results as IProductItem[]) || [],
-//       searchLoading: isLoading,
-//       searchError: error,
-//       searchValidating: isValidating,
-//       searchEmpty: !isLoading && !data?.results.length,
-//     }),
-//     [data?.results, error, isLoading, isValidating]
-//   );
+  try {
+    const response = await performRequest<any>('post', URL, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      data: formData,
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+}
 
-//   return memoizedValue;
-// }
 
-// ----------------------------------------------------------------------

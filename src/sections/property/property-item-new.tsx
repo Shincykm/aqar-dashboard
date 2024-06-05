@@ -21,7 +21,8 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { shortDateLabel } from 'src/components/custom-date-range-picker';
 import { useBoolean } from 'src/hooks/use-boolean';
 import AddAgent from './add-agent';
-import { Button, Tooltip } from '@mui/material';
+import { Avatar, Button, Grid, Tooltip, alpha } from '@mui/material';
+import { AvatarShape } from 'src/assets/illustrations';
 
 // ----------------------------------------------------------------------
 
@@ -46,8 +47,10 @@ export default function PropertyItemNew({ property, onView, onEdit, onDelete }: 
     pictures,
     count_bedrooms,
     count_bathrooms,
+    agents,
   } = property;
 
+  console.log(property, '===');
 
   //   const shortLabel = shortDateLabel(available.startDate, available.endDate);
 
@@ -106,14 +109,26 @@ export default function PropertyItemNew({ property, onView, onEdit, onDelete }: 
       <Stack flexGrow={1} sx={{ position: 'relative' }}>
         {/* {renderPrice}
         {renderRating} */}
-        <Image alt={pictures[0].alt_attribute || ""} src={pictures[0].virtual_path} sx={{ borderRadius: 1, height: 164, width: 1 }} />
+        <Image
+          alt={pictures[0].alt_attribute || ''}
+          src={pictures[0].virtual_path}
+          sx={{ borderRadius: 1, height: 164, width: 1 }}
+        />
       </Stack>
       <Stack spacing={0.5}>
         {pictures.length > 0 &&
-          pictures.map((pic: any, index: any) => (
-            (index !== 0) && <Image key={pic.id} alt={pic.alt_attribute || ""} src={pic.virtual_path} ratio="1/1" sx={{ borderRadius: 1, width: 40 }} />
-          ))
-        }
+          pictures.map(
+            (pic: any, index: any) =>
+              index !== 0 && (
+                <Image
+                  key={pic.id}
+                  alt={pic.alt_attribute || ''}
+                  src={pic.virtual_path}
+                  ratio="1/1"
+                  sx={{ borderRadius: 1, width: 40 }}
+                />
+              )
+          )}
       </Stack>
     </Stack>
   );
@@ -158,26 +173,24 @@ export default function PropertyItemNew({ property, onView, onEdit, onDelete }: 
 
         {[
           {
-            label: address?.city?.name_en || "Location not available",
+            label: address?.city?.name_en || 'Location not available',
             icon: <Iconify icon="mingcute:location-fill" sx={{ color: 'error.main' }} />,
           },
           {
-            label: count_bedrooms ? `${count_bedrooms} Beds` : "Bed info not available",
+            label: count_bedrooms ? `${count_bedrooms} Beds` : 'Bed info not available',
             icon: <Iconify icon="tabler:bed-filled" sx={{ color: 'gray' }} />,
           },
           {
-            label: count_bathrooms ? `${count_bathrooms} Baths` : "Bath info not availble",
+            label: count_bathrooms ? `${count_bathrooms} Baths` : 'Bath info not availble',
             icon: <Iconify icon="solar:bath-line-duotone" sx={{ color: 'gray' }} />,
           },
           {
             label: size_sqm ? `${size_sqm} sqm` : 'Area not available',
             icon: <Iconify icon="bx:area" sx={{ color: 'orange' }} />,
-
           },
           {
             label: amount ? `${amount} AED` : 'Price not available',
             icon: <Iconify icon="solar:tag-price-bold" sx={{ color: 'green' }} />,
-
           },
         ].map((item) => (
           <Stack
@@ -187,36 +200,80 @@ export default function PropertyItemNew({ property, onView, onEdit, onDelete }: 
             alignItems="center"
             sx={{ typography: 'body2' }}
           >
-            {item.label !== "" && item.icon}
+            {item.label !== '' && item.icon}
             {item.label}
           </Stack>
         ))}
       </Stack>
+    </>
+  );
 
+  const renderAgentInfo = (
+    <>
       <Stack
-        spacing={1}
-        direction="row"
-        alignItems="center"
+        spacing={1.5}
         sx={{
           position: 'relative',
           p: (theme) => theme.spacing(0, 2.5, 2.5, 2.5),
         }}
       >
-        <Tooltip title="Add Agent" placement="top" arrow>
-          <Button
-            variant="outlined" onClick={quickEdit.onTrue}
-            sx={{
-              width: "100%"
-            }}
-          >Add Agent</Button>
-        </Tooltip>
+        {/* <IconButton onClick={popover.onOpen} sx={{ position: 'absolute', bottom: 20, right: 8 }}>
+          <Iconify icon="eva:more-vertical-fill" />
+        </IconButton> */}
 
+<Box sx={{ position: 'relative' }}>
+        <AvatarShape
+          sx={{
+            left: 0,
+            right: 0,
+            zIndex: 10,
+            mx: 'auto',
+            bottom: -26,
+            position: 'absolute',
+          }}
+        />
+
+          <Avatar
+            alt={agents.user?.last_name}
+            src={agents.profile_picture}
+            sx={{
+              width: 50,
+              height: 50,
+              zIndex: 11,
+              left: 0,
+              right: 0,
+              bottom: -32,
+              mx: 'auto',
+              position: 'absolute',
+            }}
+          />
+          {agents && <div>{`${agents[0]?.user.last_name} agent`}</div>}
+
+        {/* <Image
+          src={coverUrl}
+          alt={coverUrl}
+          ratio="16/9"
+          overlay={alpha(theme.palette.grey[900], 0.48)}
+        /> */}
+      </Box>
       </Stack>
 
-      <AddAgent currentProperty={property} open={quickEdit.value} onClose={quickEdit.onFalse} />
+      <Tooltip title="Add Agent" placement="top" arrow>
+        <Button
+          variant="outlined"
+          onClick={quickEdit.onTrue}
+          sx={{
+            width: '100%',
+          }}
+        >
+          Add Agent
+        </Button>
+      </Tooltip>
 
+      <AddAgent currentProperty={property} open={quickEdit.value} onClose={quickEdit.onFalse} />
     </>
   );
+
 
   return (
     <>
@@ -227,6 +284,7 @@ export default function PropertyItemNew({ property, onView, onEdit, onDelete }: 
 
         {renderInfo}
 
+        {renderAgentInfo}
       </Card>
 
       <CustomPopover

@@ -34,7 +34,11 @@ import { useGetPropertyTypeList } from 'src/api/propertyType';
 import { useGetPropertyPurposeList } from 'src/api/propertyPurpose';
 import { useGetPropertyStyleList } from 'src/api/propertyStyle';
 import { useCreateUpdateProperty, useDeletePropertyPictureMapping } from 'src/api/property';
-import { useCreateUpdateAmenityPropertyMapping, useDeleteAmenityPropertyMapping, useGetAmenitiesList } from 'src/api/amenities';
+import {
+  useCreateUpdateAmenityPropertyMapping,
+  useDeleteAmenityPropertyMapping,
+  useGetAmenitiesList,
+} from 'src/api/amenities';
 //
 import { convertStringToBoolean } from 'src/utils/string-to-boolean';
 // import AmenityNewEditDetails from './amenity-new-edit-details';
@@ -52,9 +56,13 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
   const { enqueueSnackbar } = useSnackbar();
 
   const { propertyTypes, propertyTypeEmpty, propertyTypeLoading } = useGetPropertyTypeList(1, 10);
-  const { propertyPurposes, propertyPurposeEmpty, propertyPurposeLoading } = useGetPropertyPurposeList(1, 10);
-  const { propertyStyles, propertyStyleEmpty, propertyStyleLoading } = useGetPropertyStyleList(1,10);
-  
+  const { propertyPurposes, propertyPurposeEmpty, propertyPurposeLoading } =
+    useGetPropertyPurposeList(1, 10);
+  const { propertyStyles, propertyStyleEmpty, propertyStyleLoading } = useGetPropertyStyleList(
+    1,
+    10
+  );
+
   const [subTypeList, setSubTypeList] = useState<any>(null);
   const [errorMsg, setErrorMsg] = useState<any>(null);
 
@@ -109,10 +117,10 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
       property_style_id: currentProperty?.property_style_id || 0,
       building_id: currentProperty?.building_id || 0,
       country_id: currentProperty?.country_id || null,
-      city_id: currentProperty?.city_id || null ,
+      city_id: currentProperty?.city_id || null,
       state_province_id: currentProperty?.state_province_id || null,
       display_order: currentProperty?.display_order || 0,
-      amenity_items: currentProperty?.amenities?.map((amenity:any) => amenity.id) || [],
+      amenity_items: currentProperty?.amenities?.map((amenity: any) => amenity.id) || [],
       pictures:
         currentProperty?.pictures?.map((item: any) => ({
           ...item,
@@ -139,16 +147,24 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
   const values = watch();
 
   const { countries, countriesEmpty, countriesLoading } = useGetCountriesList(1, 10);
-  const { stateProvinces, stateProvincesEmpty, stateProvincesLoading } = useStateProvincesList(1,10,values.country_id ? values.country_id : "" );
-  const { cities, citiesEmpty, citiesLoading } = useCityList(1, 10, values.state_province_id ? values.state_province_id:"");
-  const { amenities : amenitiesFullList, amenitiesEmpty, amenitiesLoading } = useGetAmenitiesList();
+  const { stateProvinces, stateProvincesEmpty, stateProvincesLoading } = useStateProvincesList(
+    1,
+    10,
+    values.country_id ? values.country_id : ''
+  );
+  const { cities, citiesEmpty, citiesLoading } = useCityList(
+    1,
+    10,
+    values.state_province_id ? values.state_province_id : ''
+  );
+  const { amenities: amenitiesFullList, amenitiesEmpty, amenitiesLoading } = useGetAmenitiesList();
 
-  const [amenitiesList, setAmenitiesList] = useState<{ value: any; label: any }[]>([]); 
+  const [amenitiesList, setAmenitiesList] = useState<{ value: any; label: any }[]>([]);
 
   useEffect(() => {
     if (currentProperty) {
       console.log(currentProperty?.is_featured);
-      
+
       reset(defaultValues);
     }
   }, [currentProperty]);
@@ -163,17 +179,17 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
 
   const onSubmit = handleSubmit(async (propertyData: any) => {
     try {
-      if(currentProperty?.id){
-        console.log("edit");
-        
-        propertyData["id"] = currentProperty.id;
+      if (currentProperty?.id) {
+        console.log('edit');
+
+        propertyData['id'] = currentProperty.id;
       }
-       console.log(propertyData, "create");
-       
+      console.log(propertyData, 'create');
+
       const response = await useCreateUpdateProperty(propertyData);
 
-      if(!response) throw new Error("Something went wrong!");
-      
+      if (!response) throw new Error('Something went wrong!');
+
       if (response) {
         // const { id: propertyId } = response;
         // -----------------------------------------
@@ -190,7 +206,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
         // -----------------------------------------
 
         // Handling amenity-property mapping
-        
+
         // if(currentProperty?.id && amenity_items.length === 0){
         //   await useDeleteAmenityPropertyMapping(propertyId);
         // }
@@ -206,11 +222,11 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
       }
     } catch (error) {
       console.log(error);
-      enqueueSnackbar(error?.message || "api error", {variant : 'error'});
+      enqueueSnackbar(error?.message || 'api error', { variant: 'error' });
     }
   });
 
-  const deleteSingleImage = async(image:any) => {
+  const deleteSingleImage = async (image: any) => {
     try {
       const res = await useDeletePropertyPictureMapping(image?.pivot?.id);
       enqueueSnackbar(`Image Deleted`);
@@ -218,7 +234,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
     } catch (error) {
       enqueueSnackbar('Unable to Delete!', { variant: 'error' });
     }
-  }
+  };
 
   const handleDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -237,9 +253,10 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
 
   const handleRemoveFile = useCallback(
     async (inputFile: any) => {
-      const filtered = values.pictures && values.pictures?.filter((file:any) => (file?.id !== inputFile?.id)) || [inputFile];
+      const filtered = (values.pictures &&
+        values.pictures?.filter((file: any) => file?.id !== inputFile?.id)) || [inputFile];
       const response = await deleteSingleImage(inputFile);
-      if(response) setValue('pictures', filtered);
+      if (response) setValue('pictures', filtered);
     },
     [setValue, values.pictures]
   );
@@ -254,19 +271,28 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
     [propertyTypes]
   );
 
-  const handleCountryChange = useCallback((newValue:any) => {
-    setValue('country_id', newValue, { shouldValidate: true });
-    setValue('state_province_id', '', { shouldValidate: true }); // Reset state when country changes
-  }, [setValue]);
+  const handleCountryChange = useCallback(
+    (newValue: any) => {
+      setValue('country_id', newValue, { shouldValidate: true });
+      setValue('state_province_id', '', { shouldValidate: true }); // Reset state when country changes
+    },
+    [setValue]
+  );
 
-  const handleStateChange = useCallback((newValue:any) => {
-    setValue('state_province_id', newValue, { shouldValidate: true });
-    setValue('city_id', '', { shouldValidate: true }); // Reset state when city changes
-  }, [setValue]);
+  const handleStateChange = useCallback(
+    (newValue: any) => {
+      setValue('state_province_id', newValue, { shouldValidate: true });
+      setValue('city_id', '', { shouldValidate: true }); // Reset state when city changes
+    },
+    [setValue]
+  );
 
-  const handleCityChange = useCallback((newValue:any) => {
-    setValue('city_id', newValue, { shouldValidate: true });
-  }, [setValue]);
+  const handleCityChange = useCallback(
+    (newValue: any) => {
+      setValue('city_id', newValue, { shouldValidate: true });
+    },
+    [setValue]
+  );
 
   const renderDetails = (
     <>
@@ -517,42 +543,42 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
               }}
             >
               {/* {!propertyTypeEmpty && (
- propertyTypeLoading 
- ? <LoadingButton />
- : (
- <>
- <RHFSelect
- native
- name="property_type_id"
- label="Property Type"
- InputLabelProps={{ shrink: true }}
- onChange = {handleSelectPropertyType}
- >
- <option value=""></option>
- {propertyTypes?.map((type) =>
- <option key={type?.id} value={type?.id}>
- {type?.name_en.charAt(0).toUpperCase() + type?.name_en.slice(1)}
- </option>
- )}
- </RHFSelect>
+                  propertyTypeLoading 
+                  ? <LoadingButton />
+                  : (
+                  <>
+                  <RHFSelect
+                  native
+                  name="property_type_id"
+                  label="Property Type"
+                  InputLabelProps={{ shrink: true }}
+                  onChange = {handleSelectPropertyType}
+                  >
+                  <option value=""></option>
+                  {propertyTypes?.map((type) =>
+                  <option key={type?.id} value={type?.id}>
+                  {type?.name_en.charAt(0).toUpperCase() + type?.name_en.slice(1)}
+                  </option>
+                  )}
+                  </RHFSelect>
 
- <RHFSelect
- native
- name="sub_type"
- label="Property Sub-Type"
- InputLabelProps={{ shrink: true }}
- disabled={subTypeList?.length > 0 ? false : true}
- >
- <option value=""></option>
- {subTypeList?.map((type:any) => 
- <option key={type?.id} value={type?.id} >
- {type?.name_en}
- </option>
- )}
- </RHFSelect>
- </>
- )
- )} */}
+                  <RHFSelect
+                  native
+                  name="sub_type"
+                  label="Property Sub-Type"
+                  InputLabelProps={{ shrink: true }}
+                  disabled={subTypeList?.length > 0 ? false : true}
+                  >
+                  <option value=""></option>
+                  {subTypeList?.map((type:any) => 
+                  <option key={type?.id} value={type?.id} >
+                  {type?.name_en}
+                  </option>
+                  )}
+                  </RHFSelect>
+                  </>
+                  )
+                  )} */}
 
               {!propertyTypeEmpty && (
                 <RHFSelect
@@ -698,7 +724,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                     );
                     return selectedSate ? selectedSate.name : '';
                   }}
-                  isOptionEqualToValue={(option, value) =>  option === value}
+                  isOptionEqualToValue={(option, value) => option === value}
                   onChange={(event, newValue) => handleStateChange(newValue)}
                   loading={stateProvincesLoading}
                   renderOption={(props, option) => {

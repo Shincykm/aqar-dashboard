@@ -23,8 +23,6 @@ export type IAgentItem = {
 
   export type IAgentTableFilters = {
     name: string;
-    role: string[];
-    status: string;
   };
 
   export type IAgentTableFilterValue = string | string[];
