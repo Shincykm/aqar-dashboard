@@ -36,10 +36,10 @@ export function useGetAgent(agentId: string | number) {
 
   const memoizedValue = useMemo(
     () => ({
-      agents: data?.data as any,
-      agentsLoading: isLoading,
-      agentsError: error,
-      agentsValidating: isValidating,
+      agent: data?.data as any,
+      agentLoading: isLoading,
+      agentError: error,
+      agentValidating: isValidating,
     }),
     [data?.data, error, isLoading, isValidating]
   );

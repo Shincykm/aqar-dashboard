@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 // @mui
 import { alpha } from '@mui/material/styles';
 import Tab from '@mui/material/Tab';
@@ -44,16 +44,21 @@ import UserTableRow from '../../user/user-table-row';
 import UserTableToolbar from '../../user/user-table-toolbar';
 import UserTableFiltersResult from '../../user/user-table-filters-result';
 
+import { useGetAgentList } from 'src/api/agent';
+import AgentTableRow from '../agent-table-row';
+import { IAgentTableFilterValue } from 'src/types/agents';
+
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
+// const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Name' },
-  { id: 'phoneNumber', label: 'Phone Number', width: 180 },
+  { id: 'phone_number', label: 'Phone', width: 180 },
+  { id: 'whatsapp_number', label: 'WhatsApp', width: 180 },
   { id: 'company', label: 'Company', width: 220 },
-  { id: 'role', label: 'Role', width: 180 },
-  { id: 'status', label: 'Status', width: 100 },
+  { id: 'office_address', label: 'Office', width: 180 },
+  { id: 'licence_expiry_date', label: 'License Expiry', width: 180 },
   { id: '', width: 88 },
 ];
 
@@ -66,17 +71,25 @@ const defaultFilters: IUserTableFilters = {
 // ----------------------------------------------------------------------
 
 export default function AgentListView() {
+  const {agents, agentsEmpty, agentsLoading} = useGetAgentList(1,100);
+
   const table = useTable();
 
   const settings = useSettingsContext();
 
   const router = useRouter();
 
+  
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState(_userList);
+  const [tableData, setTableData] = useState(agents);
 
   const [filters, setFilters] = useState(defaultFilters);
+
+  useEffect(() => {
+    setTableData(agents);
+  }, [agents]);
+  
 
   const dataFiltered = applyFilter({
     inputData: tableData,
@@ -96,7 +109,7 @@ export default function AgentListView() {
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
   const handleFilters = useCallback(
-    (name: string, value: IUserTableFilterValue) => {
+    (name: string, value: IAgentTableFilterValue) => {
       table.onResetPage();
       setFilters((prevState) => ({
         ...prevState,
@@ -134,17 +147,17 @@ export default function AgentListView() {
     [router]
   );
 
-  const handleFilterStatus = useCallback(
-    (event: React.SyntheticEvent, newValue: string) => {
-      handleFilters('status', newValue);
-    },
-    [handleFilters]
-  );
+  // const handleFilterStatus = useCallback(
+  //   (event: React.SyntheticEvent, newValue: string) => {
+  //     handleFilters('status', newValue);
+  //   },
+  //   [handleFilters]
+  // );
 
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
-
+  
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -152,17 +165,17 @@ export default function AgentListView() {
           heading="List"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'User', href: paths.dashboard.user.root },
+            { name: 'Agents', href: paths.dashboard.agents.root },
             { name: 'List' },
           ]}
           action={
             <Button
               component={RouterLink}
-              href={paths.dashboard.user.new}
+              href={paths.dashboard.agents.new}
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New User
+              New Agent
             </Button>
           }
           sx={{
@@ -171,7 +184,7 @@ export default function AgentListView() {
         />
 
         <Card>
-          <Tabs
+          {/* <Tabs
             value={filters.status}
             onChange={handleFilterStatus}
             sx={{
@@ -211,7 +224,7 @@ export default function AgentListView() {
                 }
               />
             ))}
-          </Tabs>
+          </Tabs> */}
 
           <UserTableToolbar
             filters={filters}
@@ -276,7 +289,7 @@ export default function AgentListView() {
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row) => (
-                      <UserTableRow
+                        <AgentTableRow
                         key={row.id}
                         row={row}
                         selected={table.selected.includes(row.id)}
@@ -343,7 +356,7 @@ function applyFilter({
   comparator,
   filters,
 }: {
-  inputData: IUserItem[];
+  inputData: any[];
   comparator: (a: any, b: any) => number;
   filters: IUserTableFilters;
 }) {
@@ -360,9 +373,14 @@ function applyFilter({
   inputData = stabilizedThis.map((el) => el[0]);
 
   if (name) {
-    inputData = inputData.filter(
-      (user) => user.name.toLowerCase().indexOf(name.toLowerCase()) !== -1
-    );
+    inputData = inputData.filter((agent) => {
+      const fullName = `${agent.user.first_name || agent.user.last_name}`;
+      if (fullName.toLowerCase().includes(name)){
+        return fullName.toLowerCase().indexOf(fullName.toLowerCase()) !== -1
+      }
+  });
+    console.log(inputData);
+    
   }
 
   if (status !== 'all') {

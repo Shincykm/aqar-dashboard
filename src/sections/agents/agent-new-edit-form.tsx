@@ -50,7 +50,7 @@ export default function AmenityNewEditForm({ currentAgent }: Props) {
 
   const defaultValues = useMemo(
     () => ({
-      agnet: currentAgent?.id || '',
+      agent: currentAgent?.id || '',
       property_id: currentAgent?.properties || '',
     }),
     [currentAgent]

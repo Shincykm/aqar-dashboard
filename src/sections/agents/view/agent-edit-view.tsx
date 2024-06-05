@@ -9,6 +9,7 @@ import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 //
 import AgentNewEditForm from 'src/sections/agents/agent-new-edit-form';
+import { useGetAgent } from 'src/api/agent';
 
 // ----------------------------------------------------------------------
 
@@ -19,7 +20,7 @@ type Props = {
 export default function AgentsEditView({ id }: Props) {
   const settings = useSettingsContext();
   
-  const { amenities: currentAgent } = useGetAgent(id);
+  const { agents: currentAgent } = useGetAgent(id);
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
