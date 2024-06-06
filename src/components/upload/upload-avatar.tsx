@@ -34,7 +34,7 @@ export default function UploadAvatar({
 
   const hasError = isDragReject || !!error;
 
-  const imgUrl = typeof file === 'string' ? file : file?.preview;
+  const imgUrl = typeof file === 'string' ? file : file?.preview || file?.virtual_path;
 
   const renderPreview = hasFile && (
     <Image

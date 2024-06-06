@@ -33,17 +33,22 @@ import { useGetPropertyTypeList } from 'src/api/propertyType';
 import { useGetPropertyPurposeList } from 'src/api/propertyPurpose';
 import { useGetPropertyStyleList } from 'src/api/propertyStyle';
 import { useCreateUpdateProperty, useDeletePropertyPictureMapping } from 'src/api/property';
-import {
-  useGetAmenitiesList,
-} from 'src/api/amenities';
+import { useGetAmenitiesList } from 'src/api/amenities';
 //
 import { convertStringToBoolean } from 'src/utils/string-to-boolean';
 // import AmenityNewEditDetails from './amenity-new-edit-details';
 import { useCityList, useGetCountriesList, useStateProvincesList } from 'src/api/address';
+import PropertyMapItem from './property-map-item';
+import { ILocation } from 'src/types/property';
 
 type Props = {
   currentProperty?: any;
 };
+
+interface Location {
+  lat: number;
+  lng: number;
+}
 
 export default function PropertyNewEditForm({ currentProperty }: Props) {
   const router = useRouter();
@@ -73,8 +78,8 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
     is_furnished: Yup.boolean(),
     count_bathrooms: Yup.number(),
     count_bedrooms: Yup.number(),
-    count_parking: Yup.number(),
-    size_sqm: Yup.number(),
+    // count_parking: Yup.number(),
+    size_sqft: Yup.number(),
     maintenance_fee: Yup.number(),
     old_amount: Yup.number(),
     amount: Yup.number(),
@@ -86,8 +91,10 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
     property_purpose_id: Yup.number(),
     property_style_id: Yup.number(),
     building_id: Yup.number(),
-    display_order: Yup.number(),
+    // display_order: Yup.number(),
     pictures: Yup.array().min(1, 'Images is required'),
+    latitude: Yup.number(),
+    longitude: Yup.number(),
   });
 
   const defaultValues = useMemo(
@@ -101,8 +108,8 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
       is_furnished: currentProperty?.is_furnished || false,
       count_bathrooms: currentProperty?.count_bathrooms || 0,
       count_bedrooms: currentProperty?.count_bedrooms || 0,
-      count_parking: currentProperty?.count_parking || 0,
-      size_sqm: currentProperty?.size_sqm || 0,
+      // count_parking: currentProperty?.count_parking || 0,
+      size_sqft: currentProperty?.size_sqft || 0,
       ownership: currentProperty?.ownership || '',
       reference_number: currentProperty?.reference_number || '',
       constructed_date: currentProperty?.constructed_date || {},
@@ -114,9 +121,12 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
       property_style_id: currentProperty?.property_style_id || 0,
       building_id: currentProperty?.building_id || 0,
       country_id: currentProperty?.country_id || null,
-      city_id: currentProperty?.city_id || null,
       state_province_id: currentProperty?.state_province_id || null,
-      display_order: currentProperty?.display_order || 0,
+      city_id: currentProperty?.city_id || null,
+      latitude: currentProperty?.address?.latitude | 0,
+      longitude: currentProperty?.address?.longitude | 0,
+
+      // display_order: currentProperty?.display_order || 0,
       amenity_items: currentProperty?.amenities?.map((amenity: any) => amenity.id) || [],
       pictures:
         currentProperty?.pictures?.map((item: any) => ({
@@ -157,14 +167,15 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
   const { amenities: amenitiesFullList, amenitiesEmpty, amenitiesLoading } = useGetAmenitiesList();
 
   const [amenitiesList, setAmenitiesList] = useState<{ value: any; label: any }[]>([]);
+  const [location, setLocation] = useState<Location | null>(null);
 
-  useEffect(() => {
-    if (currentProperty) {
-      console.log(currentProperty?.is_featured);
+  // useEffect(() => {
+  //   if (currentProperty) {
+  //     console.log(currentProperty?.is_featured);
 
-      reset(defaultValues);
-    }
-  }, [currentProperty]);
+  //     reset(defaultValues);
+  //   }
+  // }, [currentProperty]);
 
   useEffect(() => {
     const transformedAmenities = amenitiesFullList?.map((amenity) => ({
@@ -291,6 +302,15 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
     [setValue]
   );
 
+  const handleLocation = useCallback(
+    (newValue: any) => {
+      setLocation(newValue);
+      setValue('latitude', newValue.lat, { shouldValidate: true });
+      setValue('longitude', newValue.lng, { shouldValidate: true });
+    },
+    [setValue]
+  );
+
   const renderDetails = (
     <>
       {mdUp && (
@@ -339,7 +359,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
               >
                 <RHFSwitch name="active" label="Active" />
                 <RHFSwitch label="Featured" name="is_featured" />
-                <RHFSwitch label="Furnished" name="is_furnished" />
+                {/* <RHFSwitch label="Furnished" name="is_furnished" /> */}
               </Box>
             </Stack>
 
@@ -369,15 +389,15 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                   type="number"
                   InputLabelProps={{ shrink: true }}
                 />
-                <RHFTextField
+                {/* <RHFTextField
                   name="count_parking"
                   label="Parking Slots"
                   placeholder="0"
                   type="number"
                   InputLabelProps={{ shrink: true }}
-                />
+                /> */}
                 <RHFTextField
-                  name="size_sqm"
+                  name="size_sqft"
                   label="Area in Sqm"
                   placeholder="0"
                   type="number"
@@ -522,7 +542,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
             Property Type
           </Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            Property Type, Sub Type, Purpose, Style...
+            Property Type, Purpose,...
           </Typography>
         </Grid>
       )}
@@ -624,7 +644,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                 </RHFSelect>
               )}
 
-              {!propertyStyleEmpty && (
+              {/* {!propertyStyleEmpty && (
                 <RHFSelect
                   native
                   name="property_style_id"
@@ -644,7 +664,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                     </>
                   )}
                 </RHFSelect>
-              )}
+              )} */}
             </Box>
           </Stack>
         </Card>
@@ -779,33 +799,67 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
     </>
   );
 
-  const renderDisplayOrder = (
+  const renderLatLng = (
     <>
       {mdUp && (
         <Grid md={4}>
           <Typography variant="h6" sx={{ mb: 0.5 }}>
-            Display Order
+            Map
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            Latitude, Longitude.
           </Typography>
         </Grid>
       )}
 
       <Grid xs={12} md={8}>
         <Card>
-          {!mdUp && <CardHeader title="Display Order" />}
-
           <Stack spacing={3} sx={{ p: 3 }}>
-            <RHFTextField
-              name="display_order"
-              label="Display Order"
-              placeholder="0"
-              type="number"
-              InputLabelProps={{ shrink: true }}
-            />
+            <Box
+              columnGap={2}
+              rowGap={3}
+              display="grid"
+              gridTemplateColumns={{
+                xs: 'repeat(1, 1fr)',
+                md: 'repeat(2, 1fr)',
+              }}
+            >
+              <RHFTextField name="latitude" label="Latitude" />
+              <RHFTextField name="longitude" label="Longitude" />
+            </Box>
           </Stack>
         </Card>
       </Grid>
     </>
   );
+
+  // const renderDisplayOrder = (
+  //   <>
+  //     {mdUp && (
+  //       <Grid md={4}>
+  //         <Typography variant="h6" sx={{ mb: 0.5 }}>
+  //           Display Order
+  //         </Typography>
+  //       </Grid>
+  //     )}
+
+  //     <Grid xs={12} md={8}>
+  //       <Card>
+  //         {!mdUp && <CardHeader title="Display Order" />}
+
+  //         <Stack spacing={3} sx={{ p: 3 }}>
+  //           <RHFTextField
+  //             name="display_order"
+  //             label="Display Order"
+  //             placeholder="0"
+  //             type="number"
+  //             InputLabelProps={{ shrink: true }}
+  //           />
+  //         </Stack>
+  //       </Card>
+  //     </Grid>
+  //   </>
+  // );
 
   const renderAmenityDetails = (
     <>
@@ -861,12 +915,25 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
 
         {renderTypeDetails}
 
-        {renderAddress}
-
-        {renderDisplayOrder}
-
         {renderAmenityDetails}
 
+        {renderAddress}
+
+        <>
+          {renderLatLng}
+          <Stack
+            sx={{
+              padding: 5,
+              width: '100%',
+              height: '600px',
+              Position: 'relative',
+            }}
+            >
+            <PropertyMapItem location={location} handleLocation={handleLocation} />
+          </Stack>
+        </>
+
+        {/* {renderDisplayOrder} */}
         {renderActions}
       </Grid>
     </FormProvider>

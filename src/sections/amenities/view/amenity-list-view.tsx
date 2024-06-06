@@ -166,7 +166,7 @@ export default function AmenityView() {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New Property Type
+              New Amenity
             </Button>
           }
           sx={{ mb: { xs: 3, md: 5 } }}

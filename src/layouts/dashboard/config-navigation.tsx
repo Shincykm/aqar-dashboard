@@ -379,15 +379,15 @@ export function useNavData() {
           },
 
           // Property Style
-          {
-            title: t('property style'),
-            path: paths.dashboard.propertyStyle.root,
-            icon: ICONS.propertyStyle,
-            children: [
-              { title: t('list'), path: paths.dashboard.propertyStyle.root },
-              { title: t('create'), path: paths.dashboard.propertyStyle.new },
-            ],
-          },
+          // {
+          //   title: t('property style'),
+          //   path: paths.dashboard.propertyStyle.root,
+          //   icon: ICONS.propertyStyle,
+          //   children: [
+          //     { title: t('list'), path: paths.dashboard.propertyStyle.root },
+          //     { title: t('create'), path: paths.dashboard.propertyStyle.new },
+          //   ],
+          // },
 
           // Property Purpose
           {

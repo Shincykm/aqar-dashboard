@@ -48,9 +48,6 @@ export default function PropertyTypeNewEditForm({ currentPropertyType }: Props) 
     description_en: Yup.string().nullable(),
     description_ar: Yup.string().nullable(),
     parent_id: Yup.number().nullable(),
-    //auto populate to db
-    // created_at: Yup.date().required(),
-    // updated_at: Yup.date().required(),
   });
 
   const defaultValues = useMemo(
@@ -60,8 +57,6 @@ export default function PropertyTypeNewEditForm({ currentPropertyType }: Props) 
       description_en: currentPropertyType?.description_en || '',
       description_ar: currentPropertyType?.description_ar || '',
       parent_id: currentPropertyType?.parent_id || 0,
-      //   created_at: currentPropertyType?.createdAt || null,
-      //   updated_at: currentPropertyType?.updatedAt || null,
     }),
     [currentPropertyType]
   );
@@ -82,11 +77,11 @@ export default function PropertyTypeNewEditForm({ currentPropertyType }: Props) 
 
   const values = watch();
 
-  useEffect(() => {
-    if (currentPropertyType) {
-      reset(defaultValues);
-    }
-  }, [currentPropertyType, defaultValues, reset]);
+  // useEffect(() => {
+  //   if (currentPropertyType) {
+  //     reset(defaultValues);
+  //   }
+  // }, [currentPropertyType, defaultValues, reset]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
@@ -101,7 +96,8 @@ export default function PropertyTypeNewEditForm({ currentPropertyType }: Props) 
       }
       router.push(paths.dashboard.propertyType.root);
     } catch (error) {
-      console.error(error);
+      console.log(error);
+      enqueueSnackbar(error?.message || 'api error', { variant: 'error' });
     }
   });
 
@@ -139,7 +135,7 @@ export default function PropertyTypeNewEditForm({ currentPropertyType }: Props) 
               <RHFTextField name="description_ar" label="Description (Arabic)" multiline rows={4} />
             </Stack>
 
-            {!propertyTypeEmpty && (
+            {/* {!propertyTypeEmpty && (
               <Stack spacing={1.5}>
                 <Divider sx={{ borderStyle: 'dashed' }} />
                 <Typography variant="subtitle2">Parent Type (If Type is a Sub-type)</Typography>
@@ -152,7 +148,7 @@ export default function PropertyTypeNewEditForm({ currentPropertyType }: Props) 
                     label="Parent Type"
                     InputLabelProps={{ shrink: true }}
                   >
-                    <option value="">Property Type</option> {/* Default option */}
+                    <option value="">Property Type</option> 
                     {propertyTypes?.map((type) => (
                       <option key={type?.id} value={type?.id}>
                         {type?.name_en}
@@ -161,7 +157,7 @@ export default function PropertyTypeNewEditForm({ currentPropertyType }: Props) 
                   </RHFSelect>
                 )}
               </Stack>
-            )}
+            )} */}
           </Stack>
         </Card>
       </Grid>

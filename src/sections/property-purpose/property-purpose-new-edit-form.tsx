@@ -94,6 +94,7 @@ export default function PropertyPurposeNewEditForm({ currentPropertyPurpose }: P
       router.push(paths.dashboard.propertyPurpose.root);
     } catch (error) {
       console.error(error);
+      enqueueSnackbar(error?.message || 'api error', { variant: 'error' });
     }
   });
 

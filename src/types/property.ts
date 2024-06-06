@@ -61,3 +61,8 @@ export type IPropertyTableFilters = {
   name_en: string;
   name_ar: string;
 };
+
+export type ILocation = {
+  lat: number;
+  lng: number;
+}

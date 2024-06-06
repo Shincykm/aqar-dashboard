@@ -52,7 +52,7 @@ const TABLE_HEAD = [
   { id: 'name', label: 'Property Type' },
   // { id: 'created_at', label: 'Create at', width: 160 },
   { id: 'description', label: 'Title & Description (Arabic)' },
-  { id: 'parent_id', label: 'Parent Type', width: 110 },
+  // { id: 'parent_id', label: 'Parent Type', width: 110 },
   { id: '', width: 88 },
 ];
 

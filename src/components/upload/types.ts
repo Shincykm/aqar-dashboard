@@ -7,6 +7,7 @@ import { Theme, SxProps } from '@mui/material/styles';
 export interface CustomFile extends File {
   path?: string;
   preview?: string;
+  virtual_path?: string;
   lastModifiedDate?: Date;
 }
 

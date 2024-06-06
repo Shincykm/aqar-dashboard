@@ -56,7 +56,7 @@ export default function AmenityNewEditForm({ currentAmenity }: Props) {
     () => ({
       name_en: currentAmenity?.name_en || '',
       name_ar: currentAmenity?.name_ar || '',
-      icon: currentAmenity?.icon?.virtual_path || null,
+      icon: currentAmenity?.icon || null,
       //   created_at: currentAmenity?.createdAt || null,
       //   updated_at: currentAmenity?.updatedAt || null,
     }),
@@ -91,11 +91,13 @@ export default function AmenityNewEditForm({ currentAmenity }: Props) {
       let formData = new FormData();
       formData.append('name_en', data.name_en);
       formData.append('name_ar', data?.name_ar || '');
-      if(data?.icon){
-        formData.append('icon', data.icon);
+      console.log(data);
+      
+      if (data?.icon && !currentAmenity?.icon?.id) {
+        formData.append('icon', data?.icon);
       }
 
-      if(currentAmenity){
+      if (currentAmenity) {
         formData.append('id', currentAmenity.id);
       }
 
@@ -107,6 +109,7 @@ export default function AmenityNewEditForm({ currentAmenity }: Props) {
       router.push(paths.dashboard.amenities.root);
     } catch (error) {
       console.error(error);
+      enqueueSnackbar(error?.message || 'api error', { variant: 'error' });
     }
   });
 

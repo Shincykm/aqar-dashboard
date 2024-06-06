@@ -110,11 +110,11 @@ export default function PropertyTypeTableRow({
           />
         </TableCell>
 
-        <TableCell>
+        {/* <TableCell>
           <Label variant="soft" color={(parent_id ? 'info' : 'default') || 'default'}>
             {parent_id}
           </Label>
-        </TableCell>
+        </TableCell> */}
 
         <TableCell align="right">
           <IconButton color={popover.open ? 'primary' : 'default'} onClick={popover.onOpen}>
