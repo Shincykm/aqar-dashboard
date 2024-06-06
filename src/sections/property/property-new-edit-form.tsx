@@ -28,15 +28,12 @@ import FormProvider, {
   RHFAutocomplete,
 } from 'src/components/hook-form';
 // types
-import { IPropertyItem } from 'src/types/property';
 // api
 import { useGetPropertyTypeList } from 'src/api/propertyType';
 import { useGetPropertyPurposeList } from 'src/api/propertyPurpose';
 import { useGetPropertyStyleList } from 'src/api/propertyStyle';
 import { useCreateUpdateProperty, useDeletePropertyPictureMapping } from 'src/api/property';
 import {
-  useCreateUpdateAmenityPropertyMapping,
-  useDeleteAmenityPropertyMapping,
   useGetAmenitiesList,
 } from 'src/api/amenities';
 //
@@ -345,7 +342,9 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                 <RHFSwitch label="Furnished" name="is_furnished" />
               </Box>
             </Stack>
+
             <Divider sx={{ borderStyle: 'dashed' }} />
+
             <Stack spacing={1.5}>
               <Box
                 columnGap={2}
