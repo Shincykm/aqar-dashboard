@@ -5,29 +5,18 @@ import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import LoadingButton from '@mui/lab/LoadingButton';
 import Box from '@mui/material/Box';
-import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
-import MenuItem from '@mui/material/MenuItem';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import Grid from '@mui/material/Unstable_Grid2';
-
-// _mock
-import { USER_STATUS_OPTIONS } from 'src/_mock';
-// types
-import { IUserItem } from 'src/types/user';
 
 // components
-import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
-import FormProvider, { RHFSelect, RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
-import { IPropertyItem } from 'src/types/property';
+import FormProvider, {RHFAutocomplete } from 'src/components/hook-form';
 import { useGetAgentList } from 'src/api/agent';
 import { Stack, Typography } from '@mui/material';
-import { values } from 'lodash';
-import { useAgentPropertyMapping, useGetProperties } from 'src/api/property';
+import { useAgentPropertyMapping } from 'src/api/property';
 
 // ----------------------------------------------------------------------
 
@@ -42,19 +31,16 @@ export default function AddAgent({ currentProperty, open, onClose }: Props) {
   const { enqueueSnackbar } = useSnackbar();
 
   const { agents, agentsEmpty, agentsLoading } = useGetAgentList(1, 1000);
-  const { property, propertyEmpty, propertyLoading } = useGetProperties(1, 1000);
 
   const NewUserSchema = Yup.object().shape({
     agent_id: Yup.number(),
-    property_id: Yup.number(),
     // agent_id : Yup.number.min(1, 'Choose at least one agent'),
   });
 
   const defaultValues = useMemo(
     () => ({
-      agent_id: agents?.find((agent: any) => agent.id === currentProperty.agents[0]?.id) || null,
-      property_id: currentProperty.id,
-      // agent_id: currentProperty?.id || null,
+      // agent_id: agents?.find((agent: any) => agent.id === currentProperty.agents[0]?.pivot?.agent_id) || null,
+      agent_id: currentProperty?.agents[0]?.pivot?.agent_id || null,
     }),
     [agents]
   );
@@ -120,7 +106,6 @@ export default function AddAgent({ currentProperty, open, onClose }: Props) {
             <RHFAutocomplete
               name="agent_id"
               label="Select agent"
-              value={values?.agent_id}
               options={agents.map((agent: any) => String(agent?.id))}
               getOptionLabel={(option) => {
                 const selectedAgent = agents.find((agent: any) => agent?.id === Number(option));

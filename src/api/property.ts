@@ -99,7 +99,9 @@ export async function useDeletePropertyPictureMapping(id: any) {
 
 // Agent-Property mapping
 export async function useAgentPropertyMapping(propertyID:any, agentId :any) {
-  const URL = endpoints.property.agentPropertyMapping;
+  const URL = `${endpoints.property.agentPropertyMapping}`;
+console.log(agentId,"==agent");
+console.log(propertyID,"==prop");
 
   // Hnadling formData
   const formData = new FormData();

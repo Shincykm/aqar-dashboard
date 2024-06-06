@@ -21,8 +21,9 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { shortDateLabel } from 'src/components/custom-date-range-picker';
 import { useBoolean } from 'src/hooks/use-boolean';
 import AddAgent from './add-agent';
-import { Avatar, Button, Grid, Tooltip, alpha } from '@mui/material';
+import { Avatar, Button, Grid, Tooltip, Typography, alpha } from '@mui/material';
 import { AvatarShape } from 'src/assets/illustrations';
+import { wrap } from 'module';
 
 // ----------------------------------------------------------------------
 
@@ -49,54 +50,6 @@ export default function PropertyItemNew({ property, onView, onEdit, onDelete }: 
     count_bathrooms,
     agents,
   } = property;
-
-  console.log(property, '===');
-
-  //   const shortLabel = shortDateLabel(available.startDate, available.endDate);
-
-  //   const renderRating = (
-  //     <Stack
-  //       direction="row"
-  //       alignItems="center"
-  //       sx={{
-  //         top: 8,
-  //         right: 8,
-  //         zIndex: 9,
-  //         borderRadius: 1,
-  //         position: 'absolute',
-  //         p: '2px 6px 2px 4px',
-  //         typography: 'subtitle2',
-  //         bgcolor: 'warning.lighter',
-  //       }}
-  //     >
-  //       <Iconify icon="eva:star-fill" sx={{ color: 'warning.main', mr: 0.25 }} /> {ratingNumber}
-  //     </Stack>
-  //   );
-
-  //   const renderPrice = (
-  //     <Stack
-  //       direction="row"
-  //       alignItems="center"
-  //       sx={{
-  //         top: 8,
-  //         left: 8,
-  //         zIndex: 9,
-  //         borderRadius: 1,
-  //         bgcolor: 'grey.800',
-  //         position: 'absolute',
-  //         p: '2px 6px 2px 4px',
-  //         color: 'common.white',
-  //         typography: 'subtitle2',
-  //       }}
-  //     >
-  //       {!!priceSale && (
-  //         <Box component="span" sx={{ color: 'grey.500', mr: 0.25, textDecoration: 'line-through' }}>
-  //           {fCurrency(priceSale)}
-  //         </Box>
-  //       )}
-  //       {fCurrency(price)}
-  //     </Stack>
-  //   );
 
   const renderImages = (
     <Stack
@@ -210,81 +163,90 @@ export default function PropertyItemNew({ property, onView, onEdit, onDelete }: 
 
   const renderAgentInfo = (
     <>
-      <Stack
-        spacing={1.5}
-        sx={{
-          position: 'relative',
-          p: (theme) => theme.spacing(0, 2.5, 2.5, 2.5),
-        }}
-      >
-        {/* <IconButton onClick={popover.onOpen} sx={{ position: 'absolute', bottom: 20, right: 8 }}>
-          <Iconify icon="eva:more-vertical-fill" />
-        </IconButton> */}
+      <Box sx={{ height: '50px', paddingInline: 2 }}>
+        <Grid container spacing={1}>
+          <Grid item xs={12} sm={7.8}>
+            <Box
+              sx={{ width: '100%', height: '100%' }}
+              display={'flex'}
+              alignItems={'center'}
+              justifyContent={'center'}
+            >
+              {agents.length > 0 && (
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  flexWrap={'wrap'}
+                  sx={{ typography: 'body2', width: '100%' }}
+                >
+                  {/* Need a method to identify high priority agent -- after change agents[0] */}
+                  <Avatar
+                    alt={`${agents[0].user?.first_name || ''} ${agents[0].user?.last_name || ''}`.trim()}
+                    src={agents[0].profile_picture || ''}
+                    sx={{ mr: 2, mb: 1, width: 48, height: 48 }}
+                  />
 
-<Box sx={{ position: 'relative' }}>
-        <AvatarShape
-          sx={{
-            left: 0,
-            right: 0,
-            zIndex: 10,
-            mx: 'auto',
-            bottom: -26,
-            position: 'absolute',
-          }}
-        />
+                  <Typography variant="subtitle2" noWrap>
+                    {`${agents[0].user?.first_name || ''} ${agents[0].user?.last_name || ''}`.trim()}
+                  </Typography>
+                </Stack>
+              )}
+            </Box>
+          </Grid>
+          <Grid item xs={12} sm={4.2}>
+            <Box
+              sx={{ width: '100%', height: '100%' }}
+              display={'flex'}
+              alignItems={'center'}
+              justifyContent={'center'}
+            >
+              <Tooltip
+                title={`${agents.length > 0 ? 'Change Agent' : 'Add Agent'}`}
+                sx={{ width: '100%' }}
+                placement="top"
+                arrow
+              >
+                <Button
+                  variant="outlined"
+                  onClick={quickEdit.onTrue}
+                  sx={{
+                    width: '100%',
+                  }}
+                >
+                  {agents.length > 0 ? 'Edit Agent' : 'Add Agent'}
+                </Button>
+              </Tooltip>
 
-          <Avatar
-            alt={agents.user?.last_name}
-            src={agents.profile_picture}
-            sx={{
-              width: 50,
-              height: 50,
-              zIndex: 11,
-              left: 0,
-              right: 0,
-              bottom: -32,
-              mx: 'auto',
-              position: 'absolute',
-            }}
-          />
-          {agents && <div>{`${agents[0]?.user.last_name} agent`}</div>}
-
-        {/* <Image
-          src={coverUrl}
-          alt={coverUrl}
-          ratio="16/9"
-          overlay={alpha(theme.palette.grey[900], 0.48)}
-        /> */}
+              <AddAgent
+                currentProperty={property}
+                open={quickEdit.value}
+                onClose={quickEdit.onFalse}
+              />
+            </Box>
+          </Grid>
+        </Grid>
       </Box>
-      </Stack>
-
-      <Tooltip title="Add Agent" placement="top" arrow>
-        <Button
-          variant="outlined"
-          onClick={quickEdit.onTrue}
-          sx={{
-            width: '100%',
-          }}
-        >
-          Add Agent
-        </Button>
-      </Tooltip>
-
-      <AddAgent currentProperty={property} open={quickEdit.value} onClose={quickEdit.onFalse} />
     </>
   );
-
 
   return (
     <>
       <Card>
-        {renderImages}
+        <Stack
+          spacing={1}
+          sx={{
+            position: 'relative',
+            p: (theme) => theme.spacing(0, 2.5, 2.5, 2.5),
+          }}
+        >
+          {renderImages}
 
-        {renderTexts}
+          {renderTexts}
 
-        {renderInfo}
+          {renderInfo}
 
-        {renderAgentInfo}
+          {renderAgentInfo}
+        </Stack>
       </Card>
 
       <CustomPopover
