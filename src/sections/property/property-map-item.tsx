@@ -13,8 +13,8 @@ const center = {
 };
 
 interface Location {
-  lat: number;
-  lng: number;
+  lat: number | any;
+  lng: number | any;
 }
 
 interface PropertyMapItemProps {
@@ -53,6 +53,7 @@ const PropertyMapItem: React.FC<PropertyMapItemProps> = ({ location, handleLocat
       } else {
         markerRef.current.setPosition(location);
       }
+      mapRef.current.setCenter(location); 
     }
   }, [isLoaded, location]);
 

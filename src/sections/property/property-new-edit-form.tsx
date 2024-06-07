@@ -10,7 +10,7 @@ import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
 import CardHeader from '@mui/material/CardHeader';
 import Typography from '@mui/material/Typography';
-import { Alert, Divider } from '@mui/material';
+import { Alert, Divider, Step } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 // routes
 import { paths } from 'src/routes/paths';
@@ -46,8 +46,8 @@ type Props = {
 };
 
 interface Location {
-  lat: number;
-  lng: number;
+  lat: number | any;
+  lng: number | any;
 }
 
 export default function PropertyNewEditForm({ currentProperty }: Props) {
@@ -93,8 +93,8 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
     building_id: Yup.number(),
     // display_order: Yup.number(),
     pictures: Yup.array().min(1, 'Images is required'),
-    latitude: Yup.number(),
-    longitude: Yup.number(),
+    // latitude: Yup.string(),
+    // longitude: Yup.string(),
   });
 
   const defaultValues = useMemo(
@@ -123,8 +123,8 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
       country_id: currentProperty?.country_id || null,
       state_province_id: currentProperty?.state_province_id || null,
       city_id: currentProperty?.city_id || null,
-      latitude: currentProperty?.address?.latitude | 0,
-      longitude: currentProperty?.address?.longitude | 0,
+      latitude: currentProperty?.address?.latitude || "",
+      longitude: currentProperty?.address?.longitude || "",
 
       // display_order: currentProperty?.display_order || 0,
       amenity_items: currentProperty?.amenities?.map((amenity: any) => amenity.id) || [],
@@ -167,15 +167,26 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
   const { amenities: amenitiesFullList, amenitiesEmpty, amenitiesLoading } = useGetAmenitiesList();
 
   const [amenitiesList, setAmenitiesList] = useState<{ value: any; label: any }[]>([]);
-  const [location, setLocation] = useState<Location | null>(null);
+  const [location, setLocation] = useState<any | null>(null);
 
-  // useEffect(() => {
-  //   if (currentProperty) {
-  //     console.log(currentProperty?.is_featured);
+  useEffect(() => {
+    if (currentProperty) {
+      currentProperty?.address?.latitude && setLocation({
+        "lat" : Number(currentProperty?.address?.latitude),
+        "lng" : Number(currentProperty?.address?.longitude)
+      });
+      reset(defaultValues);
+    }
+  }, [currentProperty]);
 
-  //     reset(defaultValues);
-  //   }
-  // }, [currentProperty]);
+  useEffect(() => {
+    if (currentProperty?.address?.latitude) {
+       setLocation({
+        "lat" : Number(currentProperty?.address?.latitude),
+        "lng" : Number(currentProperty?.address?.longitude)
+      });
+    }
+  }, [location]);
 
   useEffect(() => {
     const transformedAmenities = amenitiesFullList?.map((amenity) => ({
@@ -311,6 +322,30 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
     [setValue]
   );
 
+  const handleLatitude = useCallback(
+    (e: any) => {
+      const {value} = e.target; 
+      setValue('latitude', Number(value), { shouldValidate: true });
+      setLocation({
+        "lat" : Number(value),
+        "lng" : values.latitude
+      });
+    },
+    [setValue]
+  );
+
+  const handleLongitude = useCallback(
+    (e: any) => {
+      const {value} = e.target; 
+      setValue('longitude', Number(value), { shouldValidate: true });
+      setLocation({
+        "lat" : values.latitude,
+        "lng" : Number(value)
+      });
+    },
+    [setValue]
+  );
+  
   const renderDetails = (
     <>
       {mdUp && (
@@ -398,7 +433,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                 /> */}
                 <RHFTextField
                   name="size_sqft"
-                  label="Area in Sqm"
+                  label="Area in Sqft"
                   placeholder="0"
                   type="number"
                   InputLabelProps={{ shrink: true }}
@@ -444,10 +479,10 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
           {!mdUp && <CardHeader title="Project Details" />}
 
           <Stack spacing={3} sx={{ p: 3 }}>
-            <Stack spacing={1.5}>
+            {/* <Stack spacing={1.5}>
               <Typography variant="subtitle2">Ownership</Typography>
               <RHFTextField name="ownership" label="Ownership" />
-            </Stack>
+            </Stack> */}
             <Stack spacing={1.5}>
               <Typography variant="subtitle2">Reference Number</Typography>
               <RHFTextField name="reference_number" label="Reference Number" />
@@ -513,20 +548,20 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                 type="number"
                 InputLabelProps={{ shrink: true }}
               />
-              <RHFTextField
+              {/* <RHFTextField
                 name="old_amount"
                 label="Old Amount"
                 placeholder="0"
                 type="number"
                 InputLabelProps={{ shrink: true }}
-              />
-              <RHFTextField
+              /> */}
+              {/* <RHFTextField
                 name="maintenance_fee"
                 label="Maintenance Fee"
                 placeholder="0"
                 type="number"
                 InputLabelProps={{ shrink: true }}
-              />
+              /> */}
             </Box>
           </Stack>
         </Card>
@@ -824,8 +859,15 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                 md: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name="latitude" label="Latitude" />
-              <RHFTextField name="longitude" label="Longitude" />
+
+<RHFTextField name="latitude"
+                  label="Latitude" onChange={(event:any)=>handleLatitude(event)}
+                  value={values?.latitude }/>
+
+<RHFTextField name="longitude"
+                  label="Latitude" onChange={(event:any)=>handleLongitude(event)}
+                  value={values?.longitude }/>
+                
             </Box>
           </Stack>
         </Card>
@@ -921,6 +963,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
 
         <>
           {renderLatLng}
+
           <Stack
             sx={{
               padding: 5,
