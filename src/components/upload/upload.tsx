@@ -71,7 +71,7 @@ export default function Upload({
   );
 
   const renderSinglePreview = (
-    <SingleFilePreview imgUrl={typeof file === 'string' ? file : file?.preview} />
+    <SingleFilePreview imgUrl={typeof file === 'string' ? file :  file?.preview} />
   );
 
   const removeSinglePreview = hasFile && onDelete && (

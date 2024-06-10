@@ -222,7 +222,7 @@ export const paths = {
       },
     },
     agents : {
-      root: `${ROOTS.DASHBOARD}/agents`,
+      root: `${ROOTS.DASHBOARD}/agents/list`,
       new: `${ROOTS.DASHBOARD}/agents/new`,
       list: `${ROOTS.DASHBOARD}/agents/list`,
       edit: (id: string) => `${ROOTS.DASHBOARD}/agents/${id}/edit`,

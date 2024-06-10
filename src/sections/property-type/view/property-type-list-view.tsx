@@ -44,15 +44,12 @@ import PropertyTypeTableToolbar from '../property-type-table-toolbar';
 import PropertyTypeTableFiltersResult from '../property-type-table-filters-result';
 import PropertyTypeTableRow from '../property-type-table-row';
 import { useDeletePropertyType, useGetPropertyTypeList } from 'src/api/propertyType';
-import { textAlign } from '@mui/system';
 
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Property Type' },
-  // { id: 'created_at', label: 'Create at', width: 160 },
   { id: 'description', label: 'Title & Description (Arabic)' },
-  // { id: 'parent_id', label: 'Parent Type', width: 110 },
   { id: '', width: 88 },
 ];
 
@@ -73,7 +70,7 @@ export default function ProductListView() {
 
   const [filters, setFilters] = useState(defaultFilters);
 
-  const { propertyTypes, propertyTypeLoading, propertyTypeEmpty } = useGetPropertyTypeList();
+  const { propertyTypes, propertyTypeLoading, propertyTypeEmpty } = useGetPropertyTypeList(1,100);
 
   const confirm = useBoolean();
 
@@ -216,7 +213,6 @@ export default function ProductListView() {
                   headLabel={TABLE_HEAD}
                   rowCount={tableData.length}
                   numSelected={table.selected.length}
-                  // onSort={table.onSort}
                   onSelectAllRows={(checked) =>
                     table.onSelectAllRows(
                       checked,

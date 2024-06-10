@@ -19,6 +19,7 @@ import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 //
 import UserQuickEditForm from '../../sections/user/user-quick-edit-form';
+import { format, parseISO } from 'date-fns';
 
 // ----------------------------------------------------------------------
 
@@ -56,7 +57,7 @@ export default function AgentTableRow({
         </TableCell>
 
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar alt={first_name || last_name} src={profile_picture} sx={{ mr: 2 }} />
+          <Avatar alt={first_name || last_name} src={profile_picture?.virtual_path} sx={{ mr: 2 }} />
 
           <ListItemText
             primary={`${first_name || ""} ${last_name || ""}`}
@@ -77,7 +78,7 @@ export default function AgentTableRow({
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{office_address || "Not Available" }</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{licence_expiry_date || "Not Available" }</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{ format(parseISO(licence_expiry_date), 'yyyy-MM-dd') || "Not Available" }</TableCell>
 
         {/* <TableCell>
           <Label
@@ -94,19 +95,13 @@ export default function AgentTableRow({
         </TableCell> */}
 
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          <Tooltip title="Quick Edit" placement="top" arrow>
-            <IconButton color={quickEdit.value ? 'inherit' : 'default'} onClick={quickEdit.onTrue}>
-              <Iconify icon="solar:pen-bold" />
-            </IconButton>
-          </Tooltip>
-
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />
           </IconButton>
         </TableCell>
       </TableRow>
 
-      <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} />
+      {/* <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} /> */}
 
       <CustomPopover
         open={popover.open}

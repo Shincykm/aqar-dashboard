@@ -203,5 +203,6 @@ export const endpoints = {
     createUpdate: '/api/admin/agent/createUpdate',
     delete: '/api/admin/agent/delete',
     details: '/api/admin/agent',
+    languages : '/api/admin/language/get'
   },
 };

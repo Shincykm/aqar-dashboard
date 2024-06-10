@@ -93,8 +93,6 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
     building_id: Yup.number(),
     // display_order: Yup.number(),
     pictures: Yup.array().min(1, 'Images is required'),
-    // latitude: Yup.string(),
-    // longitude: Yup.string(),
   });
 
   const defaultValues = useMemo(
@@ -199,11 +197,8 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
   const onSubmit = handleSubmit(async (propertyData: any) => {
     try {
       if (currentProperty?.id) {
-        console.log('edit');
-
         propertyData['id'] = currentProperty.id;
       }
-      console.log(propertyData, 'create');
 
       const response = await useCreateUpdateProperty(propertyData);
 
@@ -240,7 +235,6 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
         console.info('DATA', propertyData);
       }
     } catch (error) {
-      console.log(error);
       enqueueSnackbar(error?.message || 'api error', { variant: 'error' });
     }
   });
@@ -484,8 +478,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
               <RHFTextField name="ownership" label="Ownership" />
             </Stack> */}
             <Stack spacing={1.5}>
-              <Typography variant="subtitle2">Reference Number</Typography>
-              <RHFTextField name="reference_number" label="Reference Number" />
+              <RHFTextField name="reference_number" label="Reference Number" disabled/>
             </Stack>
             {/* <RHFDatePicker name="constructed_date" label="Constructed Date" /> */}
             {/* <Stack spacing={1.5}>
@@ -745,7 +738,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                     );
                     return selectedCountry ? selectedCountry.name : '';
                   }}
-                  isOptionEqualToValue={(option, value) => option === value}
+                  isOptionEqualToValue={(option, value) => option === String(value)}
                   onChange={(event, newValue) => handleCountryChange(newValue)}
                   loading={countriesLoading}
                   renderOption={(props, option) => {
@@ -778,7 +771,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                     );
                     return selectedSate ? selectedSate.name : '';
                   }}
-                  isOptionEqualToValue={(option, value) => option === value}
+                  isOptionEqualToValue={(option, value) => option === String(value)}
                   onChange={(event, newValue) => handleStateChange(newValue)}
                   loading={stateProvincesLoading}
                   renderOption={(props, option) => {
@@ -809,7 +802,7 @@ export default function PropertyNewEditForm({ currentProperty }: Props) {
                     const selectedCity = cities.find((city) => city.id === Number(option));
                     return selectedCity ? selectedCity.name_en : '';
                   }}
-                  isOptionEqualToValue={(option, value) => option === value}
+                  isOptionEqualToValue={(option, value) => option === String(value)}
                   onChange={(event, newValue) => handleCityChange(newValue)}
                   loading={citiesLoading}
                   renderOption={(props, option) => {

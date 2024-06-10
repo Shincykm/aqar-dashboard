@@ -142,7 +142,7 @@ export default function AgentListView() {
 
   const handleEditRow = useCallback(
     (id: string) => {
-      router.push(paths.dashboard.user.edit(id));
+      router.push(paths.dashboard.agents.edit(id));
     },
     [router]
   );
@@ -379,8 +379,6 @@ function applyFilter({
         return fullName.toLowerCase().indexOf(fullName.toLowerCase()) !== -1
       }
   });
-    console.log(inputData);
-    
   }
 
   if (status !== 'all') {

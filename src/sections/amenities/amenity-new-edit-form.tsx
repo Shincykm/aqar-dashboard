@@ -81,7 +81,6 @@ export default function AmenityNewEditForm({ currentAmenity }: Props) {
 
   useEffect(() => {
     if (currentAmenity) {
-      console.log(currentAmenity);
       reset(defaultValues);
     }
   }, [currentAmenity, defaultValues, reset]);

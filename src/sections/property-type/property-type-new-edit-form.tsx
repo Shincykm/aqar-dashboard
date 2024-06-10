@@ -40,8 +40,6 @@ export default function PropertyTypeNewEditForm({ currentPropertyType }: Props) 
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const { propertyTypes, propertyTypeEmpty, propertyTypeLoading } = useGetPropertyTypeList();
-
   const NewPropertyTypeSchema = Yup.object().shape({
     name_en: Yup.string().required('Title is required'),
     name_ar: Yup.string().nullable(),
@@ -71,17 +69,16 @@ export default function PropertyTypeNewEditForm({ currentPropertyType }: Props) 
     watch,
     setValue,
     handleSubmit,
-    control,
     formState: { isSubmitting },
   } = methods;
 
   const values = watch();
 
-  // useEffect(() => {
-  //   if (currentPropertyType) {
-  //     reset(defaultValues);
-  //   }
-  // }, [currentPropertyType, defaultValues, reset]);
+  useEffect(() => {
+    if (currentPropertyType) {
+      reset(defaultValues);
+    }
+  }, [currentPropertyType, defaultValues, reset]);
 
   const onSubmit = handleSubmit(async (data) => {
     try {

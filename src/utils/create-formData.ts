@@ -1,3 +1,5 @@
+import { parseISO, format } from 'date-fns';
+
 export const createFormData = (data: any) => {
   
   const formData = new FormData();
@@ -26,6 +28,39 @@ export const createFormData = (data: any) => {
         }
       });
     }
+  });
+
+  return formData;
+};
+
+export const handleFormData = (data:any) => {
+  const formData = new FormData();
+
+  Object.entries(data).forEach(([key, value]) => {
+      if (key === "id" && value) {
+        formData.append(key, value.toString());
+      } else if (typeof value === 'boolean') {
+        formData.append(key, value ? '1' : '0');
+      } else if (typeof value === 'string' && value !== '') {
+        if(key !== "profile_picture")
+          formData.append(key, value);
+      } else if (typeof value === 'number' && value !== 0) {
+        formData.append(key, value.toString());
+      } else if (Array.isArray(value)) {
+        value.forEach((item, index) => {
+          if (item instanceof File) {
+            formData.append(`${key}[${index}]`, item);
+          } else {
+            formData.append(`${key}[${index}]`, JSON.stringify(item));
+          }
+        });
+      } else if (value instanceof File) {
+        formData.append(key, value);
+      } else if (value instanceof Date) {
+        formData.append(key, format(value, 'yyyy-MM-dd')); // Convert date to yyyy-MM-dd
+      } else if (typeof value === 'object' && value !== null) {
+        formData.append(key, JSON.stringify(value));
+      }
   });
 
   return formData;

@@ -7,6 +7,7 @@ export default function  EditPage() {
   const params = useParams();
 
   const { id } = params;
+  
   return (
     <>
       <Helmet>

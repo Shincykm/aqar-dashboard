@@ -59,7 +59,7 @@ export default function PropertyTypeTableRow({
                 noWrap
                 color="inherit"
                 variant="subtitle2"
-                // onClick={onViewRow}
+                onClick={()=>onEditRow()}
                 sx={{ cursor: 'pointer' }}
               >
                 {name_en}
@@ -72,21 +72,6 @@ export default function PropertyTypeTableRow({
             }
           />
         </TableCell>
-
-        {/* <TableCell>
-          <ListItemText
-            // primary={format(new Date(created_at), 'dd MMM yyyy')}
-            primary={format(new Date(), 'dd MMM yyyy')}
-            // secondary={format(new Date(created_at), 'p')}
-            secondary={format(new Date(), 'p')}
-            primaryTypographyProps={{ typography: 'body2', noWrap: true }}
-            secondaryTypographyProps={{
-              mt: 0.5,
-              component: 'span',
-              typography: 'caption',
-            }}
-          />
-        </TableCell> */}
         
         <TableCell>
         <ListItemText
@@ -96,7 +81,6 @@ export default function PropertyTypeTableRow({
                 noWrap
                 color="inherit"
                 variant="subtitle2"
-                // onClick={onViewRow}
                 sx={{ cursor: 'pointer'}}
               >
                 {name_ar}

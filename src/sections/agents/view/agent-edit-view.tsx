@@ -20,8 +20,8 @@ type Props = {
 export default function AgentsEditView({ id }: Props) {
   const settings = useSettingsContext();
   
-  const { agents: currentAgent } = useGetAgent(id);
-
+  const { agent: currentAgent } = useGetAgent(id);
+  
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
@@ -29,7 +29,7 @@ export default function AgentsEditView({ id }: Props) {
         links={[
           { name: 'Dashboard', href: paths.dashboard.root },
           {
-            name: 'Amenities',
+            name: 'Agents',
             href: paths.dashboard.agents.root,
           },
           { name: currentAgent?.name_en },
