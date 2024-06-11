@@ -1,7 +1,6 @@
 // @mui
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
-import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import TableRow from '@mui/material/TableRow';
 import Checkbox from '@mui/material/Checkbox';
@@ -11,14 +10,12 @@ import ListItemText from '@mui/material/ListItemText';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 // types
-import { IUserItem } from 'src/types/user';
+import { IAgentItem } from 'src/types/agents';
 // components
-import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 //
-import UserQuickEditForm from '../../sections/user/user-quick-edit-form';
 import { format, parseISO } from 'date-fns';
 
 // ----------------------------------------------------------------------
@@ -26,8 +23,7 @@ import { format, parseISO } from 'date-fns';
 type Props = {
   selected: boolean;
   onEditRow: VoidFunction;
-  // row: IUserItem ;
-  row:any
+  row: IAgentItem;
   onSelectRow: VoidFunction;
   onDeleteRow: VoidFunction;
 };
@@ -39,33 +35,41 @@ export default function AgentTableRow({
   onSelectRow,
   onDeleteRow,
 }: Props) {
-  const { user, licence_expiry_date, office_address, profile_picture, company_name } = row;
-  
-  const {first_name, last_name, email, phone_number, whatsapp_number} = user;
+  const {
+    user,
+    licence_expiry_date = '',
+    profile_picture,
+    company_name,
+    website,
+  } = row;
+
+  const { first_name, last_name, email, phone_number, whatsapp_number = '' } = user;
 
   const confirm = useBoolean();
-
-  const quickEdit = useBoolean();
 
   const popover = usePopover();
 
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell padding="checkbox">
+        {/* <TableCell padding="checkbox">
           <Checkbox checked={selected} onClick={onSelectRow} />
-        </TableCell>
+        </TableCell> */}
 
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-          <Avatar alt={first_name || last_name} src={profile_picture?.virtual_path} sx={{ mr: 2 }} />
+          <Avatar
+            alt={first_name || last_name}
+            src={profile_picture?.virtual_path}
+            sx={{ mr: 2 }}
+          />
 
           <ListItemText
-            primary={`${first_name || ""} ${last_name || ""}`}
+            primary={`${first_name || ''} ${last_name || ''}`}
             secondary={email}
             primaryTypographyProps={{ typography: 'body2' }}
             secondaryTypographyProps={{
               component: 'span',
-              color: 'text.disabled',
+              fontSize:'12px'
             }}
           />
         </TableCell>
@@ -74,25 +78,38 @@ export default function AgentTableRow({
 
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{whatsapp_number}</TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{company_name}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {company_name ? (
+            <ListItemText primary={company_name} primaryTypographyProps={{ typography: 'body2' }} />
+          ) : (
+            <ListItemText
+              secondary={"Not Available"}
+              secondaryTypographyProps={{
+                component: 'span',
+                color: 'text.disabled',
+              }}
+            />
+          )}
+        </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{office_address || "Not Available" }</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+        {website ? (
+            <ListItemText primary={website} primaryTypographyProps={{ typography: 'body2' }} />
+          ) : (
+            <ListItemText
+              secondary={"Not Available"}
+              secondaryTypographyProps={{
+                component: 'span',
+                color: 'text.disabled',
+              }}
+            />
+          )}
+        </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{ format(parseISO(licence_expiry_date), 'yyyy-MM-dd') || "Not Available" }</TableCell>
-
-        {/* <TableCell>
-          <Label
-            variant="soft"
-            color={
-              (status === 'active' && 'success') ||
-              (status === 'pending' && 'warning') ||
-              (status === 'banned' && 'error') ||
-              'default'
-            }
-          >
-            {status}
-          </Label>
-        </TableCell> */}
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {(licence_expiry_date && format(parseISO(licence_expiry_date), 'yyyy-MM-dd')) ||
+            'Not Available'}
+        </TableCell>
 
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
@@ -100,8 +117,6 @@ export default function AgentTableRow({
           </IconButton>
         </TableCell>
       </TableRow>
-
-      {/* <UserQuickEditForm currentUser={row} open={quickEdit.value} onClose={quickEdit.onFalse} /> */}
 
       <CustomPopover
         open={popover.open}

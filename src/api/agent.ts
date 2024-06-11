@@ -14,6 +14,8 @@ export function useGetAgentList(page = 1, limit = 10, search = '') {
   const memoizedValue = useMemo(
     () => ({
       agents: (data?.data as any[]) || [],
+      agentsTotal: data?.total || 0,
+      agentsPerPage: data?.data?.count_per_page,
       agentsLoading: isLoading,
       agentsError: error,
       agentsValidating: isValidating,
@@ -48,37 +50,36 @@ export function useGetAgent(agentId: string | number) {
 // ----------------------------------------------------------------------
 
 export async function useCreateUpdateAgents(agentData: any) {
-    const URL = endpoints.agents.createUpdate;
-    console.log(agentData, "===agentDaa");
-    
+  const URL = endpoints.agents.createUpdate;
+  console.log(agentData, '===agentDaa');
 
-    // Hnadling formData
-    const formData = handleFormData(agentData);
+  // Hnadling formData
+  const formData = handleFormData(agentData);
 
-    try {
-        const response = await performRequest<any>('post', URL, {
-        headers: {
-            'Content-Type': 'multipart/form-data',
-        },
-        data: formData,
-        });
-        return response.data;
-    } catch (error) {
-        throw error;
-    }
+  try {
+    const response = await performRequest<any>('post', URL, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      data: formData,
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
 }
 
 // ----------------------------------------------------------------------
 
 export async function useDeleteAgents(agentId: number) {
-    const URL = endpoints.agents.delete;
+  const URL = endpoints.agents.delete;
 
-    try {
-      const response = await performRequest<any>('DELETE', `${URL}/${agentId}`);
-      return response?.data;
-    } catch (error) {
-      throw error;
-    }
+  try {
+    const response = await performRequest<any>('DELETE', `${URL}/${agentId}`);
+    return response?.data;
+  } catch (error) {
+    throw error;
+  }
 }
 
 // ----------------------------------------------------------------------

@@ -1,45 +1,30 @@
 import { useCallback } from 'react';
 // @mui
 import Stack from '@mui/material/Stack';
-import MenuItem from '@mui/material/MenuItem';
-import Checkbox from '@mui/material/Checkbox';
 import TextField from '@mui/material/TextField';
-import InputLabel from '@mui/material/InputLabel';
-import IconButton from '@mui/material/IconButton';
-import FormControl from '@mui/material/FormControl';
-import OutlinedInput from '@mui/material/OutlinedInput';
 import InputAdornment from '@mui/material/InputAdornment';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
 // types
 import { IAgentTableFilters, IAgentTableFilterValue } from 'src/types/agents';
 // components
 import Iconify from 'src/components/iconify';
-import CustomPopover, { usePopover } from 'src/components/custom-popover';
 
 // ----------------------------------------------------------------------
 
 type Props = {
   filters: IAgentTableFilters;
   onFilters: (name: string, value: IAgentTableFilterValue) => void;
-  //
-  // roleOptions: string[];
 };
 
-export default function UserTableToolbar({
+export default function AgentTableToolbar({
   filters,
   onFilters,
-  //
-  // roleOptions,
 }: Props) {
-  // const popover = usePopover();
-
   const handleFilterName = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       onFilters('name', event.target.value);
     },
     [onFilters]
   );
-
 
   return (
     <>
@@ -70,46 +55,8 @@ export default function UserTableToolbar({
               ),
             }}
           />
-
-          {/* <IconButton onClick={popover.onOpen}>
-            <Iconify icon="eva:more-vertical-fill" />
-          </IconButton> */}
         </Stack>
       </Stack>
-
-      {/* <CustomPopover
-        open={popover.open}
-        onClose={popover.onClose}
-        arrow="right-top"
-        sx={{ width: 140 }}
-      >
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="solar:printer-minimalistic-bold" />
-          Print
-        </MenuItem>
-
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="solar:import-bold" />
-          Import
-        </MenuItem>
-
-        <MenuItem
-          onClick={() => {
-            popover.onClose();
-          }}
-        >
-          <Iconify icon="solar:export-bold" />
-          Export
-        </MenuItem>
-      </CustomPopover> */}
     </>
   );
 }

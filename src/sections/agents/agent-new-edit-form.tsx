@@ -34,11 +34,9 @@ import FormProvider, {
 // types
 import { Box } from '@mui/system';
 import { fData } from 'src/utils/format-number';
-import { useCreateUpdateAgents, useGetAgentList, useGetLanguages } from 'src/api/agent';
+import { useCreateUpdateAgents, useGetLanguages } from 'src/api/agent';
 import { useCityList, useGetCountriesList, useStateProvincesList } from 'src/api/address';
-
-
-
+import PhoneNumberInput from 'src/components/phone-number-input/phone-number-input';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -57,16 +55,15 @@ export default function AgentNewEditForm({ currentAgent }: Props) {
 
   const NewAgentSchema = Yup.object().shape({
     // user details
-    first_name: Yup.string().nullable(),
+    first_name: Yup.string().required('First name required'),
     last_name: Yup.string().required('Last name required'),
     username: Yup.string().required('Username required'),
     gender: Yup.string(),
     email: Yup.string().required('Email is required').email('Email must be a valid email address'),
-    phone_number: Yup.number(),
-    whatsapp_number: Yup.number(),
+    phone_number: Yup.number().required('Phone number is required'),
+    whatsapp_number: Yup.mixed<any>().nullable(),
     password: Yup.string(),
-    //agent details
-    id: Yup.string(),
+    // //agent details
     designation: Yup.string(),
     description: Yup.string(),
     website: Yup.string(),
@@ -74,36 +71,41 @@ export default function AgentNewEditForm({ currentAgent }: Props) {
     address_line_1: Yup.string(),
     address_line_2: Yup.string(),
     licence_picture: Yup.mixed<any>().nullable(),
-    licence_expiry_date: Yup.mixed<any>(),
+    licence_expiry_date: Yup.mixed<any>().nullable(),
     profile_picture: Yup.mixed<any>().nullable(),
+    licence_number: Yup.string().nullable(),
+    tax_number: Yup.string().nullable(),
     language_ids: Yup.array().nullable() || [],
   });
 
   const defaultValues = useMemo(
     () => ({
       // user details
-      first_name: currentAgent?.user?.first_name || "",
-      last_name: currentAgent?.user?.last_name || "",
-      username: currentAgent?.user?.username || "",
-      gender: currentAgent?.user?.gender || "",
-      email: currentAgent?.user?.email || "",
-      phone_number: currentAgent?.user?.phone_number || 0,
-      whatsapp_number: currentAgent?.user?.whatsapp_number || 0,
-      password: currentAgent?.user?.password || "",
+      first_name: currentAgent?.user?.first_name || '',
+      last_name: currentAgent?.user?.last_name || '',
+      username: currentAgent?.user?.username || '',
+      gender: currentAgent?.user?.gender || '',
+      email: currentAgent?.user?.email || '',
+      phone_number: `${currentAgent?.user?.country_code}${currentAgent?.user?.phone_number}` || '',
+      whatsapp_number: currentAgent?.user?.whatsapp_number || '',
+      password: currentAgent?.user?.password || '',
       //agent details
       id: currentAgent?.id || null,
       designation: currentAgent?.designation || '',
       website: currentAgent?.website || '',
       description: currentAgent?.description || '',
       company_name: currentAgent?.company_name || '',
-      address_line_1 : currentAgent?.address_line_1 || '',
-      address_line_2 : currentAgent?.address_line_2 || '',
+      address_line_1: currentAgent?.address_line_1 || '',
+      address_line_2: currentAgent?.address_line_2 || '',
       country_id: currentAgent?.country_id || null,
       city_id: currentAgent?.city_id || null,
       state_province_id: currentAgent?.state_province_id || null,
       licence_picture: currentAgent?.licence_picture?.virtual_path || null,
       licence_number: currentAgent?.licence_number || '',
-      licence_expiry_date : currentAgent?.licence_expiry_date ? parseISO(currentAgent?.licence_expiry_date) : null,
+      tax_number: currentAgent?.tax_number || '',
+      licence_expiry_date: currentAgent?.licence_expiry_date
+        ? parseISO(currentAgent?.licence_expiry_date)
+        : null,
       profile_picture: currentAgent?.profile_picture?.virtual_path || null,
       language_ids: currentAgent?.languages?.map((lang: any) => lang?.id) || [],
     }),
@@ -121,11 +123,12 @@ export default function AgentNewEditForm({ currentAgent }: Props) {
     setValue,
     handleSubmit,
     control,
-    formState: { isSubmitting, isValid },
+    formState: {  isSubmitting, isValid, isSubmitted, errors },
   } = methods;
 
   const values = watch();
 
+  const { languages, languagesEmpty, languagesLoading } = useGetLanguages(1, 100);
   const { countries, countriesEmpty, countriesLoading } = useGetCountriesList(1, 1000);
   const { stateProvinces, stateProvincesEmpty, stateProvincesLoading } = useStateProvincesList(
     1,
@@ -137,15 +140,16 @@ export default function AgentNewEditForm({ currentAgent }: Props) {
     1000,
     values.state_province_id ? values.state_province_id : ''
   );
-  const { languages, languagesEmpty, languagesLoading } = useGetLanguages(1, 100);
 
   const [languagesList, setLanguagesList] = useState<{ value: any; label: any }[]>([]);
 
   useEffect(() => {
     if (currentAgent) {
-      password.setValue(true); 
       reset(defaultValues);
+    }else{
+      setValue('password',"123456");
     }
+    
   }, [currentAgent, defaultValues, reset]);
 
   useEffect(() => {
@@ -160,10 +164,13 @@ export default function AgentNewEditForm({ currentAgent }: Props) {
 
   const onSubmit = handleSubmit(async (data: any) => {
     try {
-      if(currentAgent){
+      console.log(data, "==before onSubmit");
+
+      if (currentAgent) {
         data.id = currentAgent?.id;
-        data.email = "";
+        data.email = '';
       }
+
       const response = await useCreateUpdateAgents(data);
 
       if (!response) throw new Error('Something went wrong!');
@@ -196,7 +203,7 @@ export default function AgentNewEditForm({ currentAgent }: Props) {
   const handleRemoveFileLicense = useCallback(() => {
     setValue('licence_picture', null);
   }, [setValue]);
-  
+
   const handleCountryChange = useCallback(
     (newValue: any) => {
       setValue('country_id', newValue, { shouldValidate: true });
@@ -235,31 +242,6 @@ export default function AgentNewEditForm({ currentAgent }: Props) {
         <Stack spacing={3} sx={{ p: 4 }}>
           <Typography variant="subtitle2">Agent Details</Typography>
           <Stack spacing={1.5}>
-            {/* <RHFAutocomplete
-              name="id"
-              label="Select Agent *"
-              options={agents?.map((agent: any) => String(agent?.id) || [])}
-              getOptionLabel={(option) => {
-                const selectedAgent = agents.find((agent: any) => agent?.id === Number(option));
-                return selectedAgent ? selectedAgent.user?.last_name : '';
-              }}
-              isOptionEqualToValue={(option, value) => option === String(value) }
-              onChange={(event, newValue) => handleAgentChange(newValue)}
-              loading={agentsLoading}
-              renderOption={(props, option) => {
-                const selectedAgent = agents.find((agent: any) => String(agent.id) === option);
-
-                if (!selectedAgent) {
-                  return null;
-                }
-                const { id, user } = selectedAgent;
-                return (
-                  <li {...props} key={id}>
-                    {(user?.first_name || user?.last_name).trim()}
-                  </li>
-                );
-              }}
-            /> */}
             <Box
               columnGap={2}
               rowGap={3}
@@ -269,10 +251,11 @@ export default function AgentNewEditForm({ currentAgent }: Props) {
                 md: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name="username" label="Username *" disabled={disabled} />
-              <RHFTextField name="email" label="email" disabled={disabled}/>
-              <RHFTextField name="first_name" label="First Name" disabled={disabled}/>
-              <RHFTextField name="last_name" label="Last Name *" disabled={disabled}/>
+              {/* disabled={disabled} */}
+              <RHFTextField name="first_name" label="First Name *"  disabled={disabled}/>
+              <RHFTextField name="last_name" label="Last Name *"  disabled={disabled}/>
+              <RHFTextField name="username" label="Username *"  disabled={disabled} />
+              <RHFTextField name="email" label="email *"  disabled={disabled} />
               <RHFSelect
                 native
                 name="gender"
@@ -290,12 +273,16 @@ export default function AgentNewEditForm({ currentAgent }: Props) {
                 name="password"
                 label="Password *"
                 type={password.value ? 'text' : 'password'}
-                disabled={disabled}
+                disabled={true}
+                value={!currentAgent?.user_id ? "123456" : ''}
+                helperText="Deafult password is 123456"
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton onClick={password.onToggle} edge="end">
-                        <Iconify icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
+                        <Iconify
+                          icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'}
+                        />
                       </IconButton>
                     </InputAdornment>
                   ),
@@ -304,29 +291,65 @@ export default function AgentNewEditForm({ currentAgent }: Props) {
             </Box>
           </Stack>
 
+          <Box
+            columnGap={2}
+            rowGap={3}
+            display="grid"
+            gridTemplateColumns={{
+              xs: 'repeat(1, 1fr)',
+              md: 'repeat(2, 1fr)',
+            }}
+          >
+            <Stack spacing={1.5}>
+              <Typography variant="subtitle2">Phone Number *</Typography>
+              <PhoneNumberInput
+                control={control}
+                setValue={setValue}
+                value={values?.phone_number || ""}
+                id="phone_number"
+                errors={errors}
+                isSubmitted={isSubmitted}
+                isRequired={true}
+              />
+            </Stack>
+
+            <Stack spacing={1.5}>
+              <Typography variant="subtitle2">Whatsapp Number</Typography>
+              <PhoneNumberInput
+                control={control}
+                setValue={setValue}
+                value={values?.whatsapp_number || ""}
+                id="whatsapp_number"
+                errors={errors}
+                isSubmitted={isSubmitted}
+                isRequired={false}
+              />
+            </Stack>
+
+            <Stack spacing={1.5}>
+              <RHFTextField name="designation" label="Designation" />
+            </Stack>
+
+            {!languagesEmpty && !languagesLoading && (
+              <Stack spacing={1.5}>
+                <Stack spacing={3}>
+                  {!languagesEmpty && !languagesLoading && (
+                    <RHFMultiSelect
+                      checkbox
+                      name="language_ids"
+                      label="Languages"
+                      options={languagesList}
+                    />
+                  )}
+                </Stack>
+              </Stack>
+            )}
+          </Box> 
+
           <Stack spacing={1.5}>
             {/* <RHFEditor simple name="description_en" /> */}
             <RHFTextField name="description" placeholder="Description" multiline rows={4} />
           </Stack>
-
-          <Stack spacing={1.5}>
-            <RHFTextField name="designation" label="Designation" />
-          </Stack>
-
-          {!languagesEmpty && !languagesLoading && (
-            <Stack spacing={1.5}>
-              <Stack spacing={3}>
-                {!languagesEmpty && !languagesLoading && (
-                  <RHFMultiSelect
-                    checkbox
-                    name="language_ids"
-                    label="Languages"
-                    options={languagesList}
-                  />
-                )}
-              </Stack>
-            </Stack>
-          )}
         </Stack>
       </Card>
     </Grid>
@@ -371,6 +394,7 @@ export default function AgentNewEditForm({ currentAgent }: Props) {
               md: 'repeat(2, 1fr)',
             }}
           >
+
             {!countriesEmpty && (
               <RHFAutocomplete
                 name="country_id"
@@ -412,7 +436,7 @@ export default function AgentNewEditForm({ currentAgent }: Props) {
                 const selectedSate = stateProvinces.find((state) => state.id === Number(option));
                 return selectedSate ? selectedSate.name : '';
               }}
-              isOptionEqualToValue={(option, value) => option === String(value) }
+              isOptionEqualToValue={(option, value) => option === String(value)}
               onChange={(event, newValue) => handleStateChange(newValue)}
               loading={stateProvincesLoading}
               renderOption={(props, option) => {
@@ -439,7 +463,7 @@ export default function AgentNewEditForm({ currentAgent }: Props) {
                 const selectedCity = cities.find((city) => city.id === Number(option));
                 return selectedCity ? selectedCity.name_en : '';
               }}
-              isOptionEqualToValue={(option, value) => option === String(value) }
+              isOptionEqualToValue={(option, value) => option === String(value)}
               onChange={(event, newValue) => handleCityChange(newValue)}
               loading={citiesLoading}
               renderOption={(props, option) => {
@@ -486,7 +510,6 @@ export default function AgentNewEditForm({ currentAgent }: Props) {
               }}
             >
               <RHFTextField name="licence_number" placeholder="License Number" />
-              {/* <RHFDatePicker name="licence_expiry_date" label="License Expiry Date" /> */}
               <Controller
                 name="licence_expiry_date"
                 control={control}
@@ -494,7 +517,6 @@ export default function AgentNewEditForm({ currentAgent }: Props) {
                   <DatePicker
                     label="Licence Expiry Date"
                     {...field}
-                    // value={values?.licence_expiry_date ? parseISO(values?.licence_expiry_date) : null}
                     format="yyyy-MM-dd"
                     slotProps={{
                       textField: {
@@ -508,7 +530,6 @@ export default function AgentNewEditForm({ currentAgent }: Props) {
                   />
                 )}
               />
-
             </Box>
           </Stack>
           <Stack spacing={1.5}>
@@ -582,7 +603,7 @@ export default function AgentNewEditForm({ currentAgent }: Props) {
 
         {renderProfilePic}
 
-        {renderActions} 
+        {renderActions}
       </Grid>
     </FormProvider>
   );

@@ -38,7 +38,7 @@ import {
   TablePaginationCustom,
 } from 'src/components/table';
 // types
-import { IUserItem, IUserTableFilters, IUserTableFilterValue } from 'src/types/user';
+import { IAgentTableFilters, IAgentTableFilterValue } from 'src/types/agents';
 //
 import UserTableRow from '../../user/user-table-row';
 import UserTableToolbar from '../../user/user-table-toolbar';
@@ -46,7 +46,8 @@ import UserTableFiltersResult from '../../user/user-table-filters-result';
 
 import { useGetAgentList } from 'src/api/agent';
 import AgentTableRow from '../agent-table-row';
-import { IAgentTableFilterValue } from 'src/types/agents';
+import AgentTableToolbar from '../agent-table-toolbar';
+import AgentTableFiltersResult from '../agent-table-filters-result';
 
 // ----------------------------------------------------------------------
 
@@ -57,29 +58,26 @@ const TABLE_HEAD = [
   { id: 'phone_number', label: 'Phone', width: 180 },
   { id: 'whatsapp_number', label: 'WhatsApp', width: 180 },
   { id: 'company', label: 'Company', width: 220 },
-  { id: 'office_address', label: 'Office', width: 180 },
+  { id: 'website', label: 'Website', width: 180 },
   { id: 'licence_expiry_date', label: 'License Expiry', width: 180 },
   { id: '', width: 88 },
 ];
 
-const defaultFilters: IUserTableFilters = {
+const defaultFilters: IAgentTableFilters = {
   name: '',
-  role: [],
-  status: 'all',
 };
 
 // ----------------------------------------------------------------------
 
 export default function AgentListView() {
-  const {agents, agentsEmpty, agentsLoading} = useGetAgentList(1,100);
-
   const table = useTable();
+  
+  const { agents, agentsTotal, agentsEmpty, agentsLoading } = useGetAgentList(table.page, table.rowsPerPage);
 
   const settings = useSettingsContext();
 
   const router = useRouter();
 
-  
   const confirm = useBoolean();
 
   const [tableData, setTableData] = useState(agents);
@@ -87,9 +85,11 @@ export default function AgentListView() {
   const [filters, setFilters] = useState(defaultFilters);
 
   useEffect(() => {
+    console.log(agents,"==agents");
+    console.log(table.page,agentsTotal,"==");
+    
     setTableData(agents);
   }, [agents]);
-  
 
   const dataFiltered = applyFilter({
     inputData: tableData,
@@ -147,17 +147,10 @@ export default function AgentListView() {
     [router]
   );
 
-  // const handleFilterStatus = useCallback(
-  //   (event: React.SyntheticEvent, newValue: string) => {
-  //     handleFilters('status', newValue);
-  //   },
-  //   [handleFilters]
-  // );
-
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
-  
+
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
@@ -184,57 +177,10 @@ export default function AgentListView() {
         />
 
         <Card>
-          {/* <Tabs
-            value={filters.status}
-            onChange={handleFilterStatus}
-            sx={{
-              px: 2.5,
-              boxShadow: (theme) => `inset 0 -2px 0 0 ${alpha(theme.palette.grey[500], 0.08)}`,
-            }}
-          >
-            {STATUS_OPTIONS.map((tab) => (
-              <Tab
-                key={tab.value}
-                iconPosition="end"
-                value={tab.value}
-                label={tab.label}
-                icon={
-                  <Label
-                    variant={
-                      ((tab.value === 'all' || tab.value === filters.status) && 'filled') || 'soft'
-                    }
-                    color={
-                      (tab.value === 'active' && 'success') ||
-                      (tab.value === 'pending' && 'warning') ||
-                      (tab.value === 'banned' && 'error') ||
-                      'default'
-                    }
-                  >
-                    {tab.value === 'all' && _userList.length}
-                    {tab.value === 'active' &&
-                      _userList.filter((user) => user.status === 'active').length}
-
-                    {tab.value === 'pending' &&
-                      _userList.filter((user) => user.status === 'pending').length}
-                    {tab.value === 'banned' &&
-                      _userList.filter((user) => user.status === 'banned').length}
-                    {tab.value === 'rejected' &&
-                      _userList.filter((user) => user.status === 'rejected').length}
-                  </Label>
-                }
-              />
-            ))}
-          </Tabs> */}
-
-          <UserTableToolbar
-            filters={filters}
-            onFilters={handleFilters}
-            //
-            roleOptions={_roles}
-          />
+          <AgentTableToolbar filters={filters} onFilters={handleFilters} />
 
           {canReset && (
-            <UserTableFiltersResult
+            <AgentTableFiltersResult
               filters={filters}
               onFilters={handleFilters}
               //
@@ -289,7 +235,7 @@ export default function AgentListView() {
                       table.page * table.rowsPerPage + table.rowsPerPage
                     )
                     .map((row) => (
-                        <AgentTableRow
+                      <AgentTableRow
                         key={row.id}
                         row={row}
                         selected={table.selected.includes(row.id)}
@@ -311,7 +257,7 @@ export default function AgentListView() {
           </TableContainer>
 
           <TablePaginationCustom
-            count={dataFiltered.length}
+            count={agentsTotal}
             page={table.page}
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
@@ -358,9 +304,9 @@ function applyFilter({
 }: {
   inputData: any[];
   comparator: (a: any, b: any) => number;
-  filters: IUserTableFilters;
+  filters: IAgentTableFilters;
 }) {
-  const { name, status, role } = filters;
+  const { name } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index] as const);
 
@@ -375,18 +321,10 @@ function applyFilter({
   if (name) {
     inputData = inputData.filter((agent) => {
       const fullName = `${agent.user.first_name || agent.user.last_name}`;
-      if (fullName.toLowerCase().includes(name)){
-        return fullName.toLowerCase().indexOf(fullName.toLowerCase()) !== -1
+      if (fullName.toLowerCase().includes(name)) {
+        return fullName.toLowerCase().indexOf(fullName.toLowerCase()) !== -1;
       }
-  });
-  }
-
-  if (status !== 'all') {
-    inputData = inputData.filter((user) => user.status === status);
-  }
-
-  if (role.length) {
-    inputData = inputData.filter((user) => role.includes(user.role));
+    });
   }
 
   return inputData;

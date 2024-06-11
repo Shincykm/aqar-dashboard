@@ -36,13 +36,18 @@ export const createFormData = (data: any) => {
 export const handleFormData = (data:any) => {
   const formData = new FormData();
 
+  if (data?.phone_number && data?.country_code) {
+    const dialCodeLength = data.country_code.length;
+    data.phone_number = String(data.phone_number).slice(dialCodeLength);
+  }
+
   Object.entries(data).forEach(([key, value]) => {
       if (key === "id" && value) {
         formData.append(key, value.toString());
       } else if (typeof value === 'boolean') {
         formData.append(key, value ? '1' : '0');
       } else if (typeof value === 'string' && value !== '') {
-        if(key !== "profile_picture")
+        if(key !== "profile_picture" && key !== "licence_picture")
           formData.append(key, value);
       } else if (typeof value === 'number' && value !== 0) {
         formData.append(key, value.toString());
@@ -50,8 +55,8 @@ export const handleFormData = (data:any) => {
         value.forEach((item, index) => {
           if (item instanceof File) {
             formData.append(`${key}[${index}]`, item);
-          } else {
-            formData.append(`${key}[${index}]`, JSON.stringify(item));
+          } else if (key === "languages_ids") {
+            formData.append(`${key}[${index}]`, JSON.stringify(item?.id));
           }
         });
       } else if (value instanceof File) {

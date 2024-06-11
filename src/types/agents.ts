@@ -6,19 +6,28 @@ enum UserTypes {
 
 export type IAgentItem = {
     id: string;
-    first_name: string;
-    last_name: string;
+    user:{
+      first_name: string;
+      last_name: string; 
+      phone_number: string;
+      whatsapp_number: string;
+      email: string;
+    },
     user_type: UserTypes.AGENT;
-    email: string;
     state: string;
     status: string;
     address: string;
     country: string;
     zipCode: string;
     company: string;
-    avatarUrl: string;
-    phoneNumber: string;
+    profile_picture: {
+      virtual_path:string,
+    };
+    license_picture: string;
+    licence_expiry_date:string,
     isVerified: boolean;
+    company_name:string,
+    website:string,
   };
 
   export type IAgentTableFilters = {
